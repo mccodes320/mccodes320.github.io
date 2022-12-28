@@ -12,7 +12,7 @@
 
 6.2.3 再看建構式
 
-#### **CASE 1**
+#### CASE 1
 ```java
 class Some{
    Some(){
@@ -39,7 +39,7 @@ Output:
 call Some
 call Other
 
-CASE 2
+#### CASE 2
 
 ```java
 class Some{
@@ -70,7 +70,7 @@ Output:
 call Some
 call Other
 
-CASE 3
+#### CASE 3
 
 ```java
 class Some{
