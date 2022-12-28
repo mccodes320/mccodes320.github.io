@@ -11,7 +11,7 @@
 
 
 6.2.3 再看建構式
-```
+```java
 class Some{
    Some(){
       System.out.println("call Some");
