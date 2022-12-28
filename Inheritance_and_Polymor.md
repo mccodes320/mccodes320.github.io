@@ -46,9 +46,9 @@ class Some{
    Some(){
       System.out.println("call Some");
    }
-   **Some(int i){**
-     **System.out.println("call Some i: " + i);**
-   **}**
+   Some(int i){
+     System.out.println("call Some i: " + i);
+   }
 }
 
 class Other extends Some {
@@ -77,14 +77,14 @@ class Some{
    Some(){
       System.out.println("call Some");
    }
-   **Some(int i){**
-     **System.out.println("call Some i: " + i);**
-   **}**
+   Some(int i){
+     System.out.println("call Some i: " + i);
+   }
 }
 
 class Other extends Some {
    Other(){
-      **super(10);**
+      super(10);
       System.out.println("call Other");
    }
 }
