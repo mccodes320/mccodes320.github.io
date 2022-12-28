@@ -12,7 +12,7 @@
 
 6.2.3 再看建構式
 
-#### CASE 1
+#### **CASE 1**
 ```java
 class Some{
    Some(){
