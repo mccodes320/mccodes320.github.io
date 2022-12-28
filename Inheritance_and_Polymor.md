@@ -109,7 +109,8 @@ class Some{
       System.out.println("call Some i: " + i);
    }   
 }
-
+```
+```java
 class Other extends Some {
    Other(){   <<< 
       System.out.println("call Other");
@@ -118,3 +119,14 @@ class Other extends Some {
 ```
 Compile error : Implicit super constructor Some() is undefined. Must explicitly invoke another constructor
 
+```java
+class Other extends Some {
+   Other(){
+      System.out.println("call Other");
+	  super(10);  <<<
+   }
+}
+```
+Compile error : Constructor call must be the first statement in a constructor
+
+** this() and super 只能擇一呼叫, 而且一定要再建構式第一行執行
