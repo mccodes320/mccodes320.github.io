@@ -129,4 +129,4 @@ class Other extends Some {
 ```
 Compile error : Constructor call must be the first statement in a constructor
 
-** this() and super 只能擇一呼叫, 而且一定要再建構式第一行執行
+** this() and super 只能擇一呼叫, 而且一定要再建構式第一行執行**
