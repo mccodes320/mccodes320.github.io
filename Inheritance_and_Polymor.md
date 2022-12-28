@@ -24,12 +24,14 @@ class Other extends Some {
 	}
 }
 `
+
 ```
 new Some();
-`
+```
 call Some
+
 ```
 new Other();
-`
+```
 call Some
 call Other
