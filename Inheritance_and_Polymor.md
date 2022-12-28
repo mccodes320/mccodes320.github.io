@@ -101,4 +101,20 @@ Output:
 call Some i: 10
 call Other
 
+#### CASE 4
+
+```java
+class Some{
+   Some(int i){
+      System.out.println("call Some i: " + i);
+   }   
+}
+
+class Other extends Some {
+   Other(){   <<< 
+      System.out.println("call Other");
+   }
+}
+```
+Compile error : Implicit super constructor Some() is undefined. Must explicitly invoke another constructor
 
