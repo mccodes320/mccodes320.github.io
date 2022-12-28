@@ -23,7 +23,7 @@ class Other extends Some {
 		System.out.println("call Other");
 	}
 }
-`
+```
 
 ```
 new Some();
