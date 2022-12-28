@@ -11,7 +11,7 @@
 
 
 6.2.3 再看建構式
-`
+```
 class Some{
 	Some(){
 		System.out.println("call Some");
@@ -24,11 +24,11 @@ class Other extends Some {
 	}
 }
 `
-`
+```
 new Some();
 `
 call Some
-`
+```
 new Other();
 `
 call Some
