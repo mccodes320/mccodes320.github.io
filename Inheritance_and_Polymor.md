@@ -13,15 +13,15 @@
 6.2.3 再看建構式
 ```
 class Some{
-	Some(){
-		System.out.println("call Some");
-	}
+   Some(){
+      System.out.println("call Some");
+   }
 }
 
 class Other extends Some {
-	Other(){
-		System.out.println("call Other");
-	}
+   Other(){
+      System.out.println("call Other");
+   }
 }
 ```
 
