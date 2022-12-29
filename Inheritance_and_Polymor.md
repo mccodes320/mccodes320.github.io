@@ -188,10 +188,102 @@ s = null;
 ![圖片](https://user-images.githubusercontent.com/118010660/209964877-529016cb-e070-4d94-b313-cc09fcf67f29.png)
 
 
+### 6.2.7 再看抽象類別
 
+撰寫程式時, 常碰到看似不合理又非得要完成的需求,
+舉例來說, 老闆要你開發猜數字遊戲, 會隨機產生 0~9的數字,
+輸入者輸入的數字與隨機產生的數字相比, 如果相同顯示猜中了,
+不同就繼續讓使用者輸入數字, 直到猜中為止.
 
+```java
+public class Chatper_6_2_7 {
+   public static void main(String[] args) {
+      Scanner c = new Scanner(System.in);
+      int number = (int) (Math.random()*10);
+      int guess;
+      do {
+         System.out.println("Enter the number: ");
+         guess = c.nextInt();
+      } while(number != guess);
+      System.out.println("Done");
+      c.close();
+   }
+}
+```
 
+可以在給老闆之後, 老闆又說, 
+我有說要是在文字模式下執行嗎? 還沒決定哪個環境, 不能拖到下禮拜.
+而且還要再多個團隊與部門接合作開發. 互相等待的情況下可能就又拖了兩三個禮拜.
 
+這種需求就透過Design來解決.
+像是取得使用者輸入, 顯示結果的環境未定, 但已知部分是可以先做的.
+
+```java
+public abstract class GuessGame {
+   public void go() {
+      int number = (int) (Math.random()*10);
+      int guess;
+      do {
+         System.out.println("Enter the number: ");
+         guess = nextInt();
+      } while(number != guess);
+      System.out.println("Done: " + number);
+   }
+   
+   public void println(String text) {
+      print(text + "\n");
+   }
+   
+   public abstract void print(String text);
+   public abstract int nextInt();
+}
+```
+這裡可以看到, 哪個類別定義的不完整, 
+因為老闆還沒確定在哪個環境進行猜數字,
+所以如何輸出跟取得使用者輸入就不先實作,
+但是猜數字部分是可以先實作的, 
+雖然是抽象類別, 但是go()還是可以呼叫.
+
+開完會了, 
+終於還是決定於文字模式下執行猜數字遊戲,
+那就可以另外撰寫類別來實作GuessGame, 實作當中的抽象方法
+
+```java
+import java.util.Scanner;
+
+public class ConsleGame extends GuessGame{
+   private Scanner sc = new Scanner(System.in);
+   
+   @Override
+   public void print(String text) {
+      System.out.println("ConsleGame: " + text);
+   }
+
+   @Override
+   public int nextInt() {
+      return sc.nextInt();
+   }
+}
+```
+
+所以在建構了ConsleGame實例,
+執行了go() 並呼叫了 print() , nextInt()等, 都是在執行ConsleGame中定義的流程,
+完整的猜數字也就出來了.
+
+```java
+public class Guess {
+   public static void main(String[] args) {
+      ConsleGame gg = new ConsleGame();
+      gg.go();
+   }
+```
+Enter the number: 
+0
+Done: 0
+
+### 重點複習
+多形 :
+以抽象來講, 就是使用單一介面操作多種形態的物件 !
 
 
 
