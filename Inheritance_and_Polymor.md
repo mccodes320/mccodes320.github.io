@@ -162,9 +162,13 @@ s1 = s2;
 S1~[]
 S2~[]
 * 兩個物件都有牌子
+
 ![圖片](https://user-images.githubusercontent.com/118010660/209963909-7e7738ad-5eb9-48ee-9341-95173020ea33.png)
+
 到第3行, 是將s2參考的物件s1參考, 
+
 ![圖片](https://user-images.githubusercontent.com/118010660/209964096-e8c8356c-a229-4cd5-b775-15c4818007ac.png)
+
 * 沒有牌子就是垃圾
 
 CASE 2
@@ -174,11 +178,12 @@ s.next() = new Some();
 s = null;
 ```
 ![圖片](https://user-images.githubusercontent.com/118010660/209964662-fdfa6deb-f644-4a37-a2cc-acf7f40da611.png)
+
 * 鏈狀參考
 
 主流程開始, 可以透過s參考到中間物件, 而some.next可以參考至最右邊的物件.
 第三行後, 由於主流程無法透過S參考到中間物件, 也無法再透過中間物件的next參考至右邊物件,
-所以現在兩個物件都是樂熱.
+所以現在兩個物件都是垃圾.
 
 ![圖片](https://user-images.githubusercontent.com/118010660/209964877-529016cb-e070-4d94-b313-cc09fcf67f29.png)
 
