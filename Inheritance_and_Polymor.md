@@ -285,5 +285,21 @@ Done: 0
 多形 :
 以抽象來講, 就是使用單一介面操作多種形態的物件 !
 
+練習題:
+
+1. 使用6.2.5 設計的ArrayList類別收集物件,顯示所收集物件之字串描述, 必須如下:
+```java
+ArrayList list = new ArrayList();
+// ... 收集物件
+for(int i = 0 ; i < list.size() ; i++) {
+   out.println(list.get(i));
+}
+```
+請重新定義ArrryList的toString()方法,
+讓客戶端想顯示收集物件之字串描述, 如下:
+
+ArrayList list = new ArrayList();
+out.println(list);
+
 
 
