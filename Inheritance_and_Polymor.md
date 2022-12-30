@@ -302,7 +302,6 @@ ArrayList list = new ArrayList();
 out.println(list);
 
 **Solution**
-ArrayList
 
 ```java
 package chapter6;
