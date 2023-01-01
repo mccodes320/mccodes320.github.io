@@ -113,6 +113,9 @@ output: LEFT GAME
 撰寫上也可以寫成,
 但一定要賦予指定值
 
+在類別中定列舉常數也是可以的, 
+但是一定要明確寫出public static final.
+
 ```java
 public interface Action {
    int STOP = 0;
