@@ -255,8 +255,51 @@ public class MultiChat {
 
 ```
 
+### 7.2.3 使用 enum 列舉常數
+
+```java
+public enum Action {
+   STOP, RIGHT, LEFT, UP, DOWN
+}
+
+```
+定義列舉常數, 也等同於限定了輸入的參數型態,
+
+enum 定義了特殊的類別, 繼承自 java.lang.Enum,
+不過, 這是由編譯器處理, 直接撰寫程式繼承Enum類別會被編譯器拒絕.
+在編譯過後會產生Action.class.
+
+而返組譯就可以看到其實是 public static final, 且為Action 實例.
 
 
+```java
+public class Game {
+   public static void main(String[] args) {
+      // 只能傳入 Action 實例
+      play(Action.RIGHT);
+   }
+
+   public static void play(Action action) { // 宣告為Action型態
+      switch (action) {    
+      case STOP:   // 也就是Action.STOP , 列舉Action 實例
+         System.out.println("STOP");   
+         break;
+      case RIGHT:
+         System.out.println("RIGHT");
+         break;
+      case LEFT:
+         System.out.println("LEFT");
+         break;
+      case UP:
+         System.out.println("UP");
+         break;
+      case DOWN:
+         System.out.println("DOWN");
+         break;
+      }
+   }
+}
+```
 
 
 
