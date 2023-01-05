@@ -1,0 +1,11 @@
+
+
+錯誤, 會被包裝成物件, 這些物件都是可以拋出的(throws),
+因此設計錯誤物件都繼承自 java.lang.Throwable.
+
+Throwable 定義了取得的錯誤訊息, 堆疊追蹤(Stack Trace) 等方法,
+有兩個子類別: java.lang.Error 跟 java.lang.Exception.
+
+
+
+
