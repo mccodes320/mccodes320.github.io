@@ -17,6 +17,7 @@ Throwable 定義了取得的錯誤訊息, 堆疊追蹤(Stack Trace) 等方法,
 就必須明訂try-cache來處理, 或使用throws宣告這個方法會拋出例外, 否則會編譯失敗.
 
 在呼叫System.in.read()時, in 是System的靜態成員, 型態為 java.io.InputStream:
+
 ![圖片](https://user-images.githubusercontent.com/118010660/210781639-4f30dd65-41c3-4144-965c-4945c01c4fe9.png)
 
 IOException 是Exception 的直接子類別, 所以編譯器會明確要求使用語法處理.
@@ -29,5 +30,105 @@ IOException 是Exception 的直接子類別, 所以編譯器會明確要求使�
 不然不可通故編輯, API客戶端無權選擇要不要處理.
 
 
+**非受檢例外 Unchecked Exception**
+
+**屬於 RuntiomeException 衍生出來的類別實例, 代表API設計者實作某方法實, 某些條件成立時會引發錯誤, 
+而且認為API客戶端應該再呼叫方法前做好檢查, 以避免引發錯誤.**
+
+之所以命名為執行時期例外, 是因為編譯器不會強迫一定得在語法上加以處理,
+**亦稱為非受檢例外 (Unchecked Exception)**
+
+例如使用陣列時, 若存取超出索引就會拋出 ArrayIndexOutOfBoundsException, 但是編譯器並不會強迫你在語法上加以處理,
+因為ArrayIndexOutOfBoundsException屬於 RuntimeException.
+
+若在Average範例中, InputMismatchException也是RuntimeException.
 
 
+8.1.3 要抓還是要拋 ?
+
+以此為例, 讀取文字檔案, 以字串回傳
+```java
+public class FileUtil {
+   public static String readFile(String name) {
+      StringBuilder text = new StringBuilder();
+      try {
+         Scanner console = new Scanner(new FileInputStream(name));
+         while (console.hasNext()) {
+            text.append(console.nextLine()).append('\n');
+         }
+      } catch (FileNotFoundException e) {
+         e.printStackTrace();
+      }
+      return text.toString();
+   }
+}
+```
+因為建構 FileInputStream 會拋出 FileNotFoundException , 所以在這裡主控台中就會顯示錯誤
+但是code並不一定會用在文字模式中, 也可能是web網頁, 像這種情況使用者是不會看到訊息的.
+所以, 以這個案例來說不論是用catch中寫死例外處理, 或是輸出錯誤訊息, 都不符合需求.
+
+所以方法設計流程中發生例外, 而你的設計並沒有充足的資訊知道該如何處理,
+那麼就可以把例外拋出, 讓呼叫方法的客戶端自己處理
+
+
+```java
+   public static String readFile(String name) throws FileNotFoundException {
+      StringBuilder text = new StringBuilder();
+      Scanner console = new Scanner(new FileInputStream(name));
+      while (console.hasNext()) {
+         text.append(console.nextLine()).append('\n');
+      }
+      return text.toString();
+   }
+```
+
+使用 throws 宣告此方法會拋出例外類型或父類別, 編譯器才會讓你通過
+
+
+想先處理部分事項再拋出:
+
+```java
+   public static String readFile(String name) throws FileNotFoundException {
+      StringBuilder text = new StringBuilder();
+      try {
+         Scanner console = new Scanner(new FileInputStream(name));
+         while (console.hasNext()) {
+            text.append(console.nextLine()).append('\n');
+         }
+      } catch (FileNotFoundException e) {
+         e.printStackTrace();
+         throw e;
+      }
+      return text.toString();
+   }
+```
+catch 區塊進行玩部分錯誤處理之後, 可以使用 throw 再將例外拋出.
+事實上, 也可以在任何流程中拍出例外,  一定要在catch 區塊中,
+因為如果在流程中拋出例外, 就直接跳離原有流程,
+可以拋出受檢或非受檢例外
+
+如果拋出的是受檢例外, 表示你認為客戶端有能力且應可以處理例外, 此時必須在方法上使用throwvms宣告,
+如果拋出的例外是非受檢例外, 表示你認為客戶端呼叫方法的時機出錯了, 拋出例外要求客戶端修正bug再來呼叫方法, 就不需要throws宣告
+
+如果使用繼承時, 父類別某個方法宣告 throws 某些例外, 子類別重新定義該方法時可以:
+* 不宣告 throws 任何例外
+* 可 throws 父類別該方法中宣告的某些例外
+* 可 throws 物類別該方中宣告的子例外
+不可以
+* throws 父類別方法中宣告的其他例外
+* throws 父類別方中宣告例外之父類別
+
+自訂受檢例外
+public class CustomizedException extends Exception {} 
+自訂非受檢例外
+public class CustomizedException extends RuntimeException {} 
+
+
+```java
+
+catch(SomeException ex){
+  throw new CustomizedException("Error exception);
+}
+```
+
+ 8.1.6 Assert
