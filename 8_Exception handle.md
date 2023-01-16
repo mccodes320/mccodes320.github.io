@@ -132,3 +132,97 @@ catch(SomeException ex){
 ```
 
  8.1.6 Assert
+
+有時候, 需求或設計時就可以確認, 程式執行的某個時間點或某個情況下, 一定是楚瑜或不屬於某個狀態,
+若不是, 則是嚴重的錯誤, 開發過程中發現這種嚴重的錯誤, 必須立即停止程式確認需求與設計.
+
+而這是一種斷言 Assertion, 例如某個時間點程式某個變數值一定是多少.
+斷言的結果一定是成立或是不成立, 逾期結果與實際程式狀態相同時, 斷言成立, 否則就是斷言不成立.
+
+兩種語法:
+assert boolean_expression
+assert boolean_expression: detail_expression
+
+boolean_expression為true就不做事, 如我是false就會發生AssertiobError.
+detail_expression如果是false就將此顯示於文字描述結果中.
+
+若要在程式執行時, 啟動斷言檢查, 可以在java指令中指定 -enableassertions或是-ea 引數.
+
+什麼時候使用斷言呢? 一般會建議
+1. 斷言客戶端呼叫方法前, 已經準備好某些前置條件(通常在private方法中)
+2. 斷言客戶端呼叫方法後, 具有方法承諾的結果.
+3. 斷言物件某個時間點下的狀態
+4. 使用斷言取代註解
+5. 斷言程式流程中絕對不會執行到的程式碼部分
+
+public void charge (ine money) throws InsufficientException {
+  assert money>=0 : "扣負數?不是叫我儲值" ;
+  
+  checkBalance(monoey);
+  this.valance -= money;
+  
+  asssert this,balence >- 0:"this.balance不能負數";  
+}
+
+
+
+8.2.1 使用 finally
+最後一定會被執行關閉資源的動作, try-catch 就可以搭配 finally,
+無倫try區塊中有無發生例外, 若有撰寫finally就一定會被執行.
+
+
+如果程式中有先return的部分, 而且也有寫Finall區塊,
+那finally區快就會先執行, 在座returnㄡ
+```java
+public class FinallyDemo {
+   public static void main(String[] args) {
+         System.out.println(test(true));
+   }
+   
+   static int test(boolean flag) {
+      try {
+         if(flag) {
+            return 1;
+         }
+      }finally {
+         System.out.println("finally");
+      }
+      return 0;
+   }
+}
+```
+finally
+1
+
+
+8.2.2 自動嘗試關閉資源
+
+經常使用 try finally 嘗試關閉資源, 會發現程式撰寫的流程是類似的.
+所以在java7之後, **新增了嘗試關閉資源(Try-with-resource)語法**
+
+想要嘗試自動關閉資源的物件, 是撰寫try 之後的跨號中,
+如無須Catch處裡任何例外, 可以不用撰寫 也不用寫Finally自行嘗試關閉資源
+
+
+
+```java
+public class FileUtil2 {
+   public static void main(String[] args) {
+   }
+   public static String readFile(String name) throws FileNotFoundException {
+      StringBuilder text = new StringBuilder();
+      try (Scanner console = new Scanner(new FileInputStream(name))){
+         while(console.hasNext()) {
+            text.append(console.nextLine()).append("\n");
+         }
+      }
+      return text.toString();
+   }
+}
+
+```
+
+
+
+
+
