@@ -1,10 +1,2594 @@
-<!DOCTYPEhtml>
-<html>
+<!DOCTYPE html>
+<html lang="zh-Hant">
 <head>
-<metacharset="utf-8">
-<title>Test</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MongoDB C100DEV 模擬試題</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f4f7f9;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #00684A;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #00684A;
+            padding-bottom: 10px;
+        }
+        .question-block {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            background-color: #fcfcfc;
+            transition: box-shadow 0.3s;
+        }
+        .question-block:hover {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .question-block:last-child {
+            margin-bottom: 0;
+        }
+        .question-title {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 15px;
+        }
+        .options-list {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+        .options-list li {
+            margin-bottom: 10px;
+        }
+        .options-list label {
+            display: flex;
+            align-items: flex-start;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 5px;
+            transition: background-color 0.2s;
+        }
+        .options-list label:hover {
+            background-color: #e9f5ee;
+        }
+        .options-list input {
+            margin-top: 5px;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+        .show-answer-btn {
+            background-color: #00ED64;
+            color: #002B19;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.9em;
+            margin-top: 15px;
+            transition: background-color 0.3s;
+        }
+        .show-answer-btn:hover {
+            background-color: #00B34B;
+        }
+        .answer-panel {
+            display: none;
+            margin-top: 15px;
+            padding: 15px;
+            background-color: #e6ffed;
+            border: 1px solid #b3e6c5;
+            border-radius: 5px;
+            animation: fadeIn 0.5s;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .answer-panel .correct-answer {
+            color: #00684A;
+            font-weight: bold;
+        }
+        .answer-panel .explanation {
+            margin-top: 8px;
+            color: #333;
+        }
+        .multi-choice-tag {
+            font-size: 0.8em;
+            font-weight: bold;
+            color: #d9534f;
+            margin-left: 10px;
+        }
+    </style>
 </head>
 <body>
-<h1>My First Github HTML</h1>
+
+    <div class="container" id="quiz-container">
+        <h1>MongoDB C100DEV 模擬試題</h1>
+        </div>
+
+    <script>
+        const rawData = `
+ Why is MongoDB a NoSQL database?
+為什麼 MongoDB 是一個 NoSQL 資料庫？
+A. Because MongoDB uses a structured way to store and organize data (collections).
+B. Because MongoDB uses tables, rows and columns to organize data.
+C. Because MongoDB does not utilize tables, rows and columns to organize data.
+答案：A, C
+解釋：MongoDB 使用集合來組織資料，而不是傳統的資料表、列與欄。
+
+What is the built-in database called local in MongoDB for?
+MongoDB 內建的 local 資料庫用途是什麼？
+A. The local database plays an important role in authentication and authorization.
+B. The local database is used to store information about shards in shared cluster.
+C. The local database stores data describing the MongoDB server. For replica sets, it also stores replication info.
+答案：C
+解釋：local 儲存伺服器的相關資訊，在副本集中還會存放複寫相關資料。
+
+Which cursor method should you use to specify the maximum number of documents returned?
+哪個 cursor 方法可指定返回的最大文件數？
+A. cursor.map()
+B. cursor.limit()
+C. cursor.skip()
+D. cursor.hint()
+E. cursor.count()
+答案：B
+解釋：limit() 可限制返回的筆數。
+
+What does it command do in the mongo shell?
+mongo shell 中 it 指令的作用是什麼？
+A. Iterates through the cursor results.
+B. Terminates the current query execution.
+C. It is not a mongo shell command.
+D. Displays cluster statistics.
+答案：A
+解釋：it 用來繼續遍歷上一個查詢的 cursor 結果。
+
+Which of the following commands will delete a collection named restaurants?
+以下哪個命令可刪除名為 restaurants 的集合？
+A. db.restaurants.dropCollection()
+B. db.restaurants.delete()
+C. db.restaurants.remove()
+D. db.restaurants.drop()
+答案：D
+解釋：刪除集合需使用 drop()。
+
+Which cursor method should you use to force MongoDB to use a specific index for a query?
+哪個 cursor 方法能強制 MongoDB 在查詢時使用指定索引？
+A. cursor.index()
+B. cursor.hint()
+C. cursor.explain()
+D. cursor.use()
+答案：B
+解釋：hint() 用來指定索引。
+
+Given the following MongoDB URI:
+mongodb+srv://datascientist34:ta33w9rd@xtr-187.srv.net/admin
+Which of the following statements are true? (複選)
+給定上述連線 URI，下列哪些說法正確？
+A. There are 178 nodes in the xtr replica set.
+B. The password used for authentication is xtr-178.
+C. The password used for authentication is ta33w9rd.
+D. The user datascientist34 is trying to authenticate on database admin.
+答案：C, D
+解釋：URI 格式為 mongodb+srv://<使用者>:<密碼>@<主機>/<認證資料庫>。
+
+There are some special databases in MongoDB that we cannot use to create a new database. Select those names. (複選)
+MongoDB 中有一些特殊資料庫無法用來建立新資料庫，請選出。
+A. admin
+B. local
+C. apps
+D. config
+E. users
+答案：A, B, D
+解釋：admin、local、config 是保留資料庫名稱。
+
+Given a companies collection with documents containing name and description fields,
+Which command will add a new field country: "USA"?
+在 companies 集合中，哪個操作會新增 country 欄位？
+A. $push operator
+B. $set description = "Social media"
+C. $set country = "USA"
+答案：C
+解釋：使用 $set 新增或修改欄位。
+
+Suppose you have a books collection with title field.
+Which query will return all books with a title ending in 'ian'?
+有一個 books 集合，如何查詢書名結尾為 "ian" 的文件？
+A. db.movies.find({ title: { $regex: /.*ian$/ } })
+B. db.movies.find({ title: { $text: /.*ian$/ } })
+C. db.movies.find({ title: { $regex: /.*ian/ } })
+D. db.movies.find({ title: { $regex: /ian/ } })
+答案：A
+解釋：正則 /.*ian$/ 表示字串結尾為 "ian"。
+
+Extract all companies that have the same Twitter username as the company name.
+查詢 Twitter 使用者名稱與公司名稱相同的公司。
+A. db.companies.find({ $expr: { $ne: ['$name', '$twitter_username'] } })
+B. db.companies.find({ $expr: { $eq: ['$name', '$twitter_username'] } })
+C. db.companies.find({ $expr: { $eq: ['$name', 'twitter_username'] } })
+D. db.companies.find({ $expr: { $eq: ['name', 'twitter_username'] } })
+答案：B
+解釋：$expr 可以比較欄位值，$eq 代表相等。
+
+Which of the following statements are true about the mongo shell? (複選)
+關於 mongo shell，哪些敘述正確？
+A. It is a fully functioning JavaScript interpreter.
+B. It allows interaction with MongoDB instance without GUI.
+C. It doesn’t return documents sorted by default.
+D. We can sort results using sort().
+答案：A, B, C, D
+解釋：mongo shell 是 JS 直譯器，支援互動查詢，預設不排序，需用 sort()。
+
+Suppose you insert the following into companies with {ordered:false}:
+
+{"_id":1,"name":"Facebook"},
+{"_id":1,"name":"Twitter"},
+{"_id":2,"name":"Tesla"},
+{"_id":3,"name":"Amazon"}
+
+
+Which statements are true? (複選)
+A. Two documents will be inserted.
+B. This insert is unordered.
+C. Three documents will be inserted.
+D. MongoDB will insert each unique _id.
+E. One document will be inserted.
+答案：B, C, D
+解釋：因為 _id:1 重複失敗，但 unordered 模式下其他合法文件仍會插入。
+
+Which collection method do you need to use to drop a specific collection?
+刪除集合需使用哪個方法？
+A. db.collection.drop()
+B. db.collection.dropIndex()
+C. db.collection.dropCollection()
+D. db.collection.remove()
+答案：A
+解釋：刪除整個集合需用 drop()。
+
+Select all true statements about the update operation. (複選)
+以下哪些關於 update 操作的敘述正確？
+A. update() + $set 更新第一筆符合文件。
+B. If field doesn’t exist, updateOne() $set 不會新增。
+C. updateOne() + $set 更新欄位值。
+答案：A, C
+解釋：updateOne 使用 $set 可修改或新增欄位。
+
+Which operator should you use to extract all sales documents that have 'notepad' in items array?
+如何查詢 items 陣列中包含 notepad 的文件？
+A. $in
+B. $elemMatch
+C. $nin
+D. $match
+E. $all
+答案：B
+解釋：$elemMatch 可針對陣列欄位匹配條件。
+
+Which query is valid?
+以下哪個更新操作正確？
+A. $set _id = 3
+B. $set fname = 'John'
+C. $unset _id
+D. $set _id + fname
+答案：B
+解釋：只能用 $set 修改非 _id 欄位。
+
+Which command will add a BSON file collection to MongoDB cluster?
+哪個工具能從 BSON 匯入資料？
+A. mongodump
+B. mongorestore
+C. mongoimport
+D. mongoexport
+答案：B
+解釋：mongorestore 用來從 BSON 備份檔案匯入。
+
+Which query will return only the title for the five oldest movies?
+如何查詢最舊的 5 部電影，只返回 title？
+A. db.movies.find(...).skip(5).limit(5)
+B. db.movies.find({}, {title:1,_id:0}).sort({year:1}).limit(5)
+C. db.movies.find({title:1}).sort({year:1}).limit(5)
+D. db.movies.find(...).skip(5)
+答案：B
+解釋：projection {title:1,_id:0} 可只返回 title，並搭配排序與限制。
+
+Which query will find all movies made in 2000 or 2010?
+查詢年份為 2000 或 2010 的電影？
+A. db.movies.find({ $or:[{year:2000},{year:2010}] })
+B. db.movies.find({ year:2000, year:2010 })
+C. db.movies.find({ $and:[{year:2000},{year:2010}] })
+D. db.movies.find({ $in:[{year:2000},{year:2010}] })
+答案：A
+解釋：使用 $or 可以匹配多個條件。
+
+
+
+
+Why should you create indexes in MongoDB?
+為什麼要在 MongoDB 建立索引？
+A. To reduce storage space
+B. To speed up queries
+C. To reduce write latency
+D. To enforce schema validation
+答案：B
+解釋：索引的主要目的在於加快查詢速度。
+
+For the query db.users.find({age:30}).sort({name:1}), which index is best?
+對於查詢 db.users.find({age:30}).sort({name:1})，最佳的索引是？
+A. {age:1}
+B. {name:1}
+C. {age:1, name:1}
+D. {name:1, age:1}
+答案：C
+解釋：複合索引 {age:1, name:1} 可以同時支援篩選與排序。
+
+What does a multikey index do?
+多鍵索引 (multikey index) 的功能是什麼？
+A. Index only the first element of the array
+B. Create index entries for each array value
+C. Arrays cannot be indexed
+D. Used only for text search
+答案：B
+解釋：多鍵索引會為陣列中的每個元素建立索引項目。
+
+If a query uses a field without an index, what happens?
+若查詢的欄位沒有索引，會發生什麼？
+A. Error thrown
+B. Collection scan
+C. MongoDB automatically creates index
+D. No result returned
+答案：B
+解釋：沒有索引時，會執行全表掃描 (collection scan)。
+
+Which queries are supported by a compound index {status:1, age:1}? (複選)
+複合索引 {status:1, age:1} 可以支援哪些查詢？
+A. find({status:"A"})
+B. find({age:30})
+C. find({status:"A", age:30})
+D. find().sort({status:1})
+答案：A, C, D
+解釋：複合索引遵循「前綴原則」，所以必須先使用到 status。
+
+What is the benefit of a sparse index?
+稀疏索引 (sparse index) 的優點是什麼？
+A. Saves storage, only indexes documents with the field
+B. Auto-fills missing values
+C. Prevents duplicates
+D. Enforces uniqueness
+答案：A
+解釋：稀疏索引只會為有該欄位的文件建立索引。
+
+What is a text index used for?
+文字索引的用途是什麼？
+A. Exact matches
+B. Full-text search
+C. Array expansion
+D. Sharding
+答案：B
+解釋：文字索引支援全文檢索。
+
+Why are covered queries faster?
+為什麼 covered query 效能較佳？
+A. Query uses only index data, no document fetch
+B. Uses multiple CPUs
+C. Auto-caches results
+D. Always in RAM
+答案：A
+解釋：查詢只需讀索引，而不用去讀完整文件。
+
+What does explain("executionStats") show?
+explain("executionStats") 可以看到什麼？
+A. Query plan and performance stats
+B. Index size
+C. Shard status
+D. User permissions
+答案：A
+解釋：executionStats 模式會顯示查詢計劃與執行統計。
+
+What happens if a query frequently sorts without an index?
+若查詢經常進行排序，但沒有合適索引，會發生什麼？
+A. Query fails
+B. Sorting uses memory, may hit “sort exceeded memory limit”
+C. MongoDB auto-creates index
+D. Only first result returned
+答案：B
+解釋：排序會消耗記憶體，超出限制會報錯。
+
+What are the two common data modeling strategies in MongoDB? (複選)
+MongoDB 中常見的兩種資料模型策略是？
+A. Embedding
+B. Referencing
+C. Normalization
+D. Deletion
+答案：A, B
+解釋：MongoDB 主要透過嵌入與參照設計關聯資料。
+
+When should you embed documents?
+什麼情況適合使用嵌入式文件？
+A. Data is closely related and queried together
+B. Document exceeds 16MB
+C. Unrelated fields
+D. Frequent cross-collection updates
+答案：A
+解釋：嵌入適合高關聯且常一起查詢的資料。
+
+When should you reference documents?
+什麼時候應使用參照？
+A. Frequent reads
+B. Large or repeating related data
+C. Single document use only
+D. Arrays only
+答案：B
+解釋：當關聯資料龐大或經常重複時，建議用參照。
+
+What is the maximum BSON document size in MongoDB?
+MongoDB 文件的最大大小限制是多少？
+A. 8MB
+B. 16MB
+C. 32MB
+D. Unlimited
+答案：B
+解釋：單一文件限制為 16MB。
+
+In a one-to-many relationship with very large “many,” how should you design?
+在 1:N 關係且「多」的數量非常大時，應如何設計？
+A. Embed all in parent
+B. Use references, separate collections
+C. Multiple databases
+D. Keep only first 100 entries
+答案：B
+解釋：大量關聯資料應以參照方式設計。
+
+For user shopping cart data, what design is best?
+對於購物車資料，最佳設計是？
+A. Embed items in cart document
+B. Store each item in separate collection
+C. One database per user
+D. All carts in one document
+答案：A
+解釋：購物車與商品關聯緊密，嵌入設計最合適。
+
+For blog posts with potentially thousands of comments, best design is?
+部落格文章可能有上萬評論，最佳設計是？
+A. Embed all comments in post
+B. Store comments in separate collection with post _id reference
+C. Limit comments array to 100
+D. One collection per post
+答案：B
+解釋：大量評論適合分開集合，透過 post _id 參照。
+
+$lookup is most similar to which modeling strategy?
+$lookup 對應哪種資料模型策略？
+A. Embedding
+B. Referencing
+C. Normalization
+D. Denormalization
+答案：B
+解釋：$lookup 用於集合間 join，對應參照設計。
+
+Why avoid over-normalization?
+為什麼要避免過度正規化？
+A. MongoDB does not support normalization
+B. Too many joins slow queries
+C. Documents become larger
+D. Breaks indexes
+答案：B
+解釋：過度正規化會導致頻繁 join，效能下降。
+
+What is the most important factor when designing a data model?
+設計資料模型時最重要的考量是什麼？
+A. Storage size only
+B. Data integrity only
+C. Application workload (read/write patterns)
+D. MongoDB version
+答案：C
+解釋：應根據應用程式的讀寫模式設計資料模型。
+
+
+
+
+
+What is a replica set in MongoDB?
+MongoDB 中的副本集是什麼？
+A. A sharded cluster
+B. A group of mongod processes maintaining the same dataset
+C. A backup file
+D. A single mongod process with multiple databases
+答案：B
+解釋：副本集由多個 mongod 節點組成，共同維護相同資料。
+
+Which node in a replica set receives all write operations by default?
+副本集中，預設所有寫入會送到哪個節點？
+A. Secondary
+B. Primary
+C. Arbiter
+D. Hidden node
+答案：B
+解釋：預設所有寫入發送到 primary，secondary 同步資料。
+
+What is the role of a secondary node?
+副本集中 secondary 節點的角色是什麼？
+A. Handle all writes
+B. Replicate data from primary and serve reads
+C. Elect itself always as primary
+D. Only store indexes
+答案：B
+解釋：secondary 複寫 primary 的資料，並可用於讀取。
+
+What is the role of an arbiter?
+副本集中 arbiter 的角色是什麼？
+A. Stores full dataset
+B. Participates in elections but does not store data
+C. Always primary backup
+D. Holds indexes only
+答案：B
+解釋：仲裁節點只投票，不存放資料。
+
+Which command shows replica set configuration?
+哪個命令可以顯示副本集的配置？
+A. rs.config()
+B. rs.status()
+C. rs.conf()
+D. rs.initiate()
+答案：C
+解釋：rs.conf() 用於查看目前副本集配置，rs.status() 用於查看狀態。
+
+Which command shows the status of a replica set?
+查看副本集狀態應使用哪個命令？
+A. rs.status()
+B. rs.config()
+C. rs.printReplicationInfo()
+D. db.serverStatus()
+答案：A
+解釋：rs.status() 可顯示所有節點的健康狀態與角色。
+
+What is the minimum number of data-bearing nodes required for a replica set?
+副本集中至少需要幾個具有資料的節點？
+A. 1
+B. 2
+C. 3
+D. 5
+答案：3
+解釋：建議至少 3 個節點，確保可以進行選舉與容錯。
+
+What happens when a primary node fails?
+當 primary 節點失效時會發生什麼？
+A. Writes stop permanently
+B. An election occurs and a secondary becomes primary
+C. Arbiter becomes primary
+D. Cluster shuts down
+答案：B
+解釋：副本集會自動選舉新的 primary。
+
+Which of the following is true about elections? (複選)
+關於副本集的選舉，下列哪些正確？
+A. Secondary can become primary
+B. Arbiter can become primary
+C. Election uses majority voting
+D. Elections are automatic on failure
+答案：A, C, D
+解釋：secondary 可升級為 primary，選舉需要多數節點同意，故障時自動觸發。
+
+What does write concern "majority" mean?
+寫入確認等級 "majority" 的意思是什麼？
+A. Acknowledged only by primary
+B. Acknowledged by all secondaries
+C. Acknowledged by a majority of replica set members
+D. Not acknowledged at all
+答案：C
+解釋："majority" 需獲得大多數節點確認才算成功。
+
+What is the default write concern in MongoDB?
+MongoDB 的預設寫入確認等級是什麼？
+A. majority
+B. 1
+C. 0
+D. all
+答案：B
+解釋：預設寫入確認等級為 w:1，即 primary 確認即可。
+
+What is the default read preference in MongoDB?
+MongoDB 的預設讀取偏好是什麼？
+A. primary
+B. secondary
+C. nearest
+D. primaryPreferred
+答案：A
+解釋：預設讀取偏好是從 primary 讀取。
+
+Which read preference allows queries to be routed to secondary nodes? (複選)
+哪種讀取偏好允許查詢路由到 secondary？
+A. secondary
+B. secondaryPreferred
+C. nearest
+D. primary
+答案：A, B, C
+解釋：primary 僅能讀 primary，其餘模式可讀 secondary。
+
+Which node type can delay replication intentionally?
+哪種節點類型可設定延遲複寫？
+A. Hidden node
+B. Delayed node
+C. Arbiter
+D. Config server
+答案：B
+解釋：延遲節點 (delayed node) 可用於保留歷史資料。
+
+What is a hidden node used for?
+隱藏節點的用途是什麼？
+A. Participate in elections but not serve reads
+B. Store data, not participate in elections, not serve reads
+C. Only backup indexes
+D. Act as arbiter
+答案：B
+解釋：隱藏節點存放資料但不參與選舉，也不提供查詢。
+
+How do you add a new member to a replica set?
+如何將新節點加入副本集？
+A. rs.initiate()
+B. rs.add()
+C. rs.stepDown()
+D. rs.status()
+答案：B
+解釋：rs.add() 用於新增節點。
+
+Which command forces the current primary to step down?
+哪個命令可以強制目前的 primary 下台？
+A. rs.remove()
+B. rs.stepDown()
+C. rs.add()
+D. db.shutdownServer()
+答案：B
+解釋：rs.stepDown() 可強制 primary 降級為 secondary。
+
+What happens if a replica set has an even number of voting members?
+若副本集有偶數個投票節點，可能發生什麼？
+A. Faster elections
+B. Possible election ties
+C. Arbiter automatically added
+D. All secondaries become primary
+答案：B
+解釋：偶數投票節點可能導致平票。
+
+How many maximum voting members can a replica set have?
+副本集最多可有幾個投票成員？
+A. 7
+B. 9
+C. 50
+D. 100
+答案：B
+解釋：副本集最多有 50 個節點，但僅能有 7 個投票節點（MongoDB 6.0 起可到 9 個）。
+
+What is the maximum number of members (voting + non-voting) in a replica set?
+副本集最多可以有多少個成員（投票 + 非投票）？
+A. 7
+B. 9
+C. 50
+D. 100
+答案：C
+解釋：副本集最多支援 50 個成員。
+
+
+
+
+What is sharding in MongoDB?
+MongoDB 的 sharding 是什麼？
+A. Vertical partitioning of data
+B. Horizontal partitioning of data across servers
+C. Creating multiple indexes
+D. Splitting collections into multiple databases
+答案：B
+解釋：Sharding 是一種水平分割技術，將資料分散在多個伺服器上。
+
+Which component in a sharded cluster routes queries?
+在分片叢集中，哪個元件負責查詢路由？
+A. Config servers
+B. mongod shard servers
+C. mongos
+D. Arbiter
+答案：C
+解釋：mongos 是查詢路由器，將請求分派到正確的 shard。
+
+What do config servers store in a sharded cluster?
+分片叢集中的 config servers 儲存什麼？
+A. User authentication data
+B. Metadata and cluster configuration
+C. Backups of collections
+D. Indexes for queries
+答案：B
+解釋：Config servers 儲存分片的中繼資料與叢集配置資訊。
+
+What is a shard key?
+什麼是 shard key？
+A. A unique index across shards
+B. A field used to distribute documents among shards
+C. A backup key for replication
+D. A key to encrypt shard data
+答案：B
+解釋：Shard key 是用來決定文件分佈到哪個 shard 的欄位。
+
+What is a requirement for a shard key?
+Shard key 有什麼要求？
+A. Must be unique
+B. Must be indexed
+C. Must be numeric
+D. Must be a string
+答案：B
+解釋：Shard key 欄位必須建立索引。
+
+Which collections cannot be sharded? (複選)
+哪些集合不能分片？
+A. system.profile
+B. system.users
+C. config.collections
+D. Any capped collection
+答案：A, B, D
+解釋：系統集合與 capped collection 不能被分片。
+
+What happens if a shard key is poorly chosen?
+如果 shard key 選得不好，會發生什麼？
+A. Queries always fail
+B. Data and load imbalance (hot spots)
+C. Automatic rebalancing solves it
+D. Indexes stop working
+答案：B
+解釋：不良的 shard key 會造成資料與流量集中，導致瓶頸。
+
+What is a chunk in sharding?
+Sharding 中的 chunk 是什麼？
+A. A group of indexes
+B. A contiguous range of shard key values
+C. A replica set
+D. A backup file
+答案：B
+解釋：chunk 是 shard key 值範圍的一個連續片段。
+
+Which process balances chunks across shards?
+哪個程序負責在 shards 之間平衡 chunks？
+A. mongod
+B. mongos
+C. balancer
+D. arbiter
+答案：C
+解釋：Balancer 負責在不同 shard 之間移動 chunk。
+
+What happens when a chunk exceeds the maximum size?
+當一個 chunk 超過最大大小時會怎樣？
+A. Dropped automatically
+B. Split into smaller chunks
+C. Migrated to new shard only
+D. Locked until reduced
+答案：B
+解釋：當 chunk 達到閾值時會自動 split。
+
+What is the default chunk size in MongoDB sharding?
+MongoDB 分片的預設 chunk 大小是多少？
+A. 16MB
+B. 32MB
+C. 64MB
+D. 128MB
+答案：C
+解釋：預設 chunk 大小為 64MB。
+
+Which command enables sharding on a database?
+哪個命令可啟用資料庫分片？
+A. sh.enableCollectionSharding()
+B. sh.enableSharding()
+C. sh.shardCollection()
+D. sh.startBalancer()
+答案：B
+解釋：sh.enableSharding("<db>") 用來啟用分片。
+
+Which command shards a collection on a shard key?
+哪個命令可針對集合建立分片？
+A. sh.splitCollection()
+B. sh.enableSharding()
+C. sh.shardCollection()
+D. sh.addShard()
+答案：C
+解釋：sh.shardCollection("<db.collection>", {<shardKey>:1}) 用於集合分片。
+
+Which type of shard key provides uniform distribution?
+哪種 shard key 可提供均勻分佈？
+A. Monotonic increasing values (e.g., ObjectId timestamp)
+B. Hashed shard key
+C. Single string field
+D. Arbitrary user ID
+答案：B
+解釋：Hashed shard key 可避免熱點，達到較均勻的分佈。
+
+What type of queries can target a single shard?
+哪些查詢可以只命中一個 shard？
+A. Range queries on non-shard fields
+B. Queries using the shard key
+C. Aggregations without shard key
+D. Any query with $or
+答案：B
+解釋：包含 shard key 條件的查詢能精準定位到單一 shard。
+
+What is a scatter-gather query?
+什麼是 scatter-gather 查詢？
+A. Query hitting only one shard
+B. Query sent to all shards and results merged
+C. Query to config servers
+D. Query for balancing chunks
+答案：B
+解釋：scatter-gather 查詢會分送至所有 shards，然後合併結果。
+
+Which scenario is best for range-based shard key?
+哪種情況適合使用 range-based shard key？
+A. Evenly distributed random values
+B. Queries often retrieve ranges of data
+C. Always single-document lookups
+D. Write-intensive workloads with hot spots
+答案：B
+解釋：當查詢模式為範圍查詢時，range-based shard key 效率最佳。
+
+Which component merges results in sharding?
+在分片架構中，哪個元件負責合併結果？
+A. mongos
+B. mongod
+C. Config servers
+D. Arbiter
+答案：A
+解釋：mongos 負責路由與合併結果。
+
+What is the effect of enabling the balancer?
+啟用 balancer 的效果是什麼？
+A. Drops unused indexes
+B. Migrates chunks between shards to maintain balance
+C. Forces primary elections
+D. Recreates shard keys
+答案：B
+解釋：Balancer 自動在 shards 之間移動 chunks 以維持均衡。
+
+What happens if you remove a shard from the cluster?
+如果將一個 shard 移出叢集會怎樣？
+A. Data is deleted permanently
+B. Data is automatically migrated to other shards
+C. Config server stores it
+D. mongos stops working
+答案：B
+解釋：移除 shard 時，資料會自動遷移到其他 shards。
+
+
+In which MongoDB version were multi-document ACID transactions introduced?
+MongoDB 從哪個版本開始支援多文件 ACID 交易？
+A. 3.2
+B. 3.6
+C. 4.0
+D. 5.0
+答案：C
+解釋：自 MongoDB 4.0 起支援跨文件、跨集合的交易功能。
+
+What is required for transactions to work across multiple shards?
+跨多個分片的交易需要什麼條件？
+A. A replica set
+B. A sharded cluster with config servers
+C. MongoDB 4.2 or later
+D. Arbiter node
+答案：C
+解釋：MongoDB 4.2 開始支援跨分片交易。
+
+What command starts a transaction in MongoDB drivers?
+在 MongoDB 驅動程式中，哪個方法可啟動交易？
+A. db.startTransaction()
+B. session.startTransaction()
+C. transaction.begin()
+D. session.begin()
+答案：B
+解釋：交易需透過 session 啟動，使用 session.startTransaction()。
+
+What command commits a transaction?
+提交交易應使用哪個命令？
+A. session.save()
+B. session.commitTransaction()
+C. db.commit()
+D. transaction.commit()
+答案：B
+解釋：交易提交需使用 commitTransaction()。
+
+What happens if a transaction is not committed?
+若交易未提交會怎樣？
+A. Changes are permanent
+B. Changes are rolled back
+C. Changes auto-commit after timeout
+D. Server shuts down
+答案：B
+解釋：未提交的交易會回滾，不會保存變更。
+
+What is the maximum transaction lifetime in MongoDB?
+MongoDB 交易的最長存活時間是多少？
+A. 30 seconds
+B. 60 seconds
+C. 2 minutes
+D. 5 minutes
+答案：D
+解釋：交易最長執行時間為 5 分鐘，超過會被中止。
+
+What is a write concern in MongoDB?
+MongoDB 的寫入確認 (write concern) 是什麼？
+A. Level of acknowledgement requested from MongoDB for write operations
+B. The read preference of queries
+C. Index build strategy
+D. Lock mechanism
+答案：A
+解釋：寫入確認決定伺服器在寫入操作後回應的嚴格程度。
+
+Which write concern guarantees strongest durability?
+哪種寫入確認保證最強的持久性？
+A. w:1
+B. w:0
+C. w:majority
+D. w:2
+答案：C
+解釋：majority 需得到多數節點確認，最能保證資料安全。
+
+What is a read concern in MongoDB?
+MongoDB 的讀取確認 (read concern) 是什麼？
+A. Level of isolation for read operations
+B. Read preference setting
+C. Write durability option
+D. Index scan mode
+答案：A
+解釋：讀取確認決定查詢結果的隔離級別。
+
+Which read concern guarantees only committed data is returned?
+哪種讀取確認可確保僅返回已提交的資料？
+A. local
+B. majority
+C. available
+D. snapshot
+答案：B
+解釋：majority 保證查詢僅返回已被大多數節點確認的資料。
+
+Which authentication mechanisms does MongoDB support? (複選)
+MongoDB 支援哪些身份驗證機制？
+A. SCRAM-SHA-1
+B. SCRAM-SHA-256
+C. x.509 certificates
+D. LDAP proxy authentication
+答案：A, B, C, D
+解釋：MongoDB 支援多種身份驗證方式，包括 SCRAM、x.509 與 LDAP。
+
+What is role-based access control (RBAC)?
+RBAC（基於角色的存取控制）是什麼？
+A. Restricting access based on user IP
+B. Restricting access based on database roles
+C. Restricting access by query patterns
+D. Restricting access by collection size
+答案：B
+解釋：RBAC 根據角色授權來控制使用者的存取權限。
+
+What is the default role given to a new MongoDB user if not specified?
+如果未指定，MongoDB 預設給新使用者什麼角色？
+A. readWrite
+B. dbOwner
+C. No roles
+D. root
+答案：C
+解釋：建立新使用者時若未指定角色，預設不會給予任何角色。
+
+Which built-in role provides full privileges on a database?
+哪個內建角色提供對某個資料庫的完整權限？
+A. read
+B. readWrite
+C. dbOwner
+D. clusterAdmin
+答案：C
+解釋：dbOwner 擁有該資料庫的所有權限。
+
+Which role provides full privileges on the entire cluster?
+哪個角色擁有整個叢集的完整權限？
+A. root
+B. clusterAdmin
+C. userAdminAnyDatabase
+D. dbOwner
+答案：A
+解釋：root 角色具有對整個 MongoDB 部署的最高權限。
+
+Which command creates a new MongoDB user?
+建立新使用者應使用哪個命令？
+A. db.addUser()
+B. db.createUser()
+C. db.newUser()
+D. db.addRole()
+答案：B
+解釋：db.createUser() 用於建立使用者並指派角色。
+
+Which command lists all roles in the current database?
+列出目前資料庫所有角色的命令是？
+A. db.getRoles()
+B. db.getAllRoles()
+C. db.listRoles()
+D. db.roles()
+答案：B
+解釋：db.getRoles() 僅顯示該資料庫角色，db.getAllRoles() 可顯示更多細節。
+
+Which role is needed to create new users?
+建立新使用者需要哪個角色？
+A. userAdmin
+B. dbOwner
+C. clusterAdmin
+D. readWrite
+答案：A
+解釋：userAdmin 角色允許建立與管理使用者。
+
+Which command lists all users in the current database?
+列出目前資料庫所有使用者的命令是？
+A. db.getUsers()
+B. db.users()
+C. db.listUsers()
+D. show users
+答案：A
+解釋：db.getUsers() 可顯示該資料庫的所有使用者。
+
+Which MongoDB command shows current user and roles?
+哪個 MongoDB 命令可顯示目前使用者與角色？
+A. db.currentUser()
+B. db.runCommand({connectionStatus:1})
+C. db.userStatus()
+D. show roles
+答案：B
+解釋：db.runCommand({connectionStatus:1}) 可顯示目前連線使用者與角色。
+
+
+
+What does the $project stage in aggregation do?
+聚合管線中的 $project 階段用途是什麼？
+A. Filter documents
+B. Group documents
+C. Include, exclude, or reshape fields
+D. Sort documents
+答案：C
+解釋：$project 可指定輸出欄位，或對欄位進行重新命名與計算。
+
+What does the $match stage do in aggregation?
+聚合管線中的 $match 階段用途是什麼？
+A. Sort documents
+B. Filter documents based on criteria
+C. Group documents
+D. Limit output
+答案：B
+解釋：$match 相當於查詢條件，用於篩選文件。
+
+What does the $group stage do?
+聚合管線中的 $group 階段用途是什麼？
+A. Sort documents
+B. Group documents and apply accumulator expressions
+C. Project fields
+D. Limit documents
+答案：B
+解釋：$group 可依指定欄位分組，並計算總和、平均等。
+
+Which stage is used to reorder documents?
+哪個階段可用來重新排序文件？
+A. $sort
+B. $group
+C. $project
+D. $match
+答案：A
+解釋：$sort 可依指定欄位排序輸出文件。
+
+Which stage limits the number of documents in the pipeline?
+哪個階段可限制管線中文件的數量？
+A. $limit
+B. $skip
+C. $match
+D. $count
+答案：A
+解釋：$limit 用於限制輸出筆數。
+
+Which stage skips a specified number of documents?
+哪個階段可略過指定數量的文件？
+A. $skip
+B. $limit
+C. $count
+D. $match
+答案：A
+解釋：$skip 可用於分頁查詢。
+
+What does $unwind do?
+$unwind 的用途是什麼？
+A. Merge documents
+B. Flatten an array field into multiple documents
+C. Group by array field
+D. Remove fields
+答案：B
+解釋：$unwind 會將陣列展開為多筆獨立文件。
+
+Which stage adds a new field to documents?
+哪個階段可為文件新增欄位？
+A. $set
+B. $project
+C. $addFields
+D. $group
+答案：C
+解釋：$addFields 可直接新增或修改欄位。
+
+Which stage counts documents in the pipeline?
+哪個階段可計算管線中的文件數？
+A. $group
+B. $count
+C. $project
+D. $limit
+答案：B
+解釋：$count 可統計輸出筆數。
+
+Which operator is used inside $group to calculate average?
+在 $group 中用於計算平均數的運算子是？
+A. $avg
+B. $sum
+C. $min
+D. $max
+答案：A
+解釋：$avg 計算平均值。
+
+Which operator is used inside $group to concatenate strings?
+在 $group 中用於字串串接的運算子是？
+A. $concat
+B. $push
+C. $addToSet
+D. $merge
+答案：A
+解釋：$concat 可將字串合併輸出。
+
+Which stage combines results from multiple collections?
+哪個階段可合併多個集合的結果？
+A. $unionWith
+B. $merge
+C. $out
+D. $lookup
+答案：A
+解釋：$unionWith 可合併另一個集合的文件。
+
+Which stage performs left outer join with another collection?
+哪個階段可執行與另一集合的左外連接？
+A. $lookup
+B. $unionWith
+C. $out
+D. $merge
+答案：A
+解釋：$lookup 用於跨集合 join 查詢。
+
+Which stage writes pipeline results to a new collection?
+哪個階段可將管線結果寫入新集合？
+A. $out
+B. $merge
+C. $lookup
+D. $unionWith
+答案：A
+解釋：$out 將輸出寫入新集合，覆蓋原有集合。
+
+Which stage merges results into an existing collection?
+哪個階段可將結果合併到現有集合？
+A. $out
+B. $merge
+C. $lookup
+D. $set
+答案：B
+解釋：$merge 可將結果合併更新到目標集合。
+
+Which operator inside $group collects all values into an array (with duplicates)?
+在 $group 中，哪個運算子會將所有值收集成陣列（允許重複）？
+A. $push
+B. $addToSet
+C. $concat
+D. $setUnion
+答案：A
+解釋：$push 收集所有值（含重複）。
+
+Which operator inside $group collects unique values into an array?
+在 $group 中，哪個運算子會收集唯一值到陣列？
+A. $push
+B. $addToSet
+C. $first
+D. $last
+答案：B
+解釋：$addToSet 只收集不重複的值。
+
+Which stage provides performance statistics for aggregation?
+哪個階段可用來取得聚合的效能統計？
+A. $analyze
+B. $explain
+C. $profile
+D. $stats
+答案：B
+解釋：explain() 可顯示聚合的查詢計劃與效能統計。
+
+Which stage samples a random subset of documents?
+哪個階段可隨機取樣文件？
+A. $limit
+B. $skip
+C. $sample
+D. $rand
+答案：C
+解釋：$sample 可隨機選出指定數量的文件。
+
+Which operator allows using aggregation expressions in queries outside aggregation?
+哪個運算子允許在一般查詢中使用聚合運算式？
+A. $project
+B. $expr
+C. $function
+D. $merge
+答案：B
+解釋：$expr 可在查詢條件中使用聚合運算式。
+
+
+
+Which command shows database profiling information?
+哪個命令可顯示資料庫剖析資訊？
+A. db.getProfilingStatus()
+B. db.currentOp()
+C. db.serverStatus()
+D. db.profile()
+答案：A
+解釋：db.getProfilingStatus() 可查看目前資料庫剖析狀態。
+
+Which command enables database profiling?
+哪個命令可啟用資料庫剖析？
+A. db.startProfiling()
+B. db.setProfilingLevel()
+C. db.enableProfile()
+D. db.serverStatus()
+答案：B
+解釋：db.setProfilingLevel() 可設定剖析層級與閾值。
+
+Which command shows current running operations?
+哪個命令可顯示目前正在執行的操作？
+A. db.serverStatus()
+B. db.currentOp()
+C. db.getProfilingStatus()
+D. db.listOps()
+答案：B
+解釋：db.currentOp() 可查看執行中的查詢與寫入操作。
+
+Which command kills a running operation?
+哪個命令可終止正在執行的操作？
+A. db.killOp()
+B. db.terminate()
+C. db.stopOp()
+D. db.removeOp()
+答案：A
+解釋：db.killOp(<opid>) 可用來中止操作。
+
+What does the WiredTiger cache primarily store?
+WiredTiger 快取主要儲存什麼？
+A. Index definitions
+B. Frequently accessed data and indexes
+C. Backups
+D. Replication logs only
+答案：B
+解釋：WiredTiger cache 儲存常用的資料與索引以提升效能。
+
+Which storage engine is default in MongoDB 4.2 and later?
+MongoDB 4.2 之後的預設儲存引擎是什麼？
+A. MMAPv1
+B. WiredTiger
+C. InMemory
+D. RocksDB
+答案：B
+解釋：自 3.2 起 WiredTiger 成為預設儲存引擎。
+
+Which command provides server metrics such as memory and connections?
+哪個命令可提供伺服器的記憶體與連線統計？
+A. db.stats()
+B. db.serverStatus()
+C. db.getProfilingStatus()
+D. db.currentOp()
+答案：B
+解釋：db.serverStatus() 提供伺服器即時狀態與統計。
+
+What is the purpose of db.stats()?
+db.stats() 的用途是什麼？
+A. Shows memory usage
+B. Provides statistics about the current database
+C. Displays replica set info
+D. Displays shard configuration
+答案：B
+解釋：db.stats() 可查看資料庫的文件數量、大小等統計。
+
+What is the purpose of db.collection.stats()?
+db.collection.stats() 的用途是什麼？
+A. Provides statistics about a collection
+B. Shows indexes only
+C. Deletes unused documents
+D. Displays config metadata
+答案：A
+解釋：可取得集合層級的統計資訊，如大小、索引等。
+
+Which option enables query performance analysis in MongoDB?
+哪個選項可用來分析查詢效能？
+A. explain()
+B. profile()
+C. currentOp()
+D. stats()
+答案：A
+解釋：explain() 可顯示查詢計劃與效能分析。
+
+What is an index cardinality?
+什麼是索引基數 (cardinality)？
+A. Index size on disk
+B. Number of unique values in the index
+C. Index replication factor
+D. Index creation speed
+答案：B
+解釋：索引基數指欄位中唯一值的數量。
+
+What type of index is best for equality queries?
+哪種索引最適合等值查詢？
+A. Hashed index
+B. Single-field index
+C. Text index
+D. Wildcard index
+答案：B
+解釋：單欄位索引對等值查詢效能最佳。
+
+What type of index is best for range queries?
+哪種索引最適合範圍查詢？
+A. Hashed index
+B. Single-field index
+C. Compound index (with range field last)
+D. Wildcard index
+答案：C
+解釋：複合索引可支援範圍查詢，範圍欄位應放在索引最後。
+
+Which index type supports queries on arbitrary fields without knowing them in advance?
+哪種索引允許針對未知欄位查詢？
+A. Single-field index
+B. Text index
+C. Wildcard index
+D. Multikey index
+答案：C
+解釋：Wildcard index 可支援未知欄位的查詢。
+
+Which operator forces MongoDB to use a specific index?
+哪個運算子可強制 MongoDB 使用指定索引？
+A. $use
+B. $hint
+C. $forceIndex
+D. $applyIndex
+答案：B
+解釋：hint() 可用來指定索引。
+
+Which index type is recommended for geospatial queries?
+哪種索引適合地理空間查詢？
+A. 2d index
+B. 2dsphere index
+C. Hashed index
+D. Wildcard index
+答案：B
+解釋：2dsphere 索引用於支援地球表面的地理查詢。
+
+What happens if an index does not fit into RAM?
+若索引無法完全載入 RAM，會怎樣？
+A. Queries always fail
+B. Queries slow down due to disk access
+C. Indexes are dropped
+D. MongoDB creates smaller indexes
+答案：B
+解釋：索引不在 RAM 中時，查詢效能會下降。
+
+What is an index intersection?
+什麼是索引交集 (index intersection)？
+A. Combining results from multiple indexes to answer a query
+B. Using the same index twice
+C. Building compound index
+D. Removing duplicate indexes
+答案：A
+解釋：索引交集允許查詢同時使用多個索引來提升效能。
+
+What is the default behavior for index creation in MongoDB?
+MongoDB 建立索引的預設行為是什麼？
+A. Foreground (blocking writes)
+B. Background (non-blocking writes)
+C. Depends on version
+D. Online index build
+答案：B
+解釋：新版本 MongoDB 預設在背景建立索引，不會阻塞寫入。
+
+Which index type supports prefix search in strings?
+哪種索引支援字串的前綴搜尋？
+A. Text index
+B. Single-field B-tree index
+C. Hashed index
+D. Wildcard index
+答案：B
+解釋：B-tree 索引支援前綴比對與範圍查詢。
+
+
+Which tool is used to back up MongoDB data at the logical level?
+哪個工具用於邏輯層級的資料備份？
+A. mongodump
+B. mongorestore
+C. mongoexport
+D. mongos
+答案：A
+解釋：mongodump 可導出 BSON 格式的邏輯備份。
+
+Which tool restores data from a mongodump backup?
+哪個工具用於從 mongodump 備份還原？
+A. mongoimport
+B. mongorestore
+C. mongos
+D. mongod
+答案：B
+解釋：mongorestore 可將 BSON 備份檔還原至資料庫。
+
+Which tool exports MongoDB data to JSON or CSV?
+哪個工具用於將 MongoDB 資料匯出為 JSON 或 CSV？
+A. mongoexport
+B. mongodump
+C. mongosh
+D. mongos
+答案：A
+解釋：mongoexport 可匯出成 JSON 或 CSV 格式。
+
+Which tool imports JSON or CSV data into MongoDB?
+哪個工具用於將 JSON 或 CSV 匯入 MongoDB？
+A. mongoimport
+B. mongorestore
+C. mongod
+D. mongos
+答案：A
+解釋：mongoimport 用於讀取 JSON 或 CSV 檔並匯入資料庫。
+
+Which command backs up data at the storage engine level?
+哪個命令可在儲存引擎層級進行資料備份？
+A. mongodump
+B. Filesystem snapshot
+C. mongoexport
+D. mongosync
+答案：B
+解釋：檔案系統快照可直接備份儲存引擎層級的資料。
+
+Which MongoDB utility allows monitoring real-time server statistics?
+哪個工具可用來監控伺服器即時統計？
+A. mongostat
+B. mongotop
+C. mongodump
+D. mongorestore
+答案：A
+解釋：mongostat 可即時顯示資料庫操作的統計。
+
+Which utility shows read and write activity per collection?
+哪個工具可顯示每個集合的讀寫活動？
+A. mongostat
+B. mongotop
+C. mongoexport
+D. mongodump
+答案：B
+解釋：mongotop 用於顯示集合層級的讀寫時間分布。
+
+Which MongoDB Atlas feature provides automated backups?
+MongoDB Atlas 的哪個功能可提供自動化備份？
+A. Live Migrate
+B. Continuous Backup
+C. Cluster Tiering
+D. Auto-Indexing
+答案：B
+解釋：Atlas 提供 Continuous Backup 功能，可自動備份與還原。
+
+Which tool is deprecated and replaced by mongosh?
+哪個工具已被棄用並由 mongosh 取代？
+A. mongo shell
+B. mongod
+C. mongos
+D. mongorestore
+答案：A
+解釋：舊版 mongo shell 已被 mongosh 取代。
+
+What does the --oplog option in mongodump do?
+mongodump 的 --oplog 選項有什麼用途？
+A. Export indexes only
+B. Include replica set oplog for point-in-time backup
+C. Compress backup data
+D. Export only metadata
+答案：B
+解釋：--oplog 可包含 oplog，支援時間點一致的備份。
+
+Which storage engine supports in-memory databases?
+哪個儲存引擎支援記憶體型資料庫？
+A. MMAPv1
+B. WiredTiger
+C. InMemory
+D. RocksDB
+答案：C
+解釋：InMemory 儲存引擎專用於純記憶體資料庫。
+
+Which option in mongorestore drops existing data before restoring?
+mongorestore 的哪個選項會在還原前刪除現有資料？
+A. --drop
+B. --replace
+C. --clean
+D. --overwrite
+答案：A
+解釋：--drop 會在還原前先刪除集合。
+
+Which option in mongoimport updates existing documents if _id matches?
+mongoimport 的哪個選項可在 _id 相符時更新文件？
+A. --merge
+B. --upsert
+C. --replace
+D. --overwrite
+答案：B
+解釋：--upsert 可在文件存在時更新，不存在時插入。
+
+What does the --gzip option do in mongodump and mongorestore?
+mongodump 和 mongorestore 的 --gzip 選項有什麼用途？
+A. Compresses or decompresses backup data
+B. Encrypts backup data
+C. Splits backup into chunks
+D. Stores backup in JSON
+答案：A
+解釋：--gzip 可壓縮或解壓縮備份資料。
+
+Which command restores a single collection from a backup?
+哪個命令可從備份還原單一集合？
+A. mongorestore --collection
+B. mongoimport --collection
+C. mongodump --collection
+D. mongosh restore
+答案：A
+解釋：mongorestore --collection <coll> 可針對單一集合還原。
+
+Which backup strategy provides minimal downtime?
+哪種備份策略可將停機時間降至最低？
+A. mongodump only
+B. File system snapshots
+C. Manual JSON export
+D. Offline backup
+答案：B
+解釋：檔案系統快照可在不中斷服務下進行備份。
+
+Which Atlas feature allows restoring data to a specific point in time?
+Atlas 的哪個功能允許還原到特定時間點？
+A. Continuous Backup with PITR
+B. Auto-Indexing
+C. Live Migrate
+D. Data Explorer
+答案：A
+解釋：PITR (Point-In-Time Recovery) 可將資料還原到指定時間點。
+
+What is the difference between mongoexport and mongodump?
+mongoexport 與 mongodump 的差異是什麼？
+A. Both export BSON
+B. mongoexport exports JSON/CSV, mongodump exports BSON
+C. mongoexport for indexes, mongodump for data
+D. mongoexport requires Atlas only
+答案：B
+解釋：mongoexport 匯出 JSON/CSV，而 mongodump 匯出 BSON 備份。
+
+Which utility should you use to monitor MongoDB performance continuously?
+應該使用哪個工具持續監控 MongoDB 效能？
+A. mongostat
+B. mongodump
+C. mongoimport
+D. mongorestore
+答案：A
+解釋：mongostat 提供持續的效能監控。
+
+Which command-line tool helps analyze index usage and performance?
+哪個命令列工具可協助分析索引使用情況與效能？
+A. mongotop
+B. mongostat
+C. explain()
+D. mongoanalyze
+答案：C
+解釋：explain() 是分析索引與查詢效能的主要方法。
+
+What is MongoDB Atlas?
+什麼是 MongoDB Atlas？
+A. On-premises backup tool
+B. Managed cloud database service
+C. Query analyzer
+D. BI Connector
+答案：B
+解釋：MongoDB Atlas 是官方提供的雲端託管資料庫服務。
+
+Which cloud providers does Atlas support? (複選)
+Atlas 支援哪些雲端供應商？
+A. AWS
+B. Azure
+C. Google Cloud
+D. IBM Cloud
+答案：A, B, C
+解釋：Atlas 支援 AWS、Azure、Google Cloud。
+
+Which Atlas feature provides automatic scaling of storage?
+Atlas 的哪個功能可自動擴展儲存？
+A. Global Clusters
+B. Auto-Scaling
+C. Backup and Restore
+D. Data Explorer
+答案：B
+解釋：Atlas 提供 Auto-Scaling，可自動調整儲存空間與計算資源。
+
+What is an Atlas cluster tier?
+Atlas 的 cluster tier 是什麼？
+A. Backup level
+B. Performance and cost level of a cluster
+C. User access role
+D. Region selection
+答案：B
+解釋：Cluster tier 決定叢集的效能與價格等級。
+
+Which Atlas feature allows data distribution across regions?
+Atlas 的哪個功能允許跨區域分布資料？
+A. Backup & Restore
+B. Global Clusters
+C. Auto-Indexing
+D. mongotop
+答案：B
+解釋：Global Clusters 允許將資料分散至多個地區以提升可用性。
+
+Which Atlas feature ensures compliance with data locality laws?
+Atlas 的哪個功能可確保符合資料區域法規？
+A. Encryption at Rest
+B. Global Clusters with zone sharding
+C. Backup Policies
+D. IP Whitelisting
+答案：B
+解釋：Global Clusters 可根據地理位置配置分片，以符合資料存放法規。
+
+What is Atlas Data Explorer?
+什麼是 Atlas Data Explorer？
+A. A GUI for querying and managing Atlas data
+B. A backup viewer
+C. A BI reporting tool
+D. A monitoring tool
+答案：A
+解釋：Data Explorer 是 Atlas 內建的資料管理與查詢 GUI。
+
+Which Atlas feature provides metrics and monitoring dashboards?
+Atlas 的哪個功能提供效能監控與儀表板？
+A. Atlas Metrics
+B. Atlas Charts
+C. Ops Manager
+D. mongostat
+答案：A
+解釋：Atlas Metrics 提供叢集即時效能監控。
+
+What is MongoDB Atlas Charts used for?
+MongoDB Atlas Charts 的用途是什麼？
+A. Create indexes
+B. Build visualizations and dashboards
+C. Manage replica sets
+D. Configure backups
+答案：B
+解釋：Atlas Charts 用於建立視覺化報表與儀表板。
+
+Which feature allows secure private connectivity to Atlas clusters?
+哪個功能允許與 Atlas 叢集安全的私有連線？
+A. VPC Peering
+B. IP Whitelist
+C. Public DNS
+D. Atlas Charts
+答案：A
+解釋：VPC Peering 提供與 Atlas 叢集的私有網路連線。
+
+Which Atlas feature enables workload isolation?
+Atlas 的哪個功能允許工作負載隔離？
+A. Backup & Restore
+B. Dedicated Cluster with analytics nodes
+C. Global Clusters
+D. Auto-Scaling
+答案：B
+解釋：Dedicated Cluster 可新增 analytics nodes 用於隔離查詢負載。
+
+What is the default backup type in Atlas?
+Atlas 的預設備份類型是什麼？
+A. Continuous Backup with PITR
+B. Snapshot backups
+C. File system dumps
+D. Manual export
+答案：B
+解釋：Atlas 預設使用快照備份 (snapshot backups)。
+
+Which Atlas feature integrates with BI tools?
+Atlas 的哪個功能可整合 BI 工具？
+A. Atlas Charts
+B. BI Connector
+C. Data Explorer
+D. Atlas Metrics
+答案：B
+解釋：BI Connector 可讓 SQL 工具連線查詢 Atlas 資料。
+
+Which feature provides encryption for Atlas data at rest?
+Atlas 提供哪個功能保護靜態資料加密？
+A. TLS
+B. Encryption at Rest
+C. IP Whitelisting
+D. VPC Peering
+答案：B
+解釋：Atlas 內建 Encryption at Rest 功能保護靜態資料。
+
+Which feature provides encryption for Atlas data in transit?
+Atlas 提供哪個功能保護傳輸中資料？
+A. TLS/SSL
+B. VPC Peering
+C. Backup Encryption
+D. Zone Sharding
+答案：A
+解釋：TLS/SSL 可確保傳輸中的資料加密。
+
+What is Atlas Live Migrate used for?
+Atlas 的 Live Migrate 用途是什麼？
+A. Moving data between collections
+B. Migrating data from self-managed MongoDB to Atlas
+C. Migrating indexes only
+D. Moving data between shards
+答案：B
+解釋：Live Migrate 可將自管的 MongoDB 部署遷移至 Atlas。
+
+Which Atlas feature allows restricting access to specific IPs?
+Atlas 的哪個功能允許限制特定 IP 存取？
+A. VPC Peering
+B. IP Access List (Whitelisting)
+C. TLS
+D. Data Explorer
+答案：B
+解釋：IP Access List 可限制允許存取叢集的來源 IP。
+
+Which tool allows managing Atlas resources via scripts?
+哪個工具允許透過腳本管理 Atlas 資源？
+A. mongosh
+B. Atlas CLI
+C. mongoexport
+D. Compass
+答案：B
+解釋：Atlas CLI 可透過命令列操作管理 Atlas 資源。
+
+Which Atlas API allows programmatic cluster management?
+Atlas 的哪個 API 可程式化管理叢集？
+A. Atlas Admin API
+B. Metrics API
+C. Charts API
+D. BI Connector API
+答案：A
+解釋：Atlas Admin API 提供叢集、使用者、專案的管理介面。
+
+What does the Atlas Free Tier (M0) provide?
+Atlas Free Tier (M0) 提供什麼？
+A. 512MB storage cluster for free
+B. Unlimited free storage
+C. Free BI Connector
+D. Free backup only
+答案：A
+解釋：M0 叢集提供 512MB 免費儲存，可用於開發與學習。
+
+
+What does TLS/SSL provide for MongoDB connections?
+TLS/SSL 為 MongoDB 連線提供什麼？
+A. Authentication only
+B. Encryption of data in transit
+C. Index compression
+D. Backup security
+答案：B
+解釋：TLS/SSL 主要確保傳輸中的資料被加密。
+
+Which MongoDB feature enforces encryption of storage engine files?
+MongoDB 的哪個功能強制加密儲存引擎檔案？
+A. TLS
+B. Encryption at Rest
+C. VPC Peering
+D. Arbiter
+答案：B
+解釋：Encryption at Rest 可加密硬碟上儲存的資料檔案。
+
+Which command enables authentication in MongoDB?
+哪個方式可啟用 MongoDB 的身份驗證？
+A. Start mongod with --auth
+B. db.enableAuth()
+C. db.createAuth()
+D. config.auth=true
+答案：A
+解釋：啟動 mongod 時加上 --auth 參數即可啟用驗證。
+
+Which mechanism allows external authentication via Kerberos?
+哪種機制允許透過 Kerberos 進行外部驗證？
+A. LDAP
+B. x.509
+C. GSSAPI
+D. SCRAM
+答案：C
+解釋：MongoDB 可透過 GSSAPI 支援 Kerberos 驗證。
+
+What is LDAP used for in MongoDB?
+MongoDB 中的 LDAP 用途是什麼？
+A. Query optimization
+B. External user authentication and authorization
+C. Data replication
+D. Backup
+答案：B
+解釋：LDAP 可整合外部使用者身份驗證與授權。
+
+What is auditing in MongoDB?
+MongoDB 中的稽核 (auditing) 是什麼？
+A. Monitoring query performance
+B. Tracking security-related events and user actions
+C. Data replication logs
+D. Index analysis
+答案：B
+解釋：稽核可記錄使用者操作與安全相關事件。
+
+Which MongoDB edition supports auditing?
+哪個 MongoDB 版本支援稽核功能？
+A. Community only
+B. Enterprise only
+C. Both Community and Enterprise
+D. Atlas only
+答案：B
+解釋：稽核僅在 MongoDB Enterprise 提供。
+
+What is the default role for managing replication set configuration?
+管理複寫集設定的預設角色是什麼？
+A. dbAdmin
+B. clusterAdmin
+C. root
+D. userAdmin
+答案：B
+解釋：clusterAdmin 角色包含管理複寫集與分片的權限。
+
+Which option ensures writes are acknowledged by multiple nodes?
+哪個選項可確保寫入獲得多個節點的確認？
+A. readConcern
+B. writeConcern: majority
+C. journaling
+D. fsync
+答案：B
+解釋：writeConcern: majority 要求多數節點確認寫入。
+
+Which parameter controls the size of the WiredTiger cache?
+哪個參數控制 WiredTiger 快取大小？
+A. storage.cacheSizeGB
+B. wiredTigerCacheSizeGB
+C. memory.maxUsage
+D. dbCacheLimit
+答案：B
+解釋：wiredTigerCacheSizeGB 可設定快取上限。
+
+What is the purpose of journaling in MongoDB?
+MongoDB 中 journaling 的用途是什麼？
+A. Index optimization
+B. Ensures durability by recording operations before applying them
+C. Backup
+D. Monitoring
+答案：B
+解釋：Journal 檔確保即使崩潰，仍能恢復已提交的操作。
+
+Which option disables journaling in MongoDB?
+哪個選項可停用 journaling？
+A. --nojournal
+B. --disableJournal
+C. --noj
+D. --nojournaling
+答案：A
+解釋：--nojournal 可停用 journaling，但會降低資料安全。
+
+Which command rotates the MongoDB log file?
+哪個命令可讓 MongoDB 輪替日誌檔案？
+A. db.logRotate()
+B. log.rotate()
+C. rotateLog()
+D. db.adminCommand({rotateLogs:1})
+答案：D
+解釋：db.adminCommand({ logRotate: 1 }) 會執行日誌輪替。
+
+Which MongoDB feature supports field-level redaction of documents?
+MongoDB 哪個功能支援欄位層級的隱藏 (redaction)？
+A. $redact aggregation stage
+B. RBAC
+C. TLS
+D. Auditing
+答案：A
+解釋：$redact 聚合階段可依條件隱藏文件欄位。
+
+Which MongoDB command checks replica set configuration?
+哪個命令可檢查複寫集設定？
+A. rs.status()
+B. rs.config()
+C. rs.conf()
+D. db.replicaConfig()
+答案：C
+解釋：rs.conf() 可顯示複寫集的組態設定。
+
+Which option enables access control in MongoDB configuration file?
+MongoDB 設定檔中哪個選項可啟用存取控制？
+A. security.authorization: enabled
+B. accessControl: true
+C. auth.enable: true
+D. security.auth: on
+答案：A
+解釋：設定 security.authorization: enabled 可啟用存取控制。
+
+Which mechanism protects against accidental data deletion?
+哪個機制可防止意外資料刪除？
+A. writeConcern
+B. readConcern
+C. dropDatabase protection role
+D. backup and restore
+答案：C
+解釋：角色控制可限制誰能刪除資料庫，避免誤刪。
+
+Which backup method provides crash-consistent snapshots?
+哪種備份方式提供崩潰一致的快照？
+A. mongodump
+B. File system snapshots
+C. mongoexport
+D. mongorestore
+答案：B
+解釋：檔案系統快照提供 crash-consistent 備份。
+
+Which MongoDB feature supports automatic failover?
+MongoDB 哪個功能支援自動故障切換？
+A. Sharding
+B. Replica sets
+C. Journaling
+D. Indexes
+答案：B
+解釋：Replica sets 可在 primary 節點故障時自動選舉新的 primary。
+
+What is the default election timeout for replica sets?
+MongoDB 複寫集的預設選舉逾時時間是多少？
+A. 3 seconds
+B. 5 seconds
+C. 10 seconds
+D. 30 seconds
+答案：C
+解釋：預設選舉逾時時間為 10 秒。
+
+要不要我繼續整理 第 201–220 題（查詢最佳化與索引進階） 也用這個格式？
+
+你說：
+第 201–220 題
+ChatGPT 說：
+
+好的 👍
+以下是整理後的 第 201–220 題（查詢最佳化與索引進階），中英文對照，含答案與解釋：
+
+MongoDB C100DEV 模擬試題（第 201–220 題）
+
+What is a covered query in MongoDB?
+MongoDB 中的 covered query 是什麼？
+A. A query that only uses indexes without scanning documents
+B. A query that uses multiple indexes
+C. A query that is encrypted
+D. A query that covers all shards
+答案：A
+解釋：Covered query 僅使用索引回應，避免存取文件以提升效能。
+
+Which condition must be met for a covered query? (複選)
+covered query 需要滿足哪些條件？
+A. All fields in query are in an index
+B. Fields returned are in the same index
+C. No projection is used
+D. The index must be unique
+答案：A, B
+解釋：查詢與輸出的欄位都必須包含在索引中，才能成為 covered query。
+
+What does index selectivity mean?
+什麼是索引選擇性 (selectivity)？
+A. Ratio of indexed values to total documents
+B. Degree to which an index filters out documents
+C. Index build speed
+D. Index cache usage
+答案：B
+解釋：索引選擇性表示索引過濾資料的能力，越高越有效。
+
+Which index type is best for queries with equality on one field and range on another?
+哪種索引最適合一個欄位等值、一個欄位範圍的查詢？
+A. Compound index with equality field first
+B. Compound index with range field first
+C. Hashed index
+D. Wildcard index
+答案：A
+解釋：複合索引應將等值欄位放在前面，範圍欄位放在後面。
+
+What is index collation?
+什麼是索引定序 (collation)？
+A. Order of documents in a collection
+B. Language-specific rules for string comparison in indexes
+C. Index rebuild sequence
+D. Index compression
+答案：B
+解釋：Collation 定義字串比較的語言規則，例如大小寫或重音處理。
+
+Which type of index is recommended for queries using $text?
+哪種索引適合 $text 查詢？
+A. Wildcard index
+B. Compound index
+C. Text index
+D. Hashed index
+答案：C
+解釋：Text index 專門支援全文檢索查詢。
+
+Which operator can test if an index is used for a query?
+哪個方法可檢查查詢是否使用索引？
+A. .profile()
+B. .explain()
+C. .analyze()
+D. .stats()
+答案：B
+解釋：explain() 可顯示查詢計劃與索引使用情況。
+
+What does the .hint() method do in queries?
+查詢中的 .hint() 方法用途是什麼？
+A. Suggests but does not enforce an index
+B. Forces MongoDB to use a specific index
+C. Creates a new index
+D. Drops an unused index
+答案：B
+解釋：.hint() 可強制查詢使用指定索引。
+
+What happens if a hinted index does not exist?
+若指定的索引不存在會發生什麼？
+A. MongoDB chooses another index automatically
+B. Query fails with an error
+C. Query falls back to collection scan silently
+D. Index is auto-created
+答案：B
+解釋：若索引不存在，查詢會報錯。
+
+Which operator is best for regex prefix searches using indexes?
+哪種正則表達式查詢可使用索引？
+A. /^abc/
+B. /abc$/
+C. /.*abc/
+D. /a.*b/
+答案：A
+解釋：正則表達式以開頭錨定 (^) 才能利用索引。
+
+Which query pattern causes collection scans instead of index scans?
+哪種查詢模式會導致集合掃描？
+A. Queries with shard key
+B. Queries without indexed fields
+C. Queries with projection
+D. Queries with explain()
+答案：B
+解釋：若查詢條件未使用索引欄位，MongoDB 會進行集合掃描。
+
+What is the difference between single-field and compound indexes?
+單欄位索引與複合索引有何不同？
+A. Single-field indexes support only equality
+B. Compound indexes include multiple fields in index order
+C. Compound indexes are always faster
+D. Single-field indexes cannot be unique
+答案：B
+解釋：複合索引可同時涵蓋多個欄位，並有順序限制。
+
+Which index supports queries on embedded document fields?
+哪種索引支援內嵌文件欄位查詢？
+A. Wildcard index
+B. Compound index
+C. Multikey index
+D. Hashed index
+答案：C
+解釋：Multikey index 用於陣列與內嵌文件欄位。
+
+What is the main advantage of partial indexes?
+部分索引的主要優點是什麼？
+A. Indexes all documents
+B. Reduces index size by indexing subset of documents
+C. Supports wildcard queries
+D. Speeds up index builds
+答案：B
+解釋：Partial index 僅針對符合條件的文件建立索引，可節省資源。
+
+Which option allows building indexes without blocking writes?
+哪個選項允許在建立索引時不阻塞寫入？
+A. background: true
+B. online: true
+C. safe: true
+D. async: true
+答案：A
+解釋：設定 background: true 可在背景建立索引。
+
+What is a hashed index used for?
+Hashed 索引用於什麼？
+A. Range queries
+B. Equality queries and shard keys
+C. Text search
+D. Geospatial queries
+答案：B
+解釋：Hashed 索引適合等值查詢，常用於分片 shard key。
+
+Which command lists all indexes on a collection?
+哪個命令可列出集合的所有索引？
+A. db.collection.indexes()
+B. db.collection.getIndexes()
+C. db.collection.showIndexes()
+D. db.collection.stats()
+答案：B
+解釋：db.collection.getIndexes() 可列出集合索引。
+
+Which command drops a specific index from a collection?
+哪個命令可刪除集合中的特定索引？
+A. db.collection.drop()
+B. db.collection.dropIndex()
+C. db.collection.removeIndex()
+D. db.collection.deleteIndex()
+答案：B
+解釋：dropIndex() 可刪除指定的索引。
+
+What is an index key pattern?
+什麼是索引鍵模式 (index key pattern)？
+A. Document schema design
+B. Fields and sort order used in an index
+C. The data type of index keys
+D. Shard key definition
+答案：B
+解釋：索引鍵模式指索引欄位與其排序方向 (1 升冪 / -1 降冪)。
+
+What does an explain plan show for a query?
+查詢的 explain 計劃會顯示什麼？
+A. Index creation time
+B. Query execution details and index usage
+C. Backup configuration
+D. Replication lag
+答案：B
+解釋：Explain 計劃可分析查詢如何執行與索引使用狀況。
+
+
+
+
+What is the official MongoDB driver for Node.js?
+Node.js 的官方 MongoDB 驅動是什麼？
+A. mongoose
+B. mongodb
+C. mongojs
+D. express-mongo
+答案：B
+解釋：mongodb 是官方驅動，mongoose 是 ODM。
+
+Which method is used to insert a single document in drivers?
+在驅動程式中插入單一文件的方法是？
+A. insert()
+B. insertOne()
+C. add()
+D. create()
+答案：B
+解釋：insertOne() 用於插入單一文件。
+
+Which method inserts multiple documents at once?
+一次插入多筆文件的方法是？
+A. insertMany()
+B. batchInsert()
+C. bulkInsert()
+D. addMany()
+答案：A
+解釋：insertMany() 可批量插入多筆文件。
+
+Which method retrieves a single document by filter?
+透過篩選條件取得單一文件的方法是？
+A. findOne()
+B. getOne()
+C. fetch()
+D. selectOne()
+答案：A
+解釋：findOne() 會返回符合條件的第一筆文件。
+
+Which method retrieves multiple documents by filter?
+透過篩選條件取得多筆文件的方法是？
+A. find()
+B. findAll()
+C. select()
+D. query()
+答案：A
+解釋：find() 用於查詢多筆文件，返回 cursor。
+
+Which method updates a single document?
+更新單一文件的方法是？
+A. update()
+B. updateOne()
+C. modify()
+D. save()
+答案：B
+解釋：updateOne() 會更新第一筆符合條件的文件。
+
+Which method updates multiple documents?
+更新多筆文件的方法是？
+A. updateMany()
+B. updateAll()
+C. bulkUpdate()
+D. modifyMany()
+答案：A
+解釋：updateMany() 可一次更新多筆文件。
+
+Which operator is used in updates to set field values?
+更新操作中用於設定欄位值的運算子是？
+A. $set
+B. $update
+C. $modify
+D. $change
+答案：A
+解釋：$set 可修改或新增欄位值。
+
+Which operator increments a numeric field in updates?
+更新操作中用於數值累加的運算子是？
+A. $inc
+B. $add
+C. $plus
+D. $increase
+答案：A
+解釋：$inc 可將數值欄位增加或減少指定值。
+
+Which method deletes a single document?
+刪除單一文件的方法是？
+A. delete()
+B. deleteOne()
+C. removeOne()
+D. dropOne()
+答案：B
+解釋：deleteOne() 刪除符合條件的第一筆文件。
+
+Which method deletes multiple documents?
+刪除多筆文件的方法是？
+A. deleteMany()
+B. removeMany()
+C. dropMany()
+D. deleteAll()
+答案：A
+解釋：deleteMany() 可一次刪除多筆文件。
+
+Which method is used to create an index in drivers?
+在驅動程式中建立索引的方法是？
+A. createIndex()
+B. addIndex()
+C. ensureIndex()
+D. makeIndex()
+答案：A
+解釋：createIndex() 是建立索引的標準方法。
+
+Which method lists all indexes on a collection?
+列出集合所有索引的方法是？
+A. getIndexes()
+B. listIndexes()
+C. showIndexes()
+D. indexes()
+答案：B
+解釋：listIndexes() 可列出集合的所有索引。
+
+Which method starts a client session for transactions?
+啟動交易用的 client session 方法是？
+A. startSession()
+B. beginTransaction()
+C. createSession()
+D. newSession()
+答案：A
+解釋：startSession() 用於建立交易 session。
+
+Which method commits a transaction?
+提交交易的方法是？
+A. commit()
+B. commitTransaction()
+C. save()
+D. endTransaction()
+答案：B
+解釋：commitTransaction() 用於提交交易。
+
+Which method aborts a transaction?
+中止交易的方法是？
+A. rollback()
+B. abortTransaction()
+C. cancel()
+D. undo()
+答案：B
+解釋：abortTransaction() 可中止交易並回滾。
+
+What does ObjectId represent in MongoDB?
+MongoDB 的 ObjectId 代表什麼？
+A. Sequential integer ID
+B. 12-byte unique identifier including timestamp
+C. UUID only
+D. Auto-increment field
+答案：B
+解釋：ObjectId 為 12 位元組唯一識別碼，內含時間戳記與隨機值。
+
+Which field in ObjectId encodes the timestamp?
+ObjectId 中哪個部分編碼時間戳？
+A. First 4 bytes
+B. Middle 3 bytes
+C. Last 5 bytes
+D. None
+答案：A
+解釋：ObjectId 的前 4 位元組代表 UNIX timestamp。
+
+Which BSON type is used for 64-bit integers?
+哪個 BSON 型別用於 64 位元整數？
+A. int32
+B. int64 / long
+C. double
+D. decimal128
+答案：B
+解釋：int64（long）型別支援 64 位元整數。
+
+Which BSON type is best for monetary calculations?
+哪個 BSON 型別最適合用於金額計算？
+A. double
+B. int32
+C. int64
+D. decimal128
+答案：D
+解釋：decimal128 可避免浮點數誤差，適合金額計算。
+
+
+
+
+Which MongoDB feature ensures automatic failover in case of primary failure?
+MongoDB 的哪個功能可在 primary 故障時自動故障轉移？
+A. Sharding
+B. Replica Sets
+C. Journaling
+D. Indexing
+答案：B
+解釋：Replica Set 提供自動選舉與故障轉移機制。
+
+A company needs to distribute data across multiple regions for low latency. Which MongoDB feature should they use?
+公司需要跨多區域分佈資料以降低延遲，應該使用哪個功能？
+A. Indexes
+B. Global Clusters
+C. Journaling
+D. Balancer
+答案：B
+解釋：Global Clusters 可依照地理區域分配資料。
+
+Which scenario requires using a hashed shard key?
+哪種情境適合使用 hashed shard key？
+A. Range queries
+B. Preventing write hot spots
+C. Multi-key indexing
+D. Geospatial queries
+答案：B
+解釋：Hashed shard key 可避免寫入集中在某個範圍，減少熱點。
+
+If a query often uses status and createdAt fields, which index is best?
+如果查詢經常使用 status 和 createdAt 欄位，哪種索引最好？
+A. { status: 1 }
+B. { createdAt: 1 }
+C. { status: 1, createdAt: -1 }
+D. Wildcard index
+答案：C
+解釋：複合索引可最佳化同時使用這兩個欄位的查詢。
+
+A developer wants to search text in description field. Which index should be created?
+開發者想在 description 欄位進行文字搜尋，應建立哪種索引？
+A. Hashed index
+B. Text index
+C. Compound index
+D. Wildcard index
+答案：B
+解釋：Text index 支援全文檢索。
+
+Which feature helps minimize downtime during a major version upgrade?
+哪個功能可幫助在主要版本升級時減少停機？
+A. Backup
+B. Rolling Upgrade with Replica Sets
+C. Journaling
+D. Sharding
+答案：B
+解釋：利用 Replica Set 的 rolling upgrade，可逐一升級節點並保持服務可用。
+
+A user needs point-in-time recovery in Atlas. Which feature should they use?
+使用者需要在 Atlas 中進行時間點還原，應該使用哪個功能？
+A. Continuous Backup with PITR
+B. Manual Snapshot
+C. Oplog tailing
+D. Live Migrate
+答案：A
+解釋：Atlas 的 Continuous Backup with PITR 支援時間點還原。
+
+A company wants to analyze sales data visually in Atlas. Which feature should they use?
+公司想在 Atlas 中視覺化分析銷售數據，應該使用哪個功能？
+A. Atlas Metrics
+B. Atlas Charts
+C. BI Connector
+D. Compass
+答案：B
+解釋：Atlas Charts 提供圖表化與儀表板視覺化工具。
+
+What is the main benefit of using readConcern: majority?
+使用 readConcern: majority 的主要好處是什麼？
+A. Faster reads
+B. Stronger consistency by reading committed data
+C. Lower memory usage
+D. Offline reads only
+答案：B
+解釋：readConcern: majority 可確保讀取到多數節點已提交的資料。
+
+Which replication member does not store data?
+哪種複寫成員不存放資料？
+A. Arbiter
+B. Secondary
+C. Primary
+D. Hidden Secondary
+答案：A
+解釋：Arbiter 只參與選舉，不存放資料。
+
+What is the role of a hidden secondary in replica sets?
+複寫集中 hidden secondary 的角色是什麼？
+A. Accept writes
+B. Participate in elections but hidden from queries
+C. Store analytics workload without affecting primary
+D. Backup arbiter
+答案：C
+解釋：Hidden secondary 可承擔分析查詢，避免影響主要節點。
+
+Which tool allows migrating data from a relational database to MongoDB?
+哪個工具可將資料從關聯式資料庫遷移到 MongoDB？
+A. mongoimport
+B. mongomigrate
+C. MongoDB Connector for BI
+D. MongoDB Atlas Data Migration Tool
+答案：D
+解釋：Atlas 提供 Data Migration Tool，可整合 RDB 與 MongoDB。
+
+What is a primary use case for capped collections?
+Capped collections 的主要用途是什麼？
+A. Archiving old data
+B. Logging and caching with fixed size
+C. Storing financial transactions
+D. Sharding
+答案：B
+解釋：Capped collections 適合用於日誌與快取。
+
+Which command converts a collection to a capped collection?
+哪個命令可將集合轉換為 capped collection？
+A. db.convertToCapped()
+B. db.collection.convert()
+C. db.collection.capped()
+D. db.toCapped()
+答案：A
+解釋：db.convertToCapped(<coll>, <size>) 可轉換集合為 capped。
+
+A company needs analytics queries without impacting production. Which solution is best?
+公司需要在不影響生產的情況下執行分析查詢，最佳解法是？
+A. Run queries on primary
+B. Use hidden secondary or analytics node
+C. Enable journaling
+D. Use capped collections
+答案：B
+解釋：可使用 hidden secondary 或 analytics node 處理分析查詢。
+
+Which MongoDB feature helps enforce schema validation?
+哪個功能可強制結構驗證？
+A. Validation rules
+B. Capped collections
+C. Index constraints
+D. Journaling
+答案：A
+解釋：Validation rules 可透過 JSON Schema 驗證文件結構。
+
+A developer needs to restrict access so that users can only see their own data. Which feature can be used?
+開發者需要限制使用者只能存取自己的資料，可使用哪個功能？
+A. RBAC
+B. Views with filters
+C. Sharding
+D. Arbiter
+答案：B
+解釋：可透過建立帶有過濾條件的 view 來限制存取範圍。
+
+Which MongoDB feature supports server-side field-level encryption?
+MongoDB 哪個功能支援伺服器端欄位層級加密？
+A. TLS
+B. Client-Side Field Level Encryption
+C. Encryption at Rest
+D. Views
+答案：B
+解釋：CSFLE（Client-Side Field Level Encryption）支援欄位級加密。
+
+What is the purpose of MongoDB Compass?
+MongoDB Compass 的用途是什麼？
+A. Manage sharding only
+B. GUI tool for schema visualization, queries, and indexes
+C. Backup and restore tool
+D. Monitoring only
+答案：B
+解釋：Compass 是 MongoDB 官方 GUI 工具，用於結構設計、查詢與索引管理。
+
+Which feature of MongoDB enables time-series data support?
+MongoDB 的哪個功能支援時間序列資料？
+A. Capped collections
+B. Time-series collections
+C. Aggregation pipelines
+D. Hidden secondary
+答案：B
+解釋：MongoDB 5.0 引入 time-series collections，優化時間序列資料處理。
+`;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const container = document.getElementById('quiz-container');
+            const questionBlocks = rawData.trim().split(/\n\n+/);
+            let questionNumber = 0;
+
+            questionBlocks.forEach(block => {
+                const lines = block.trim().split('\n');
+                if (lines.length < 3) return;
+
+                questionNumber++;
+
+                let title = '';
+                const options = [];
+                let answer = '';
+                let explanation = '';
+
+                lines.forEach(line => {
+                    if (line.startsWith('答案：')) {
+                        answer = line.replace('答案：', '').trim();
+                    } else if (line.startsWith('解釋：')) {
+                        explanation = line.replace('解釋：', '').trim();
+                    } else if (line.match(/^[A-Z]\.\s/)) {
+                        options.push(line.trim());
+                    } else {
+                        title += line.trim() + ' ';
+                    }
+                });
+                
+                title = title.trim();
+
+                const isMultiChoice = title.includes('(複選)') || (answer && answer.includes(','));
+                if (isMultiChoice && !title.includes('(複選)')) {
+                    title += '<span class="multi-choice-tag">(複選)</span>';
+                } else {
+                     title = title.replace('(複選)', '<span class="multi-choice-tag">(複選)</span>');
+                }
+
+                const questionElement = document.createElement('div');
+                questionElement.className = 'question-block';
+
+                let optionsHtml = '<ul class="options-list">';
+                const inputType = isMultiChoice ? 'checkbox' : 'radio';
+                options.forEach(opt => {
+                    const value = opt.split('.')[0];
+                    optionsHtml += `
+                        <li>
+                            <label>
+                                <input type="${inputType}" name="q${questionNumber}" value="${value}">
+                                <span>${opt}</span>
+                            </label>
+                        </li>
+                    `;
+                });
+                optionsHtml += '</ul>';
+
+                questionElement.innerHTML = `
+                    <div class="question-title">第 ${questionNumber} 題: ${title}</div>
+                    ${optionsHtml}
+                    <button class="show-answer-btn">顯示答案</button>
+                    <div class="answer-panel">
+                        <div class="correct-answer">正確答案：${answer}</div>
+                        <div class="explanation">解釋：${explanation}</div>
+                    </div>
+                `;
+
+                container.appendChild(questionElement);
+            });
+
+            // Add event listeners to all buttons
+            container.querySelectorAll('.show-answer-btn').forEach(button => {
+                button.addEventListener('click', () => {
+                    const answerPanel = button.nextElementSibling;
+                    const isVisible = answerPanel.style.display === 'block';
+                    answerPanel.style.display = isVisible ? 'none' : 'block';
+                    button.textContent = isVisible ? '顯示答案' : '隱藏答案';
+                });
+            });
+        });
+    </script>
+
 </body>
 </html>
