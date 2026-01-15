@@ -2,61 +2,136 @@
 <html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MongoDB Indexing 考試終極系統C100DEV </title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MongoDB Indexing 考試終極系統 C100DEV</title>
     <style>
         :root {
             --mongo-dark: #001e2b;
             --mongo-green: #00ed64;
             --mongo-border: #e0e0e0;
             --accent: #ffcc00;
+            --bg-gray: #f0f2f5;
         }
-        body { font-family: sans-serif; line-height: 1.6; background: #f0f2f5; color: #333; margin: 0; padding-bottom: 50px; }
-        .container { max-width: 900px; margin: 0 auto; padding: 20px; }
+
+        /* 基礎縮放設定 */
+        * { box-sizing: border-box; }
         
-        /* 工具列導航 */
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+            line-height: 1.6; 
+            background: var(--bg-gray); 
+            color: #333; 
+            margin: 0; 
+            padding: 0;
+            font-size: 16px; /* 基礎字級 */
+        }
+
+        /* 容器等比例縮放 */
+        .container { 
+            width: 95%; 
+            max-width: 900px; 
+            margin: 0 auto; 
+            padding: 10px 0 50px 0; 
+        }
+
+        /* 工具列響應式優化 */
         .toolbar { 
-            position: sticky; top: 10px; background: white; padding: 15px 20px; 
-            border-radius: 50px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); 
-            z-index: 1000; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center;
+            position: sticky; 
+            top: 10px; 
+            background: white; 
+            padding: 10px 20px; 
+            border-radius: 30px; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1); 
+            z-index: 1000; 
+            margin-bottom: 20px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            flex-wrap: wrap; /* 小螢幕自動換行 */
+            gap: 10px;
         }
-        select, button { padding: 8px 12px; border-radius: 5px; border: 1px solid #ddd; cursor: pointer; font-weight: bold; }
-        
+
+        .toolbar-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        select, button { 
+            padding: 8px 15px; 
+            border-radius: 8px; 
+            border: 1px solid #ddd; 
+            cursor: pointer; 
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
         /* 標題與章節 */
         h2.lesson-header { 
-            background: var(--mongo-dark); color: var(--mongo-green); 
-            padding: 12px 20px; border-radius: 8px; margin-top: 40px; 
+            background: var(--mongo-dark); 
+            color: var(--mongo-green); 
+            padding: 15px; 
+            border-radius: 12px; 
+            margin-top: 30px;
+            font-size: 1.25rem;
+            word-break: break-all;
         }
 
         /* 題目卡片 */
         .question-card { 
-            background: white; padding: 25px; border-radius: 12px; 
-            margin-bottom: 25px; border-left: 6px solid #ddd; 
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05); transition: 0.3s;
+            background: white; 
+            padding: 20px; 
+            border-radius: 15px; 
+            margin-bottom: 20px; 
+            border-left: 8px solid #ddd; 
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05); 
+            transition: transform 0.2s;
         }
+        
+        .question-card:hover { transform: translateY(-2px); }
         .question-card.marked { border-left-color: var(--accent); background: #fffdf2; }
         .hidden { display: none !important; }
 
-        .options-list { list-style: none; padding: 0; margin: 20px 0; }
+        .question-title { font-weight: bold; font-size: 1.1rem; margin-bottom: 15px; }
+
+        /* 選項清單 */
+        .options-list { list-style: none; padding: 0; margin: 15px 0; }
         .options-list label { 
-            display: flex; padding: 12px; border-radius: 6px; 
-            transition: 0.2s; border: 1px solid transparent; cursor: pointer;
+            display: flex; 
+            align-items: flex-start;
+            padding: 12px; 
+            border-radius: 10px; 
+            transition: 0.2s; 
+            border: 1px solid transparent; 
+            cursor: pointer;
+            margin-bottom: 5px;
         }
         .options-list label:hover { background: #f0fff4; border-color: var(--mongo-green); }
-        .options-list input { margin-right: 15px; transform: scale(1.2); }
+        .options-list input { margin-top: 5px; margin-right: 12px; transform: scale(1.3); flex-shrink: 0; }
 
-        /* 按鈕樣式 */
+        /* 按鈕視覺增強 */
         .btn-ans { background: var(--mongo-green); color: var(--mongo-dark); border: none; }
-        .btn-mark { background: #f8f9fa; color: #666; margin-left: 10px; }
+        .btn-mark { background: #f8f9fa; color: #666; }
         .marked .btn-mark { background: var(--accent); color: #000; border-color: var(--accent); }
 
         .answer-panel { 
-            display: none; margin-top: 20px; padding: 15px; 
-            background: #eefbed; border: 1px solid #c3e6cb; border-radius: 8px; 
-            animation: fadeIn 0.4s;
+            display: none; margin-top: 15px; padding: 15px; 
+            background: #eefbed; border: 1px solid #c3e6cb; border-radius: 10px; 
+            font-size: 0.95rem;
+            animation: fadeIn 0.3s ease-in;
         }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .tag-multi { color: #d9534f; font-size: 0.8em; margin-left: 8px; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* 手機版適配 */
+        @media (max-width: 600px) {
+            body { font-size: 14px; }
+            .toolbar { border-radius: 15px; padding: 10px; }
+            .toolbar-group { width: 100%; justify-content: space-between; }
+            select { flex: 1; }
+            .btn-ans, .btn-mark { padding: 10px; flex: 1; }
+            .lesson-header { font-size: 1.1rem; }
+        }
     </style>
 </head>
 <body>
@@ -64,11 +139,11 @@
 <div class="container">
     <div class="toolbar">
         <select id="lesson-nav" onchange="jumpTo(this.value)">
-            <option value="">跳轉章節...</option>
+            <option value="">快速跳轉章節...</option>
         </select>
         
-        <div>
-            <span style="margin-right:15px; font-size:14px;">已標記: <strong id="mark-count">0</strong></span>
+        <div class="toolbar-group">
+            <span style="font-size:14px;">已標記: <strong id="mark-count">0</strong></span>
             <button id="toggle-review" onclick="toggleReviewMode()">複習模式: 關閉</button>
         </div>
     </div>
@@ -77,150 +152,168 @@
 </div>
 
 <script>
-    // 這裡放入你提供的 Raw Data，支援 Lesson 標題
     const rawData = `
 Lesson 1: Index Fundamentals & Performance (索引基礎與效能)
-
 
 What is the primary purpose of an index in MongoDB?
 aMongoDB 索引的主要目的為何？
 A. Reduce document size
 B. Improve query performance
 C. Automatically sort all collections
-D. Improve write performance答案：B
+D. Improve write performance
+答案：B
 解釋：索引的核心價值是加速查詢，讓 MongoDB 不必掃描整個 collection，而是透過索引快速定位文件。
 
 Which statement best describes how MongoDB stores index data?
 A. Indexes store all document fields
 B. Indexes store a small, ordered portion of the data
 C. Indexes duplicate entire collections
-D. Indexes only exist in memory答案：B
+D. Indexes only exist in memory
+答案：B
 解釋：索引只儲存「部分欄位資料＋指向文件的 reference」，而且是有序結構，才能高效搜尋。
 
 What happens when MongoDB executes a query without using an index?
 A. Uses index cache
 B. Performs a collection scan
 C. Uses aggregation pipeline
-D. Returns unsorted results only答案：B
+D. Returns unsorted results only
+答案：B
 解釋：沒有索引時，MongoDB 只能做 Collection Scan，逐筆讀取所有文件，效能最差。
 
 Which operation is more expensive when many indexes exist on a collection?
 A. find
 B. aggregate
 C. insert
-D. explain答案：C
+D. explain
+答案：C
 解釋：每次寫入（insert / update / delete）都必須同步更新所有索引，索引越多，寫入成本越高。
 
 How many indexes are created by default for a new collection?
 A. 0
 B. 1
 C. 2
-D. Depends on schema答案：B
+D. Depends on schema
+答案：B
 解釋：MongoDB 預設只會建立一個 _id 單一欄位索引。
 
 Which index type supports equality matches and range queries efficiently?
 A. Text index
 B. Hashed index
 C. B-tree index
-D. TTL index答案：C
+D. TTL index
+答案：C
 解釋：MongoDB 的索引底層結構為 B-tree，非常適合等值與範圍查詢。
 
 Which statement about indexes is TRUE?
 A. Indexes improve query performance with no trade-offs
 B. Indexes reduce disk I/O
 C. Indexes slow down all queries
-D. Indexes are auto-created by MongoDB答案：B
+D. Indexes are auto-created by MongoDB
+答案：B
 解釋：索引能減少實際需要讀取的文件數量，直接降低 disk I/O。
 
 Which index type is created automatically when indexing an array field?
 A. Compound index
 B. Hashed index
 C. Multikey index
-D. Text index答案：C
+D. Text index
+答案：C
 解釋：只要索引欄位是 array，MongoDB 會自動轉成 Multikey index，不用手動指定。
 
 Which of the following can be a multikey index? (Select all that apply)
 A. Single field index on an array
 B. Compound index with one array field
 C. Compound index with two array fields
-D. Index on _id答案：A、B
+D. Index on _id
+答案：A、B
 解釋：Multikey 允許 一個 array 欄位，但不能同時索引多個 array 欄位。
 
 What happens if a query requires sorted output but no suitable index exists?
 A. MongoDB fails the query
 B. MongoDB sorts results in memory
 C. MongoDB creates a temporary index
-D. MongoDB ignores sort答案：B
+D. MongoDB ignores sort
+答案：B
 解釋：沒有索引支援排序時，MongoDB 需要在 memory 中排序，非常吃資源。
 
 Which index best supports queries on { age: 30 }?
 A. Compound index { name: 1, age: 1 }
 B. Single field index { age: 1 }
 C. Multikey index { age: 1 }
-D. Text index答案：B
+D. Text index
+答案：B
 解釋：單一欄位查詢，最精準就是 Single Field Index。
 
 Why is the order of fields important in a compound index?
 A. Affects storage size
 B. Determines index name
 C. Determines query usability and sort order
-D. Determines write speed only答案：C
+D. Determines write speed only
+答案：C
 解釋：複合索引遵守 前綴原則（Prefix Rule），欄位順序會直接影響可支援的查詢。
 
 Given index { a: 1, b: 1 }, which query can use this index?
 A. { b: 1 }
 B. { a: 1 }
 C. { b: 1, a: 1 } only
-D. { c: 1 }答案：B
+D. { c: 1 }
+答案：B
 解釋：可以用 {a} 或 {a, b}，但不能只查 {b}。
 
 Which statement about “Every query should use an index” is correct?
 A. It is always mandatory
 B. It is a best practice guideline
 C. MongoDB enforces it
-D. Queries without indexes are invalid答案：B
+D. Queries without indexes are invalid
+答案：B
 解釋：這是效能最佳實務建議，不是強制規則。
 
 What is the main disadvantage of having too many indexes?
 A. Increased memory usage
 B. Slower write performance
 C. Slower read performance
-D. Larger document size答案：B
+D. Larger document size
+答案：B
 解釋：索引越多，寫入時要更新的結構越多，寫效能會明顯下降。
 
  Which index type supports indexing multiple fields?
 A. Single field index
 B. Compound index
 C. Hashed index
-D. TTL index答案：B
+D. TTL index
+答案：B
 解釋：複合索引可同時索引多個欄位，是多條件查詢的關鍵武器！
 
 Can MongoDB automatically detect and create indexes based on usage?
 A. Yes
 B. No
 C. Only in Atlas
-D. Only for _id答案：B
+D. Only for _id
+答案：B
 解釋：MongoDB 不會自動建索引，但 Atlas 會「建議」你該怎麼建。
 
 What does an index entry point to?
 A. Another index
 B. Document identity
 C. Collection name
-D. Schema definition答案：B
+D. Schema definition
+答案：B
 解釋：索引儲存的是「欄位值 + 指向文件的 reference」。
 
 Which of the following improves query performance the MOST?
 A. Adding more RAM
 B. Increasing document size
 C. Creating proper indexes
-D. Increasing write concern答案：C
+D. Increasing write concern
+答案：C
 解釋：索引是效能優化 CP 值最高的方式，沒有之一！
 
 Which statement about multikey indexes is TRUE?
 A. Must be manually specified
 B. Cannot be compound
 C. Automatically created for array fields
-D. Can index multiple array fields答案：C
+D. Can index multiple array fields
+答案：C
 解釋：只要欄位是 array，MongoDB 會自動變成 multikey index，但只能有一個 array 欄位。
 
 Lesson 2: Creating a Single Field Index in MongoDB
@@ -232,6 +325,7 @@ A. create()
 B. createIndex()
 C. addIndex()
 D. ensureIndex()
+
 答案：B
 解釋：MongoDB 使用 createIndex() 來建立索引，需在方法中指定欄位與排序方向。
 
@@ -241,6 +335,7 @@ A. Queries and sorts on one field
 B. Queries on multiple fields
 C. Automatic sharding
 D. Aggregation pipelines only
+
 答案：A
 解釋：單一欄位索引可有效支援「單一欄位」的查詢與排序。
 
@@ -250,6 +345,7 @@ A. db.coll.createIndex(fieldname)
 B. db.coll.createIndex({ fieldname: 1 })
 C. db.coll.createIndex([fieldname])
 D. db.coll.index({ fieldname: "asc" })
+
 答案：B
 解釋：createIndex() 需要傳入一個物件，指定欄位名稱與排序方向（1 或 -1）。
 
@@ -259,6 +355,7 @@ A. Text index
 B. Hashed index
 C. Ascending order
 D. Descending order
+
 答案：C
 解釋：1 代表遞增排序（Ascending），-1 則代表遞減排序（Descending）。
 
@@ -268,6 +365,7 @@ A. { required: true }
 B. { unique: true }
 C. { distinct: true }
 D. { primary: true }
+
 答案：B
 解釋：{ unique: true } 會確保索引欄位中的值不可重複。
 
@@ -277,6 +375,7 @@ A. MongoDB removes duplicates automatically
 B. MongoDB creates the index anyway
 C. Index creation fails
 D. Old documents are replaced
+
 答案：C
 解釋：若資料中已有重複值，MongoDB 不會建立 unique index，並回傳錯誤。
 
@@ -286,6 +385,7 @@ A. db.coll.indexes()
 B. db.coll.showIndexes()
 C. db.coll.getIndexes()
 D. db.coll.explainIndexes()
+
 答案：C
 解釋：getIndexes() 會列出集合內所有已建立的索引。
 
@@ -295,6 +395,7 @@ A. stats()
 B. getIndexes()
 C. explain()
 D. profile()
+
 答案：C
 解釋：explain() 會顯示查詢的執行計畫（Execution Plan）。
 
@@ -304,6 +405,7 @@ A. Collection scan
 B. Index scan
 C. In-memory sort
 D. Document fetch only
+
 答案：B
 解釋：IXSCAN 表示 MongoDB 正在使用索引掃描，是理想的查詢狀態。
 
@@ -313,6 +415,7 @@ A. Using multiple indexes
 B. Index merge
 C. Full collection scan
 D. Cached result
+
 答案：C
 解釋：COLLSCAN 表示進行全表掃描，代表沒有使用索引，效能較差。
 
@@ -322,6 +425,7 @@ A. Sorting documents
 B. Reading documents from disk
 C. Reading actual documents after index scan
 D. Writing documents
+
 答案：C
 解釋：FETCH 通常搭配 IXSCAN，代表依索引找到位置後，再讀取實際文件內容。
 
@@ -331,6 +435,7 @@ A. Sorting using index
 B. Sorting in memory
 C. Sorting during insert
 D. Sorting during index creation
+
 答案：B
 解釋：SORT 代表在記憶體中進行排序，通常表示沒有索引支援該排序條件。
 
@@ -340,6 +445,7 @@ A. Compound index
 B. Hashed index
 C. Multikey index
 D. TTL index
+
 答案：C
 解釋：只要索引欄位是陣列，MongoDB 會自動建立 Multikey index。
 
@@ -349,6 +455,7 @@ A. Document is inserted and old one removed
 B. Document is inserted and both remain
 C. Duplicate key error, document inserted
 D. Duplicate key error, document not inserted
+
 答案：D
 解釋：unique index 會阻止重複值寫入，MongoDB 會回傳 duplicate key error，且不會插入文件。
 
@@ -358,6 +465,7 @@ A. Supports efficient querying against one field
 B. Supports efficient querying against multiple fields
 C. Only works on scalar values
 D. Automatically created for all fields
+
 答案：A
 解釋：單一欄位索引專門優化「單一欄位」的查詢，可用於純量或陣列欄位。
 
@@ -369,6 +477,7 @@ A. An index on one field only where the field is not an array
 B. An index where one of the indexed fields contains an array
 C. An index on more than one field where none of the fields are arrays
 D. An index on more than one field where multiple fields are arrays
+
 答案：B
 解釋：只要索引的欄位中「有任一個欄位是陣列」，該索引就是 Multikey Index，適用於單一欄位或複合索引，但複合索引中只能有一個陣列欄位。
 
@@ -378,6 +487,7 @@ A. Only the first element in the array is indexed
 B. MongoDB creates one index entry for the entire array
 C. MongoDB creates an index key for each element in the array
 D. MongoDB ignores array fields
+
 答案：C
 解釋：MongoDB 會為陣列中的每一個元素建立索引鍵，讓查詢可以直接比對元素而非掃描整個陣列。
 
@@ -387,6 +497,7 @@ A. Multikey indexes must be manually specified
 B. Multikey indexes only work with numeric arrays
 C. Multikey indexes are automatically created when indexing an array field
 D. Multikey indexes cannot be used for queries
+
 答案：C
 解釋：只要索引欄位是陣列，MongoDB 會自動建立 Multikey Index，不需要額外指定。
 
@@ -396,6 +507,7 @@ A. 1
 B. 2
 C. 5
 D. Unlimited
+
 答案：A
 解釋：MongoDB 限制一個複合索引中「最多只能有一個陣列欄位」，否則無法建立索引。
 
@@ -405,6 +517,7 @@ A. db.customers.createIndex(accounts)
 B. db.customers.createIndex({ accounts: 1 })
 C. db.customers.createIndex([accounts])
 D. db.customers.ensureIndex({ accounts: 1 })
+
 答案：B
 解釋：使用 createIndex() 並指定陣列欄位與排序方向即可，MongoDB 會自動判斷為 Multikey Index。
 
@@ -414,6 +527,7 @@ A. db.customers.indexes()
 B. db.customers.showIndexes()
 C. db.customers.getIndexes()
 D. db.customers.explainIndexes()
+
 答案：C
 解釋：getIndexes() 會列出集合中目前存在的所有索引，包括 Multikey Index。
 
@@ -423,6 +537,7 @@ A. Sorting documents in memory
 B. Full collection scan
 C. Reading documents only
 D. Query is using an index
+
 答案：D
 解釋：IXSCAN 表示查詢正在使用索引（包含 Multikey Index），是效能良好的查詢狀態。
 
@@ -432,6 +547,7 @@ A. MongoDB is using a multikey index
 B. MongoDB is scanning the entire collection
 C. MongoDB is sorting using index order
 D. MongoDB is reading cached results
+
 答案：B
 解釋：COLLSCAN 表示未使用索引而進行全表掃描，通常代表缺少合適的 Multikey Index。
 
@@ -443,6 +559,7 @@ A. An index that supports queries that combine the field name and the value into
 B. An index that supports queries against unknown or arbitrary fields
 C. An index that contains references to multiple fields within a document
 D. An index that supports queries that are run on two collections at the same time
+
 答案：C
 解釋：複合索引是在同一個索引結構中同時包含多個欄位及其排序方式，用來加速多欄位查詢。
 
@@ -452,6 +569,7 @@ A. Index on a single field only
 B. Index on multiple fields
 C. Index only supports array fields
 D. Index only supports sorting
+
 答案：B
 解釋：複合索引是建立在多個欄位之上的索引結構，可同時支援多條件查詢與排序。
 
@@ -461,6 +579,7 @@ A. Compound indexes can include unlimited array fields
 B. Compound indexes cannot be used for sorting
 C. Compound indexes can become multikey indexes if they include an array field
 D. Compound indexes are created automatically by MongoDB
+
 答案：C
 解釋：只要複合索引中包含陣列欄位，就會自動成為 Multikey Index，但整個索引只能有一個陣列欄位。
 
@@ -470,6 +589,7 @@ A. 0
 B. 1
 C. 2
 D. Unlimited
+
 答案：B
 解釋：MongoDB 規定一個索引中最多只能有一個欄位是陣列，否則無法建立索引。
 
@@ -479,6 +599,7 @@ A. It affects document size
 B. It affects index name
 C. It affects query optimization and index usability
 D. It affects write concern
+
 答案：C
 解釋：複合索引遵循前綴原則，欄位順序會直接影響哪些查詢能有效使用該索引以及排序是否能被索引支援。
 
@@ -488,6 +609,7 @@ A. Sort, Range, Equality
 B. Range, Sort, Equality
 C. Equality, Sort, Range
 D. The order does not matter
+
 答案：C
 解釋：建議順序為 Equality（相等條件）→ Sort（排序）→ Range（範圍），可讓查詢最佳化並減少處理成本。
 
@@ -497,6 +619,7 @@ A. Range query
 B. Sort field
 C. Equality match
 D. Projection field
+
 答案：C
 解釋：相等條件能快速縮小搜尋範圍，應放在索引最前面以減少需要掃描的索引鍵數量。
 
@@ -506,6 +629,7 @@ A. Improves write performance
 B. Eliminates in-memory sorting
 C. Reduces index size
 D. Allows unlimited array fields
+
 答案：B
 解釋：若排序順序與索引一致，MongoDB 可直接依索引順序回傳結果，避免在記憶體中進行 SORT。
 
@@ -515,6 +639,7 @@ A. The query uses multiple indexes
 B. The query requires fetching documents from memory
 C. All required fields are returned directly from the index
 D. The query includes a sort stage
+
 答案：C
 解釋：當查詢所需的欄位全部包含在索引中，MongoDB 不需 FETCH 文件即可回傳結果，即為覆蓋查詢。
 
@@ -524,6 +649,7 @@ A. FETCH
 B. SORT
 C. COLLSCAN
 D. PROJECTION_COVERED
+
 答案：D
 解釋：PROJECTION_COVERED 表示所有需要的資料皆由索引提供，無需從集合中讀取文件。
 
@@ -533,6 +659,7 @@ A. In-memory sorting
 B. Full collection scan
 C. Index scan is being used
 D. Projection only
+
 答案：C
 解釋：IXSCAN 表示 MongoDB 正在使用索引（包含複合索引）進行查詢，是效能良好的執行計畫。
 
@@ -544,6 +671,7 @@ A. Query performance improves
 B. Query performance is negatively affected
 C. Query will fail
 D. Query behavior is unchanged
+
 答案：B
 解釋：刪除支援查詢的索引會導致 MongoDB 可能改用 COLLSCAN 全表掃描，查詢效能因此下降。
 
@@ -553,6 +681,7 @@ A. deleteIndex()
 B. dropIndexes()
 C. dropIndex()
 D. removeIndex()
+
 答案：C
 解釋：dropIndex() 用於刪除集合中的單一索引，可使用索引名稱或索引鍵指定。
 
@@ -562,6 +691,7 @@ A. Compound index
 B. Multikey index
 C. Text index
 D. _id index
+
 答案：D
 解釋：每個集合都預設存在 _id 索引，該索引由 MongoDB 內部使用，不可刪除。
 
@@ -571,6 +701,7 @@ A. dropIndex()
 B. dropIndexes()
 C. getIndexes()
 D. hideIndex()
+
 答案：B
 解釋：dropIndexes() 會刪除集合中所有使用者建立的索引，但保留預設的 _id 索引。
 
@@ -580,6 +711,7 @@ A. dropIndex()
 B. dropIndexes()
 C. getIndexes()
 D. hideIndex()
+
 答案：D
 解釋：hideIndex() 會讓 MongoDB 查詢時不使用該索引但仍維護索引資料，可安全評估移除索引對效能的影響。
 
@@ -589,6 +721,7 @@ A. Hidden indexes are deleted permanently
 B. Hidden indexes are not updated
 C. Hidden indexes are ignored by the query planner
 D. Hidden indexes cause queries to fail
+
 答案：C
 解釋：被隱藏的索引不會被查詢規劃器使用，但 MongoDB 仍會持續更新索引鍵，方便日後快速還原使用。
 
@@ -603,7 +736,8 @@ A. Stores a full copy of the collection
 B. Improves query performance by scanning all documents
 C. Improves query performance by reducing scanned documents
 D. Is required for every query
-正確答案：C
+正確
+答案：C
 解釋：索引透過減少需掃描的文件數量來提升查詢效能，是 MongoDB 查詢最佳化的核心機制。
 
 What happens if you insert a document with a duplicate value into a unique indexed field?
@@ -612,7 +746,8 @@ A. Document is inserted and old one removed
 B. Document is inserted and both remain
 C. Duplicate key error, document inserted
 D. Duplicate key error, document not inserted
-正確答案：D
+正確
+答案：D
 解釋：unique index 會阻止重複值寫入，MongoDB 會回傳 duplicate key error，且文件不會被插入。
 
 Which index type is automatically created for every MongoDB collection?
@@ -621,7 +756,8 @@ A. Single field index
 B. Compound index
 C. Multikey index
 D. _id index
-正確答案：D
+正確
+答案：D
 解釋：每個集合都自動建立 _id 索引，用於唯一識別文件且不可刪除。
 
 What is a multikey index in MongoDB?
@@ -630,7 +766,8 @@ A. An index on multiple collections
 B. An index where one indexed field contains an array
 C. An index on multiple fields with multiple arrays
 D. An index used only for sorting
-正確答案：B
+正確
+答案：B
 解釋：只要索引欄位中包含陣列，該索引即為 multikey index，可用於單一欄位或複合索引。
 
 In a compound index, how many fields can be arrays?
@@ -639,7 +776,8 @@ A. 0
 B. 1
 C. 2
 D. Unlimited
-正確答案：B
+正確
+答案：B
 解釋：MongoDB 規定複合索引中只能有一個欄位是陣列，否則無法建立索引。
 
 Which execution stage indicates that MongoDB is using an index?
@@ -648,7 +786,8 @@ A. COLLSCAN
 B. FETCH
 C. SORT
 D. IXSCAN
-正確答案：D
+正確
+答案：D
 解釋：IXSCAN 代表 MongoDB 透過索引掃描資料，而非進行全表掃描。
 
 Which command deletes a single index from a collection?
@@ -657,7 +796,8 @@ A. deleteIndex()
 B. dropIndexes()
 C. dropIndex()
 D. removeIndex()
-正確答案：C
+正確
+答案：C
 解釋：dropIndex() 可透過索引名稱或索引鍵刪除指定索引。
 
 Which command removes all indexes except the default _id index?
@@ -666,7 +806,8 @@ A. dropIndex()
 B. dropIndexes()
 C. getIndexes()
 D. hideIndex()
-正確答案：B
+正確
+答案：B
 解釋：dropIndexes() 會刪除所有使用者建立的索引，但 _id 索引會被保留。
 
 What is the impact of deleting an index that supports a query?
@@ -675,7 +816,8 @@ A. Query performance improves
 B. Query performance is negatively affected
 C. Query will fail
 D. Query behavior is unchanged
-正確答案：B
+正確
+答案：B
 解釋：移除索引後查詢可能退化為 COLLSCAN，導致效能下降但不會失敗。
 
 Before deleting an index, which command should be used to evaluate its impact on query performance?
@@ -684,21 +826,9 @@ A. dropIndex()
 B. dropIndexes()
 C. getIndexes()
 D. hideIndex()
-正確答案：D
+正確
+答案：D
 解釋：hideIndex() 會讓查詢不使用該索引但仍維護索引資料，能安全評估效能影響並快速還原。
-
-
-
-
-
-
-
-
-
-
-
-
-
 `;
 
     let markedIds = new Set();
@@ -707,16 +837,16 @@ D. hideIndex()
     function init() {
         const container = document.getElementById('quiz-content');
         const nav = document.getElementById('lesson-nav');
-        const sections = rawData.trim().split(/\n(?=Lesson \d:)/); // 以 Lesson 字樣分割
+        const sections = rawData.trim().split(/\n(?=Lesson \d:)/); 
         
         let qGlobalId = 1;
 
         sections.forEach((sec) => {
             const lines = sec.trim().split('\n');
-            const lessonTitle = lines.shift(); // 第一行是標題
-            const lessonId = "lesson-" + lessonTitle.match(/\d/)[0];
+            const lessonTitle = lines.shift();
+            const lessonMatch = lessonTitle.match(/\d+/);
+            const lessonId = "lesson-" + (lessonMatch ? lessonMatch[0] : qGlobalId);
 
-            // 建立標題與導航
             const h2 = document.createElement('h2');
             h2.className = 'lesson-header';
             h2.id = lessonId;
@@ -728,10 +858,9 @@ D. hideIndex()
             opt.textContent = lessonTitle;
             nav.appendChild(opt);
 
-            // 解析題目
             const questions = lines.join('\n').trim().split(/\n\n+/);
             questions.forEach(qBlock => {
-                renderQuestion(qBlock, qGlobalId++, container);
+                if(qBlock.trim()) renderQuestion(qBlock, qGlobalId++, container);
             });
         });
     }
@@ -741,27 +870,33 @@ D. hideIndex()
         let title = "", options = [], answer = "", exp = "";
 
         lines.forEach(l => {
-            if (l.startsWith('答案：')) answer = l.replace('答案：', '');
-            else if (l.startsWith('解釋：')) exp = l.replace('解釋：', '');
+            if (l.startsWith('
+答案：')) answer = l.replace('
+答案：', '').trim();
+            else if (l.startsWith('解釋：')) exp = l.replace('解釋：', '').trim();
             else if (l.match(/^[A-Z]\.\s/)) options.push(l);
-            else title += l + " ";
+            else if (l.trim() !== "") title += l + " ";
         });
 
-        const isMulti = answer.includes(',') || answer.includes('，');
+        const isMulti = answer.length > 1 && (answer.includes(',') || answer.includes('，') || /[A-Z]{2,}/.test(answer));
         const card = document.createElement('div');
         card.className = 'question-card';
         card.id = `q-card-${id}`;
         card.innerHTML = `
             <div class="question-title">
-                <strong>#${id}</strong> ${title} ${isMulti ? '<span class="tag-multi">(複選)</span>' : ''}
+                <strong>#${id}</strong> ${title} ${isMulti ? '<span style="color:#d9534f; font-size:0.8em;">(複選)</span>' : ''}
             </div>
             <div class="options-list">
                 ${options.map(o => `<label><input type="${isMulti ? 'checkbox' : 'radio'}" name="q${id}"><span>${o}</span></label>`).join('')}
             </div>
-            <button class="btn-ans" onclick="toggleAns(${id})">顯示解析</button>
-            <button class="btn-mark" onclick="toggleMark(${id})">標記題目</button>
+            <div style="display:flex; gap:10px;">
+                <button class="btn-ans" onclick="toggleAns(${id})">顯示解析</button>
+                <button class="btn-mark" onclick="toggleMark(${id})">標記題目</button>
+            </div>
             <div class="answer-panel" id="ans-${id}">
-                <b>答案：${answer}</b><br><div style="margin-top:10px">${exp}</div>
+                <b style="color:#28a745;">正確
+答案：${answer}</b>
+                <div style="margin-top:10px; border-top:1px dashed #ccc; padding-top:10px;">${exp}</div>
             </div>
         `;
         container.appendChild(card);
@@ -799,7 +934,6 @@ D. hideIndex()
             const id = parseInt(card.id.replace('q-card-', ''));
             card.classList.toggle('hidden', isReviewMode && !markedIds.has(id));
         });
-        // 隱藏沒有題目的章節標題
         document.querySelectorAll('.lesson-header').forEach(h => {
             let next = h.nextElementSibling;
             let hasVisible = false;
@@ -811,7 +945,18 @@ D. hideIndex()
         });
     }
 
-    function jumpTo(id) { if(id) document.getElementById(id).scrollIntoView({behavior: 'smooth'}); }
+    function jumpTo(id) { 
+        if(id) {
+            const el = document.getElementById(id);
+            const offset = 80; // 考慮到 sticky toolbar 的高度
+            const bodyRect = document.body.getBoundingClientRect().top;
+            const elementRect = el.getBoundingClientRect().top;
+            const elementPosition = elementRect - bodyRect;
+            const offsetPosition = elementPosition - offset;
+
+            window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
+        } 
+    }
 
     init();
 </script>
