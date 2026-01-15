@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MongoDB Indexing 考試終極系統 C100DEV</title>
+    <title>MongoDB Indexing 考試終極系統 C100DEV v.0116</title>
     <style>
         :root {
             --mongo-dark: #001e2b;
@@ -154,6 +154,7 @@
 <script>
     const rawData = `
 Lesson 1: Index Fundamentals & Performance (索引基礎與效能)
+
 
 What is the primary purpose of an index in MongoDB?
 aMongoDB 索引的主要目的為何？
@@ -325,7 +326,6 @@ A. create()
 B. createIndex()
 C. addIndex()
 D. ensureIndex()
-
 答案：B
 解釋：MongoDB 使用 createIndex() 來建立索引，需在方法中指定欄位與排序方向。
 
@@ -335,7 +335,6 @@ A. Queries and sorts on one field
 B. Queries on multiple fields
 C. Automatic sharding
 D. Aggregation pipelines only
-
 答案：A
 解釋：單一欄位索引可有效支援「單一欄位」的查詢與排序。
 
@@ -345,7 +344,6 @@ A. db.coll.createIndex(fieldname)
 B. db.coll.createIndex({ fieldname: 1 })
 C. db.coll.createIndex([fieldname])
 D. db.coll.index({ fieldname: "asc" })
-
 答案：B
 解釋：createIndex() 需要傳入一個物件，指定欄位名稱與排序方向（1 或 -1）。
 
@@ -355,7 +353,6 @@ A. Text index
 B. Hashed index
 C. Ascending order
 D. Descending order
-
 答案：C
 解釋：1 代表遞增排序（Ascending），-1 則代表遞減排序（Descending）。
 
@@ -365,7 +362,6 @@ A. { required: true }
 B. { unique: true }
 C. { distinct: true }
 D. { primary: true }
-
 答案：B
 解釋：{ unique: true } 會確保索引欄位中的值不可重複。
 
@@ -375,7 +371,6 @@ A. MongoDB removes duplicates automatically
 B. MongoDB creates the index anyway
 C. Index creation fails
 D. Old documents are replaced
-
 答案：C
 解釋：若資料中已有重複值，MongoDB 不會建立 unique index，並回傳錯誤。
 
@@ -385,7 +380,6 @@ A. db.coll.indexes()
 B. db.coll.showIndexes()
 C. db.coll.getIndexes()
 D. db.coll.explainIndexes()
-
 答案：C
 解釋：getIndexes() 會列出集合內所有已建立的索引。
 
@@ -395,7 +389,6 @@ A. stats()
 B. getIndexes()
 C. explain()
 D. profile()
-
 答案：C
 解釋：explain() 會顯示查詢的執行計畫（Execution Plan）。
 
@@ -405,7 +398,6 @@ A. Collection scan
 B. Index scan
 C. In-memory sort
 D. Document fetch only
-
 答案：B
 解釋：IXSCAN 表示 MongoDB 正在使用索引掃描，是理想的查詢狀態。
 
@@ -415,7 +407,6 @@ A. Using multiple indexes
 B. Index merge
 C. Full collection scan
 D. Cached result
-
 答案：C
 解釋：COLLSCAN 表示進行全表掃描，代表沒有使用索引，效能較差。
 
@@ -425,7 +416,6 @@ A. Sorting documents
 B. Reading documents from disk
 C. Reading actual documents after index scan
 D. Writing documents
-
 答案：C
 解釋：FETCH 通常搭配 IXSCAN，代表依索引找到位置後，再讀取實際文件內容。
 
@@ -435,7 +425,6 @@ A. Sorting using index
 B. Sorting in memory
 C. Sorting during insert
 D. Sorting during index creation
-
 答案：B
 解釋：SORT 代表在記憶體中進行排序，通常表示沒有索引支援該排序條件。
 
@@ -445,7 +434,6 @@ A. Compound index
 B. Hashed index
 C. Multikey index
 D. TTL index
-
 答案：C
 解釋：只要索引欄位是陣列，MongoDB 會自動建立 Multikey index。
 
@@ -455,7 +443,6 @@ A. Document is inserted and old one removed
 B. Document is inserted and both remain
 C. Duplicate key error, document inserted
 D. Duplicate key error, document not inserted
-
 答案：D
 解釋：unique index 會阻止重複值寫入，MongoDB 會回傳 duplicate key error，且不會插入文件。
 
@@ -465,7 +452,6 @@ A. Supports efficient querying against one field
 B. Supports efficient querying against multiple fields
 C. Only works on scalar values
 D. Automatically created for all fields
-
 答案：A
 解釋：單一欄位索引專門優化「單一欄位」的查詢，可用於純量或陣列欄位。
 
@@ -477,7 +463,6 @@ A. An index on one field only where the field is not an array
 B. An index where one of the indexed fields contains an array
 C. An index on more than one field where none of the fields are arrays
 D. An index on more than one field where multiple fields are arrays
-
 答案：B
 解釋：只要索引的欄位中「有任一個欄位是陣列」，該索引就是 Multikey Index，適用於單一欄位或複合索引，但複合索引中只能有一個陣列欄位。
 
@@ -487,7 +472,6 @@ A. Only the first element in the array is indexed
 B. MongoDB creates one index entry for the entire array
 C. MongoDB creates an index key for each element in the array
 D. MongoDB ignores array fields
-
 答案：C
 解釋：MongoDB 會為陣列中的每一個元素建立索引鍵，讓查詢可以直接比對元素而非掃描整個陣列。
 
@@ -497,7 +481,6 @@ A. Multikey indexes must be manually specified
 B. Multikey indexes only work with numeric arrays
 C. Multikey indexes are automatically created when indexing an array field
 D. Multikey indexes cannot be used for queries
-
 答案：C
 解釋：只要索引欄位是陣列，MongoDB 會自動建立 Multikey Index，不需要額外指定。
 
@@ -507,7 +490,6 @@ A. 1
 B. 2
 C. 5
 D. Unlimited
-
 答案：A
 解釋：MongoDB 限制一個複合索引中「最多只能有一個陣列欄位」，否則無法建立索引。
 
@@ -517,7 +499,6 @@ A. db.customers.createIndex(accounts)
 B. db.customers.createIndex({ accounts: 1 })
 C. db.customers.createIndex([accounts])
 D. db.customers.ensureIndex({ accounts: 1 })
-
 答案：B
 解釋：使用 createIndex() 並指定陣列欄位與排序方向即可，MongoDB 會自動判斷為 Multikey Index。
 
@@ -527,7 +508,6 @@ A. db.customers.indexes()
 B. db.customers.showIndexes()
 C. db.customers.getIndexes()
 D. db.customers.explainIndexes()
-
 答案：C
 解釋：getIndexes() 會列出集合中目前存在的所有索引，包括 Multikey Index。
 
@@ -537,7 +517,6 @@ A. Sorting documents in memory
 B. Full collection scan
 C. Reading documents only
 D. Query is using an index
-
 答案：D
 解釋：IXSCAN 表示查詢正在使用索引（包含 Multikey Index），是效能良好的查詢狀態。
 
@@ -547,7 +526,6 @@ A. MongoDB is using a multikey index
 B. MongoDB is scanning the entire collection
 C. MongoDB is sorting using index order
 D. MongoDB is reading cached results
-
 答案：B
 解釋：COLLSCAN 表示未使用索引而進行全表掃描，通常代表缺少合適的 Multikey Index。
 
@@ -559,7 +537,6 @@ A. An index that supports queries that combine the field name and the value into
 B. An index that supports queries against unknown or arbitrary fields
 C. An index that contains references to multiple fields within a document
 D. An index that supports queries that are run on two collections at the same time
-
 答案：C
 解釋：複合索引是在同一個索引結構中同時包含多個欄位及其排序方式，用來加速多欄位查詢。
 
@@ -569,7 +546,6 @@ A. Index on a single field only
 B. Index on multiple fields
 C. Index only supports array fields
 D. Index only supports sorting
-
 答案：B
 解釋：複合索引是建立在多個欄位之上的索引結構，可同時支援多條件查詢與排序。
 
@@ -579,7 +555,6 @@ A. Compound indexes can include unlimited array fields
 B. Compound indexes cannot be used for sorting
 C. Compound indexes can become multikey indexes if they include an array field
 D. Compound indexes are created automatically by MongoDB
-
 答案：C
 解釋：只要複合索引中包含陣列欄位，就會自動成為 Multikey Index，但整個索引只能有一個陣列欄位。
 
@@ -589,7 +564,6 @@ A. 0
 B. 1
 C. 2
 D. Unlimited
-
 答案：B
 解釋：MongoDB 規定一個索引中最多只能有一個欄位是陣列，否則無法建立索引。
 
@@ -599,7 +573,6 @@ A. It affects document size
 B. It affects index name
 C. It affects query optimization and index usability
 D. It affects write concern
-
 答案：C
 解釋：複合索引遵循前綴原則，欄位順序會直接影響哪些查詢能有效使用該索引以及排序是否能被索引支援。
 
@@ -609,7 +582,6 @@ A. Sort, Range, Equality
 B. Range, Sort, Equality
 C. Equality, Sort, Range
 D. The order does not matter
-
 答案：C
 解釋：建議順序為 Equality（相等條件）→ Sort（排序）→ Range（範圍），可讓查詢最佳化並減少處理成本。
 
@@ -619,7 +591,6 @@ A. Range query
 B. Sort field
 C. Equality match
 D. Projection field
-
 答案：C
 解釋：相等條件能快速縮小搜尋範圍，應放在索引最前面以減少需要掃描的索引鍵數量。
 
@@ -629,7 +600,6 @@ A. Improves write performance
 B. Eliminates in-memory sorting
 C. Reduces index size
 D. Allows unlimited array fields
-
 答案：B
 解釋：若排序順序與索引一致，MongoDB 可直接依索引順序回傳結果，避免在記憶體中進行 SORT。
 
@@ -639,7 +609,6 @@ A. The query uses multiple indexes
 B. The query requires fetching documents from memory
 C. All required fields are returned directly from the index
 D. The query includes a sort stage
-
 答案：C
 解釋：當查詢所需的欄位全部包含在索引中，MongoDB 不需 FETCH 文件即可回傳結果，即為覆蓋查詢。
 
@@ -649,7 +618,6 @@ A. FETCH
 B. SORT
 C. COLLSCAN
 D. PROJECTION_COVERED
-
 答案：D
 解釋：PROJECTION_COVERED 表示所有需要的資料皆由索引提供，無需從集合中讀取文件。
 
@@ -659,7 +627,6 @@ A. In-memory sorting
 B. Full collection scan
 C. Index scan is being used
 D. Projection only
-
 答案：C
 解釋：IXSCAN 表示 MongoDB 正在使用索引（包含複合索引）進行查詢，是效能良好的執行計畫。
 
@@ -671,7 +638,6 @@ A. Query performance improves
 B. Query performance is negatively affected
 C. Query will fail
 D. Query behavior is unchanged
-
 答案：B
 解釋：刪除支援查詢的索引會導致 MongoDB 可能改用 COLLSCAN 全表掃描，查詢效能因此下降。
 
@@ -681,7 +647,6 @@ A. deleteIndex()
 B. dropIndexes()
 C. dropIndex()
 D. removeIndex()
-
 答案：C
 解釋：dropIndex() 用於刪除集合中的單一索引，可使用索引名稱或索引鍵指定。
 
@@ -691,7 +656,6 @@ A. Compound index
 B. Multikey index
 C. Text index
 D. _id index
-
 答案：D
 解釋：每個集合都預設存在 _id 索引，該索引由 MongoDB 內部使用，不可刪除。
 
@@ -701,7 +665,6 @@ A. dropIndex()
 B. dropIndexes()
 C. getIndexes()
 D. hideIndex()
-
 答案：B
 解釋：dropIndexes() 會刪除集合中所有使用者建立的索引，但保留預設的 _id 索引。
 
@@ -711,7 +674,6 @@ A. dropIndex()
 B. dropIndexes()
 C. getIndexes()
 D. hideIndex()
-
 答案：D
 解釋：hideIndex() 會讓 MongoDB 查詢時不使用該索引但仍維護索引資料，可安全評估移除索引對效能的影響。
 
@@ -721,7 +683,6 @@ A. Hidden indexes are deleted permanently
 B. Hidden indexes are not updated
 C. Hidden indexes are ignored by the query planner
 D. Hidden indexes cause queries to fail
-
 答案：C
 解釋：被隱藏的索引不會被查詢規劃器使用，但 MongoDB 仍會持續更新索引鍵，方便日後快速還原使用。
 
@@ -736,7 +697,6 @@ A. Stores a full copy of the collection
 B. Improves query performance by scanning all documents
 C. Improves query performance by reducing scanned documents
 D. Is required for every query
-正確
 答案：C
 解釋：索引透過減少需掃描的文件數量來提升查詢效能，是 MongoDB 查詢最佳化的核心機制。
 
@@ -746,7 +706,6 @@ A. Document is inserted and old one removed
 B. Document is inserted and both remain
 C. Duplicate key error, document inserted
 D. Duplicate key error, document not inserted
-正確
 答案：D
 解釋：unique index 會阻止重複值寫入，MongoDB 會回傳 duplicate key error，且文件不會被插入。
 
@@ -756,7 +715,6 @@ A. Single field index
 B. Compound index
 C. Multikey index
 D. _id index
-正確
 答案：D
 解釋：每個集合都自動建立 _id 索引，用於唯一識別文件且不可刪除。
 
@@ -766,7 +724,6 @@ A. An index on multiple collections
 B. An index where one indexed field contains an array
 C. An index on multiple fields with multiple arrays
 D. An index used only for sorting
-正確
 答案：B
 解釋：只要索引欄位中包含陣列，該索引即為 multikey index，可用於單一欄位或複合索引。
 
@@ -776,7 +733,6 @@ A. 0
 B. 1
 C. 2
 D. Unlimited
-正確
 答案：B
 解釋：MongoDB 規定複合索引中只能有一個欄位是陣列，否則無法建立索引。
 
@@ -786,7 +742,6 @@ A. COLLSCAN
 B. FETCH
 C. SORT
 D. IXSCAN
-正確
 答案：D
 解釋：IXSCAN 代表 MongoDB 透過索引掃描資料，而非進行全表掃描。
 
@@ -796,7 +751,6 @@ A. deleteIndex()
 B. dropIndexes()
 C. dropIndex()
 D. removeIndex()
-正確
 答案：C
 解釋：dropIndex() 可透過索引名稱或索引鍵刪除指定索引。
 
@@ -806,7 +760,6 @@ A. dropIndex()
 B. dropIndexes()
 C. getIndexes()
 D. hideIndex()
-正確
 答案：B
 解釋：dropIndexes() 會刪除所有使用者建立的索引，但 _id 索引會被保留。
 
@@ -816,7 +769,6 @@ A. Query performance improves
 B. Query performance is negatively affected
 C. Query will fail
 D. Query behavior is unchanged
-正確
 答案：B
 解釋：移除索引後查詢可能退化為 COLLSCAN，導致效能下降但不會失敗。
 
@@ -826,7 +778,6 @@ A. dropIndex()
 B. dropIndexes()
 C. getIndexes()
 D. hideIndex()
-正確
 答案：D
 解釋：hideIndex() 會讓查詢不使用該索引但仍維護索引資料，能安全評估效能影響並快速還原。
 `;
@@ -870,9 +821,7 @@ D. hideIndex()
         let title = "", options = [], answer = "", exp = "";
 
         lines.forEach(l => {
-            if (l.startsWith('
-答案：')) answer = l.replace('
-答案：', '').trim();
+            if (l.startsWith('答案：')) answer = l.replace('答案：', '').trim();
             else if (l.startsWith('解釋：')) exp = l.replace('解釋：', '').trim();
             else if (l.match(/^[A-Z]\.\s/)) options.push(l);
             else if (l.trim() !== "") title += l + " ";
@@ -894,8 +843,7 @@ D. hideIndex()
                 <button class="btn-mark" onclick="toggleMark(${id})">標記題目</button>
             </div>
             <div class="answer-panel" id="ans-${id}">
-                <b style="color:#28a745;">正確
-答案：${answer}</b>
+                <b style="color:#28a745;">答案：${answer}</b>
                 <div style="margin-top:10px; border-top:1px dashed #ccc; padding-top:10px;">${exp}</div>
             </div>
         `;
