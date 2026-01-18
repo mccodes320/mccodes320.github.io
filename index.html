@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MongoDB Indexing 考試終極系統 C100DEV v.0116</title>
+    <title>MongoDB Indexing 考試終極系統 C100DEV.20260119</title>
     <style>
         :root {
             --mongo-dark: #001e2b;
@@ -227,7 +227,19 @@ B. Compound index with one array field
 C. Compound index with two array fields
 D. Index on _id
 答案：A、B
-解釋：Multikey 允許 一個 array 欄位，但不能同時索引多個 array 欄位。
+解釋：Multikey 允許 一個 array 欄位，但不能同時索引多個 array 欄位。1. 這是多鍵索引最基本的型態。當你在一個包含陣列的欄位上建立索引時，MongoDB 會為陣列中的每個元素建立一個索引條目。2. 複合索引可以包含一個陣列欄位。例如，索引 { a: 1, b: 1 }，如果 b 是陣列，這仍然是一個有效的多鍵索引。3. 這是 MongoDB 的一項核心限制。一個複合索引中不能包含超過一個陣列欄位。這是為了避免索引條目數量因為笛卡兒積（Cartesian product）而爆炸性增長，導致效能崩潰。4. 雖然 _id 欄位預設有索引，但 MongoDB 的規範規定 _id 欄位不能儲存陣列值。因此，_id 上的索引永遠不會是多鍵索引。
+
+
+
+
+
+
+
+
+
+
+
+
 
 What happens if a query requires sorted output but no suitable index exists?
 A. MongoDB fails the query
@@ -780,6 +792,167 @@ C. getIndexes()
 D. hideIndex()
 答案：D
 解釋：hideIndex() 會讓查詢不使用該索引但仍維護索引資料，能安全評估效能影響並快速還原。
+
+Lesson 7: Introduction to MongoDB Aggregation
+
+Which task CANNOT be performed within an aggregation pipeline? 
+A. Filtering documents based on a criteria 
+B. Grouping documents together to calculate summaries 
+C. Permanently altering the original documents in the database 
+D. Calculating the total sum of a field across multiple documents 
+答案：C 
+解釋：Aggregation 只是對資料進行分析、彙總並回傳結果，過程是不會（does not permanently alter）改變資料庫中的原始文件的。
+
+Which method is used to perform an aggregation operation in MongoDB? 
+A. db.collection.aggregation() 
+B. db.collection.aggregate() 
+C. db.collection.group() 
+D. db.collection.filter() 
+答案：B 
+解釋：正確的指令名稱是 aggregate()，它接受一個陣列作為參數來定義聚合管線（Aggregation Pipeline）。
+
+What is the correct definition of a "Stage" in an aggregation pipeline? 
+A. A separate database where data is stored 
+B. A series of operations completed at the same time 
+C. A single operation performed on the data in the pipeline 
+D. A method used to import data from outside sources 
+答案：C 
+解釋：Stage（階段）是管線中的單一操作步驟，資料會依序經過這些階段處理，但不會永久改變原始資料。
+
+In an aggregation pipeline, how are the stages organized and executed? 
+A. Stages are executed in random order 
+B. Stages are executed simultaneously (in parallel) 
+C. Stages are completed one at a time, in a specified order 
+D. Only one stage can be used per aggregation command 
+答案：C 
+解釋：Aggregation Pipeline 是一系列按順序（in order）逐一完成的階段，前一個階段的輸出會成為下一個階段的輸入。
+
+Which stage is used to filter documents to match a specific criteria, similar to the find() method? 
+A. $sort 
+B. $match 
+C. $group 
+D. $project 
+答案：B 
+解釋：$match 的功能就是篩選，讓符合條件的文件進入管線的下一個階段。
+
+When using the $group stage, which field MUST be specified to define the grouping criteria? 
+A. $id 
+B. _id 
+C. groupKey 
+D. customerId 
+答案：B 
+解釋：在 $group 階段中，必須使用 _id 欄位來指定分組的基準（Key）。
+
+Which stage would you use if you wanted to output documents in a specific descending or ascending order? 
+A. $limit 
+B. $match 
+C. $sort 
+D. $unwind 
+答案：C 
+解釋：$sort 階段用於將文件排序，例如 { total: -1 } 表示依照 total 欄位進行降冪排序。
+
+What does the $unwind stage do in an aggregation pipeline? 
+A. Combines multiple documents into one 
+B. Deconstructs an array field into multiple documents 
+C. Joins two different collections together 
+D. Removes specific fields from a document 
+答案：B 
+解釋：$unwind 會將陣列欄位展開，陣列中的每個元素都會對應生成一筆新的文件，常用於處理巢狀陣列資料。
+
+Which of the following describes the structure of an aggregation command? 
+A. db.collection.aggregate({ $stage1 }, { $stage2 }) 
+B. db.collection.aggregate([ { $stage1 }, { $stage2 } ]) 
+C. db.collection.aggregate( { pipeline: [ stage1, stage2 ] } ) 
+D. db.collection.aggregate("stage1", "stage2") 
+答案：B 
+解釋：aggregate() 方法接收一個包含各個階段物件的「陣列 (Array)」，因此必須使用方括號 [] 包裹。
+
+What is the primary purpose of the $lookup stage? 
+A. To filter documents based on a search string 
+B. To perform a join with another collection 
+C. To limit the number of documents returned 
+D. To rename fields in the output documents 
+答案：B 
+解釋：$lookup 類似 SQL 的 JOIN，可以用來關聯同一個資料庫中另一個集合（collection）的資料。
+
+
+Which of the following tasks cannot be completed with an aggregation pipeline[官方]?
+A. Filtering for relevant pieces of data Correct!
+B. Finding data from outside sources
+C. Grouping documents
+D. Calculating total values from a field across many documents
+答案：B 
+解釋：B. You cannot use aggregation to find data from outside sources.  
+
+Select an answer choice and then click "See Results" to submit. Which command performs an aggregation operation by using an aggregation pipeline? (Select one.)[官方]
+A. group()
+B. filter()
+C. aggregation()
+D. aggregate()
+答案：D 
+解釋：D aggregate() performs an aggregation operation by using an aggregation pipeline. aggregate() takes an array of aggregation stages to form the pipeline. An aggregation function is written as db.collection.aggregate().
+
+
+Lesson 8: Using $match and $group Stages in a MongoDB Aggregation Pipeline
+
+What is the main benefit of placing a $match stage as early as possible in an aggregation pipeline? 
+A. It allows the pipeline to use indexes and reduces the number of documents to process 
+B. It automatically sorts the documents in ascending order 
+C. It permanently changes the field names in the original collection 
+D. It allows the $group stage to be skipped entirely 
+答案：A 
+解釋：將 $match 放在管線越前面的位置，可以利用索引來過濾資料，減少後續階段需要處理的文件數量，進而提升效能。
+
+In the $group stage, what does the _id field represent? 
+A. The unique identifier of the original document 
+B. The group key used to aggregate documents by distinct values 
+C. The name of the collection being queried 
+D. A random number generated by the database 
+答案：B 
+解釋：在 $group 階段中，_id 用於定義分組鍵（group key），MongoDB 會根據這個鍵的每個唯一值輸出一個彙總文件。
+
+Which of the following is the correct syntax for a $match stage filtering for a specific state? 
+A. { $match: { "state" = "CA" } } 
+B. { $filter: { "state": "CA" } } 
+C. { $match: { "state": "CA" } } 
+D. { $match: [ "state", "CA" ] } 
+答案：C 
+解釋：$match 的語法與 find() 相同，使用大括號物件格式 { "field_name": "value" }。
+
+In the $group stage, what is an "accumulator" used for? 
+A. To filter out documents that don't match the group key 
+B. To perform calculations like $count or $sum on grouped documents 
+C. To rename the collection in the database 
+D. To prevent the pipeline from using too much memory 
+答案：B 
+解釋：累加器（accumulator）運算子（如 $count、$sum、$avg）用於在分組後對資料進行計算。
+
+Review the following code. What will be the output of this pipeline? db.zips.aggregate([ { $match: { state: "CA" } }, { $group: { _id: "$city", totalZips: { $count : { } } } } ]) 
+A. A list of all zip codes in the city of California 
+B. A single document containing the total number of cities in the US 
+C. One document for each unique city in California, showing the count of zip codes for that city 
+D. A list of all states that have a city named CA 
+答案：C 
+解釋：此管線先篩選出 state 為 "CA" 的文件，然後按 city 分組，並計算每個城市所擁有的郵遞區號總數。
+
+Which of the following describes the output of a $group stage? 
+A. It returns the same number of documents that entered the stage 
+B. It returns one document for each unique value of the group key 
+C. It returns a single array containing all documents 
+D. It returns only the fields that were used in the $match stage 
+答案：B 
+解釋：$group 階段會壓縮資料，針對分組鍵（group key）的每一個不重複值（distinct value），最終只輸出一個對應的文件。
+
+What is the correct way to reference a field name as a group key inside the $group stage (e.g., the city field)? 
+A. "city" 
+B. "$city" 
+C. { city } 
+D. field(city) 
+答案：B 
+解釋：在聚合階段中，引用文件中的欄位值作為表達式時，必須在欄位名稱前加上錢字號 $ 並用引號括起來，例如 "$city"。
+
+
+
 `;
 
     let markedIds = new Set();
