@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MongoDB Indexing 考試終極系統 C100DEV.20260119</title>
+    <title>MongoDB Indexing 考試終極系統 C100DEV</title>
     <style>
         :root {
             --mongo-dark: #001e2b;
@@ -950,6 +950,263 @@ C. { city }
 D. field(city) 
 答案：B 
 解釋：在聚合階段中，引用文件中的欄位值作為表達式時，必須在欄位名稱前加上錢字號 $ 並用引號括起來，例如 "$city"。
+
+Lesson 2: Using $match and $group Stages in a MongoDB Aggregation Pipeline
+
+在聚合管道（Aggregation Pipeline）中，儘早放置 $match 階段（Stage）的主要好處是什麼？ 
+A. 讓管道能夠使用索引（Indexes）並減少需要處理的文件數量 
+B. 自動將文件按升冪順序排序 
+C. 永久更改原始集合（Collection）中的欄位名稱 
+D. 允許完全跳過 $group 階段 
+答案：A 
+解釋：將 $match 儘可能放在管線早期，可以利用索引來過濾資料，減少後續階段需要處理的文件（Documents）數量，從而提升處理效能。
+
+在 $group 階段中，_id 欄位代表什麼？ 
+A. 原始文件的唯一識別碼（Unique identifier） 
+B. 用於按不重複值聚合文件的群組鍵（Group Key） 
+C. 正在被查詢的集合名稱 
+D. 資料庫產生的隨機數字 
+答案：B 
+解釋：在 $group 階段中，_id 用於定義分組鍵。MongoDB 會根據這個鍵的每個唯一值（Unique value）輸出一個彙總文件。
+
+下列哪一項是使用 $match 階段過濾特定「州」（State）的正確語法？ 
+A. { $match: { "state" = "CA" } } 
+B. { $filter: { "state": "CA" } } 
+C. { $match: { "state": "CA" } } 
+D. { $match: [ "state", "CA" ] } 
+答案：C 
+解釋：$match 的語法與 find() 查詢相同，使用大括號物件格式 { "field_name": "value" }。
+
+在 $group 階段中，「累加器」（Accumulator）的用途是什麼？ 
+A. 過濾掉不符合群組鍵的文件 
+B. 對分組後的文件執行計算，如 $count 或 $sum 
+C. 重新命名資料庫中的集合 
+D. 防止管道佔用過多記憶體 
+答案：B 
+解釋：累加器運算子（如 $count、$sum、$avg）用於在分組（Grouped）後對資料進行統計與計算。
+
+請閱讀以下代碼，此管道的輸出結果會是什麼？ db.zips.aggregate([ { $match: { state: "CA" } }, { $group: { _id: "$city", totalZips: { $count : { } } } } ]) 
+A. 加州（California）境內所有郵遞區號（Zip codes）的列表 
+B. 包含美國城市總數的單一文件 
+C. 加州內每個唯一城市的一筆文件，並顯示該城市的郵遞區號總數 
+D. 所有包含名為 "CA" 的城市的州列表 
+答案：C 
+解釋：此管線先篩選出 state 為 "CA" 的文件，然後按城市（city）分組，並計算（$count）每個城市所擁有的郵遞區號數量。
+
+下列何者描述了 $group 階段的輸出特性？ 
+A. 回傳與進入該階段時相同數量的文件 
+B. 針對群組鍵（Group Key）的每個唯一值回傳一筆文件 
+C. 回傳包含所有文件的單一陣列（Array） 
+D. 僅回傳在 $match 階段中使用的欄位 
+答案：B 
+解釋：$group 階段會壓縮資料。對於分組鍵的每一個不重複值（Distinct value），最終只會輸出一個對應的彙總文件。
+
+在 $group 階段中，引用欄位名稱作為群組鍵（例如 city 欄位）的正確方式為何？ 
+A. "city" 
+B. "$city" 
+C. { city } 
+D. field(city) 
+答案：B 
+解釋：在聚合表達式中引用文件內的欄位值時，必須在欄位名稱前加上錢字號 $ 並用引號括起來，例如 "$city"。
+
+
+Lesson 3: Using $sort and $limit Stages in a MongoDB Aggregation Pipeline
+
+在聚合管道（Aggregation Pipeline）中，使用 $sort 階段（Stage）的主要目的是什麼？ 
+A. 根據特定值過濾（Filter）文件 
+B. 依照指定的順序（如升冪或降冪）排列文件 
+C. 限制傳遞到下一個階段的文件數量 
+D. 使用唯一的群組鍵（Group Key）對文件進行分組 
+答案：B 
+解釋：$sort 階段用於對進入的文件進行排序，可以指定一個或多個欄位進行升冪（1）或降冪（-1）排列。
+
+在 $sort 階段中，哪一個數值代表「降冪」（Descending）排序？ 
+A. 1 
+B. 0 
+C. -1 
+D. DESC 
+答案：C 
+解釋：在 MongoDB 的排序語法中，數值 1 代表升冪（Ascending），數值 -1 代表降冪（Descending）。
+
+在聚合管道中，$limit 階段的作用是什麼？ 
+A. 限制可以存儲在集合（Collection）中的文件數量 
+B. 指定允許傳遞到下一個階段的最大文件數量 
+C. 限制每個文件中顯示的欄位（Fields）數量 
+D. 防止管道消耗過多的 CPU 效能 
+答案：B 
+解釋：$limit 階段用於限制處理的結果數量，只允許指定數量的文件通過管線進入下一個階段或作為最終輸出。
+
+在一個需要先排序後限制結果的「前 5 名」（Top 5）查詢中，常見的階段順序為何？ 
+A. { $limit: 5 }, { $sort: { score: -1 } } 
+B. { $sort: { score: -1 } }, { $limit: 5 } 
+C. { $match: { score: 5 } }, { $limit: 1 } 
+D. { $group: { _id: "$score" } }, { $limit: 5 } 
+答案：B 
+解釋：為了取得前 5 名，通常先使用 $sort 進行降冪排序（-1），然後再使用 $limit 取得排序後的前 5 筆資料。
+
+下列哪一項是將輸出限制為 10 筆文件的正確語法？ 
+A. { $limit: { count: 10 } } 
+B. { $max: 10 } 
+C. { $limit: 10 } 
+D. { $match: { limit: 10 } } 
+答案：C 
+解釋：$limit 階段的語法非常簡單，直接接一個正整數（Positive integer）即可。
+
+對於那些不在 $limit 階段指定數量內的文件，會發生什麼事？ 
+A. 它們會從資料庫中被刪除 
+B. 它們會被移動到另一個獨立的集合中 
+C. 它們會從管道中被丟棄，不再進行後續處理 
+D. 它們會自動排序並添加到結果的末尾 
+答案：C 
+解釋：$limit 只是管線中的一個過濾器，不符合數量限制的文件會被丟棄，但不會影響資料庫中的原始數據（Original data）。
+
+如果你想將產品按價格從「最低到最高」排序，你的 $sort 階段應該長什麼樣子？ 
+A. { $sort: { price: -1 } } 
+B. { $sort: { price: 0 } } 
+C. { $sort: { price: 1 } } 
+D. { $sort: { price: "ascending" } } 
+答案：C 
+解釋：由低到高是升冪排序（Ascending），因此應該將欄位 price 的值設為 1。
+
+下列關於 $sort 與 $limit 關係的敘述，何者正確？ 
+A. $sort 必須永遠放在 $limit 之前 
+B. $limit 必須永遠放在 $sort 之前 
+C. 它們可以以任何順序使用，但順序會改變最終的結果 
+D. $sort 與 $limit 不能在同一個管道中使用 
+答案：C 
+解釋：雖然它們可以以任何順序使用，但順序極其重要。先排序再限制通常用於獲取「最高/最低」的資料；先限制再排序則只會對隨機抓取的樣本進行排序。
+
+Lesson 4: Using $project, $count, and $set Stages in a MongoDB Aggregation Pipeline
+
+在聚合管道（Aggregation Pipeline）中，$project 階段（Stage）的主要用途是什麼？ 
+A. 將文件中的陣列（Array）展開為多個文件 
+B. 指定要包含、排除或新增欄位（Fields）來改變文件的結構 
+C. 根據特定條件對文件進行分組（Group） 
+D. 限制傳遞到下一個階段的文件數量 
+答案：B 
+解釋：$project 用於篩選要顯示的欄位、移除不需要的欄位，甚至可以建立新的欄位或修改現有的欄位名稱。
+
+在 $project 階段中，如果你想「排除」某個欄位，應該將該欄位的值設為多少？ 
+A. 1 
+B. 0 
+C. -1 
+D. null 
+答案：B 
+解釋：在投影（Projection）操作中，1 代表包含（Include），0 代表排除（Exclude）。
+
+關於 $count 階段，下列敘述何者正確？ 
+A. 它會回傳集合中所有原始文件的總數 
+B. 它會輸出一個包含指定名稱及計算結果的文件，代表通過該階段的文件總量 
+C. 它必須與 $group 階段一起使用才能運作 
+D. 它會計算文件中陣列元素的數量 
+答案：B 
+解釋：$count 階段會計算傳入該階段的文件總數，並將結果儲存在你指定的字串標籤中，例如 { $count: "total_records" }。
+
+如果你想在不改變文件現有結構的情況下，新增一個欄位或更新現有欄位，應該使用哪個階段？ 
+A. $project 
+B. $match 
+C. $set 
+D. $limit 
+答案：C 
+解釋：$set 階段（在舊版本中也稱為 $addFields）允許你在保留所有現有欄位的同時，增加新的欄位或修改現有的欄位值。
+
+下列哪一項是使用 $count 階段將結果命名為 "active_users" 的正確語法？ 
+A. { $count: { name: "active_users" } } 
+B. { $count: "active_users" } 
+C. { $sum: "active_users" } 
+D. { $match: { count: "active_users" } } 
+答案：B 
+解釋：$count 的語法非常直接，後面接一個字串（String）作為輸出的欄位名稱。
+
+在 $project 階段中，除了 _id 之外，是否可以同時混合使用包含（1）和排除（0）的操作？ 
+A. 可以，MongoDB 會自動處理 
+B. 不可以，除了 _id 以外，投影必須全是包含或全是排除 
+C. 只有在處理巢狀文件（Nested documents）時才可以 
+D. 取決於資料庫的版本 
+答案：B 
+解釋：這是一個經典限制。在同一個 $project 階段中，你不能既指定包含某些欄位又指定排除另一些欄位（除非是針對 _id）。
+
+下列哪一個階段最適合用來「重新命名」（Rename）一個欄位並輸出？ 
+A. $match 
+B. $limit 
+C. $project 
+D. $sort 
+答案：C 
+解釋：透過 $project，你可以寫成 { new_name: "$old_name" } 來實現欄位重命名的效果。
+
+假設你有一個管線：[ { $match: { status: "A" } }, { $count: "total" } ]。如果符合條件的文件有 5 筆，最終輸出會是什麼？ 
+A. 5 
+B. [ 1, 1, 1, 1, 1 ] 
+C. { "total": 5 } 
+D. { "count": 5 } 
+答案：C 
+解釋：$count 階段會輸出一個文件（Document），其中的鍵名（Key）是你指定的字串，值則是文件的總計數。
+
+
+Lesson 5: Using the $out Stage in a MongoDB Aggregation Pipeline
+
+
+在聚合管道（Aggregation Pipeline）中，$out 階段（Stage）的主要用途是什麼？ 
+A. 將聚合結果輸出為一個 PDF 檔案 
+B. 將聚合管道的結果文件寫入到指定的集合（Collection）中 
+C. 暫時隱藏不符合條件的文件 
+D. 將資料匯出到外部的 SQL 資料庫 
+答案：B 
+解釋：$out 階段會將管線處理後的結果持久化（Persist），儲存到同一個資料庫中的另一個集合內。
+
+關於 $out 階段在管道中的位置，下列敘述何者正確？ 
+A. 它必須是管道中的第一個階段 
+B. 它可以用在管道中的任何位置 
+C. 它必須是管道中的最後一個階段 
+D. 它必須放在 $match 階段之前 
+答案：C 
+解釋：$out 必須作為聚合管道的最後一個階段（Final stage），一旦執行，資料就會被寫入目標集合。
+
+如果 $out 指定的目標集合（Target collection）已經存在，執行後會發生什麼事？ 
+A. 聚合結果會附加（Append）在現有資料之後 
+B. 聚合操作會報錯並停止執行 
+C. $out 會完全替換（Replace）現有的集合內容 
+D. MongoDB 會自動建立一個帶有時間戳記的新集合 
+答案：C 
+解釋：這是一個重要特性，$out 會將現有的集合替換掉。如果聚合成功完成，原本集合內的舊資料將會丟失。
+
+下列哪一項是使用 $out 階段將結果存入名為 "report_data" 集合的正確語法？ 
+A. { $out: { collection: "report_data" } } 
+B. { $out: "report_data" } 
+C. { $writeTo: "report_data" } 
+D. { $save: "report_data" } 
+答案：B 
+解釋：$out 的語法非常簡單，直接接一個字串（String）作為目標集合的名稱。
+
+使用 $out 階段時，下列哪一項限制是正確的？ 
+A. 無法將結果寫入到另一個資料庫（Database）中的集合 
+B. 它可以同時將結果寫入到多個不同的集合 
+C. 它不會寫入任何索引，目標集合的索引需要另外建立 
+D. 它只能處理少於 100 筆的文件 
+答案：A 
+解釋：在標準的 $out 操作中，目標集合必須位於與來源資料相同的資料庫內（不能跨資料庫寫入）。
+
+在什麼樣的情境下最適合使用 $out 階段？ 
+A. 只需要在畫面上查看臨時的統計結果時 
+B. 需要將複雜計算後的結果保存下來，供後續應用程式快速查詢時 
+C. 想要刪除集合中的特定欄位時 
+D. 當資料庫磁碟空間不足時 
+答案：B 
+解釋：$out 常用於「預計算」（Pre-computation）場景，將耗時的聚合結果存成一個實體集合（即實體化視圖 Materialized View 的概念），以提升後續讀取效能。
+
+如果聚合管道在執行到 $out 期間發生錯誤，原本存在的目標集合會被刪除嗎？ 
+A. 會，一旦啟動 $out 就會先刪除目標集合 
+B. 不會，MongoDB 只有在聚合成功完成後才會替換目標集合 
+C. 會，但 MongoDB 會保留一筆錯誤紀錄 
+D. 不確定，取決於錯誤的類型 
+答案：B 
+解釋：$out 具有原子性替換的特性，只有當整個管線成功執行完畢，才會原子化地替換掉目標集合，這能保護現有資料不會因為計算失敗而消失。
+
+
+
+
+
+
 
 
 
