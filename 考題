@@ -1,0 +1,1375 @@
+Exam
+
+Lesson 1: Index Fundamentals & Performance (索引基礎與效能)
+
+
+What is the primary purpose of an index in MongoDB?
+aMongoDB 索引的主要目的為何？
+A. Reduce document size
+B. Improve query performance
+C. Automatically sort all collections
+D. Improve write performance
+答案：B
+解釋：索引的核心價值是加速查詢，讓 MongoDB 不必掃描整個 collection，而是透過索引快速定位文件。
+
+Which statement best describes how MongoDB stores index data?
+A. Indexes store all document fields
+B. Indexes store a small, ordered portion of the data
+C. Indexes duplicate entire collections
+D. Indexes only exist in memory
+答案：B
+解釋：索引只儲存「部分欄位資料＋指向文件的 reference」，而且是有序結構，才能高效搜尋。
+
+What happens when MongoDB executes a query without using an index?
+A. Uses index cache
+B. Performs a collection scan
+C. Uses aggregation pipeline
+D. Returns unsorted results only
+答案：B
+解釋：沒有索引時，MongoDB 只能做 Collection Scan，逐筆讀取所有文件，效能最差。
+
+Which operation is more expensive when many indexes exist on a collection?
+A. find
+B. aggregate
+C. insert
+D. explain
+答案：C
+解釋：每次寫入（insert / update / delete）都必須同步更新所有索引，索引越多，寫入成本越高。
+
+How many indexes are created by default for a new collection?
+A. 0
+B. 1
+C. 2
+D. Depends on schema
+答案：B
+解釋：MongoDB 預設只會建立一個 _id 單一欄位索引。
+
+Which index type supports equality matches and range queries efficiently?
+A. Text index
+B. Hashed index
+C. B-tree index
+D. TTL index
+答案：C
+解釋：MongoDB 的索引底層結構為 B-tree，非常適合等值與範圍查詢。
+
+Which statement about indexes is TRUE?
+A. Indexes improve query performance with no trade-offs
+B. Indexes reduce disk I/O
+C. Indexes slow down all queries
+D. Indexes are auto-created by MongoDB
+答案：B
+解釋：索引能減少實際需要讀取的文件數量，直接降低 disk I/O。
+
+Which index type is created automatically when indexing an array field?
+A. Compound index
+B. Hashed index
+C. Multikey index
+D. Text index
+答案：C
+解釋：只要索引欄位是 array，MongoDB 會自動轉成 Multikey index，不用手動指定。
+
+Which of the following can be a multikey index? (Select all that apply)
+A. Single field index on an array
+B. Compound index with one array field
+C. Compound index with two array fields
+D. Index on _id
+答案：A、B
+解釋：Multikey 允許 一個 array 欄位，但不能同時索引多個 array 欄位。1. 這是多鍵索引最基本的型態。當你在一個包含陣列的欄位上建立索引時，MongoDB 會為陣列中的每個元素建立一個索引條目。2. 複合索引可以包含一個陣列欄位。例如，索引 { a: 1, b: 1 }，如果 b 是陣列，這仍然是一個有效的多鍵索引。3. 這是 MongoDB 的一項核心限制。一個複合索引中不能包含超過一個陣列欄位。這是為了避免索引條目數量因為笛卡兒積（Cartesian product）而爆炸性增長，導致效能崩潰。4. 雖然 _id 欄位預設有索引，但 MongoDB 的規範規定 _id 欄位不能儲存陣列值。因此，_id 上的索引永遠不會是多鍵索引。
+
+
+
+
+
+
+
+
+
+
+
+
+
+What happens if a query requires sorted output but no suitable index exists?
+A. MongoDB fails the query
+B. MongoDB sorts results in memory
+C. MongoDB creates a temporary index
+D. MongoDB ignores sort
+答案：B
+解釋：沒有索引支援排序時，MongoDB 需要在 memory 中排序，非常吃資源。
+
+Which index best supports queries on { age: 30 }?
+A. Compound index { name: 1, age: 1 }
+B. Single field index { age: 1 }
+C. Multikey index { age: 1 }
+D. Text index
+答案：B
+解釋：單一欄位查詢，最精準就是 Single Field Index。
+
+Why is the order of fields important in a compound index?
+A. Affects storage size
+B. Determines index name
+C. Determines query usability and sort order
+D. Determines write speed only
+答案：C
+解釋：複合索引遵守 前綴原則（Prefix Rule），欄位順序會直接影響可支援的查詢。
+
+Given index { a: 1, b: 1 }, which query can use this index?
+A. { b: 1 }
+B. { a: 1 }
+C. { b: 1, a: 1 } only
+D. { c: 1 }
+答案：B
+解釋：可以用 {a} 或 {a, b}，但不能只查 {b}。
+
+Which statement about “Every query should use an index” is correct?
+A. It is always mandatory
+B. It is a best practice guideline
+C. MongoDB enforces it
+D. Queries without indexes are invalid
+答案：B
+解釋：這是效能最佳實務建議，不是強制規則。
+
+What is the main disadvantage of having too many indexes?
+A. Increased memory usage
+B. Slower write performance
+C. Slower read performance
+D. Larger document size
+答案：B
+解釋：索引越多，寫入時要更新的結構越多，寫效能會明顯下降。
+
+ Which index type supports indexing multiple fields?
+A. Single field index
+B. Compound index
+C. Hashed index
+D. TTL index
+答案：B
+解釋：複合索引可同時索引多個欄位，是多條件查詢的關鍵武器！
+
+Can MongoDB automatically detect and create indexes based on usage?
+A. Yes
+B. No
+C. Only in Atlas
+D. Only for _id
+答案：B
+解釋：MongoDB 不會自動建索引，但 Atlas 會「建議」你該怎麼建。
+
+What does an index entry point to?
+A. Another index
+B. Document identity
+C. Collection name
+D. Schema definition
+答案：B
+解釋：索引儲存的是「欄位值 + 指向文件的 reference」。
+
+Which of the following improves query performance the MOST?
+A. Adding more RAM
+B. Increasing document size
+C. Creating proper indexes
+D. Increasing write concern
+答案：C
+解釋：索引是效能優化 CP 值最高的方式，沒有之一！
+
+Which statement about multikey indexes is TRUE?
+A. Must be manually specified
+B. Cannot be compound
+C. Automatically created for array fields
+D. Can index multiple array fields
+答案：C
+解釋：只要欄位是 array，MongoDB 會自動變成 multikey index，但只能有一個 array 欄位。
+
+Lesson 2: Creating a Single Field Index in MongoDB
+
+
+Which method is used to create a single field index in MongoDB?
+MongoDB 中用來建立單一欄位索引的方法是？
+A. create()
+B. createIndex()
+C. addIndex()
+D. ensureIndex()
+答案：B
+解釋：MongoDB 使用 createIndex() 來建立索引，需在方法中指定欄位與排序方向。
+
+What does a single field index support?
+單一欄位索引支援哪些功能？
+A. Queries and sorts on one field
+B. Queries on multiple fields
+C. Automatic sharding
+D. Aggregation pipelines only
+答案：A
+解釋：單一欄位索引可有效支援「單一欄位」的查詢與排序。
+
+Which of the following is a correct syntax to create a single field index?
+以下哪一個是正確的單一欄位索引建立語法？
+A. db.coll.createIndex(fieldname)
+B. db.coll.createIndex({ fieldname: 1 })
+C. db.coll.createIndex([fieldname])
+D. db.coll.index({ fieldname: "asc" })
+答案：B
+解釋：createIndex() 需要傳入一個物件，指定欄位名稱與排序方向（1 或 -1）。
+
+What does the value 1 indicate when creating an index?
+建立索引時，數值 1 代表什麼？
+A. Text index
+B. Hashed index
+C. Ascending order
+D. Descending order
+答案：C
+解釋：1 代表遞增排序（Ascending），-1 則代表遞減排序（Descending）。
+
+Which option enforces uniqueness when creating a single field index?
+建立單一欄位索引時，哪個選項可以強制唯一性？
+A. { required: true }
+B. { unique: true }
+C. { distinct: true }
+D. { primary: true }
+答案：B
+解釋：{ unique: true } 會確保索引欄位中的值不可重複。
+
+What happens if duplicate values already exist when creating a unique index?
+若欄位中已存在重複值，建立 unique index 會發生什麼事？
+A. MongoDB removes duplicates automatically
+B. MongoDB creates the index anyway
+C. Index creation fails
+D. Old documents are replaced
+答案：C
+解釋：若資料中已有重複值，MongoDB 不會建立 unique index，並回傳錯誤。
+
+Which command lists all indexes in a collection?
+哪一個指令可查看集合中所有索引？
+A. db.coll.indexes()
+B. db.coll.showIndexes()
+C. db.coll.getIndexes()
+D. db.coll.explainIndexes()
+答案：C
+解釋：getIndexes() 會列出集合內所有已建立的索引。
+
+Which method helps determine whether a query is using an index?
+哪個方法可用來判斷查詢是否使用索引？
+A. stats()
+B. getIndexes()
+C. explain()
+D. profile()
+答案：C
+解釋：explain() 會顯示查詢的執行計畫（Execution Plan）。
+
+What does the IXSCAN stage indicate in an explain plan?
+在 explain 結果中，IXSCAN 代表什麼？
+A. Collection scan
+B. Index scan
+C. In-memory sort
+D. Document fetch only
+答案：B
+解釋：IXSCAN 表示 MongoDB 正在使用索引掃描，是理想的查詢狀態。
+
+What does the COLLSCAN stage indicate?
+COLLSCAN 階段代表什麼？
+A. Using multiple indexes
+B. Index merge
+C. Full collection scan
+D. Cached result
+答案：C
+解釋：COLLSCAN 表示進行全表掃描，代表沒有使用索引，效能較差。
+
+What does the FETCH stage represent in an execution plan?
+FETCH 階段代表什麼？
+A. Sorting documents
+B. Reading documents from disk
+C. Reading actual documents after index scan
+D. Writing documents
+答案：C
+解釋：FETCH 通常搭配 IXSCAN，代表依索引找到位置後，再讀取實際文件內容。
+
+What does the SORT stage indicate in explain output?
+explain 中出現 SORT 代表什麼？
+A. Sorting using index
+B. Sorting in memory
+C. Sorting during insert
+D. Sorting during index creation
+答案：B
+解釋：SORT 代表在記憶體中進行排序，通常表示沒有索引支援該排序條件。
+
+What type of index is created when a single field index is built on an array field?
+當單一欄位索引建立在陣列欄位上時，會變成哪種索引？
+A. Compound index
+B. Hashed index
+C. Multikey index
+D. TTL index
+答案：C
+解釋：只要索引欄位是陣列，MongoDB 會自動建立 Multikey index。
+
+What happens if you insert a document with a duplicate value into a unique indexed field?
+若在 unique index 欄位插入重複值，會發生什麼事？
+A. Document is inserted and old one removed
+B. Document is inserted and both remain
+C. Duplicate key error, document inserted
+D. Duplicate key error, document not inserted
+答案：D
+解釋：unique index 會阻止重複值寫入，MongoDB 會回傳 duplicate key error，且不會插入文件。
+
+Which statement best describes a single field index?
+以下哪個最正確描述單一欄位索引？
+A. Supports efficient querying against one field
+B. Supports efficient querying against multiple fields
+C. Only works on scalar values
+D. Automatically created for all fields
+答案：A
+解釋：單一欄位索引專門優化「單一欄位」的查詢，可用於純量或陣列欄位。
+
+Lesson 3: Creating a Multikey Index in MongoDB
+
+What is a multikey index?
+什麼是 Multikey Index（多鍵索引）？
+A. An index on one field only where the field is not an array
+B. An index where one of the indexed fields contains an array
+C. An index on more than one field where none of the fields are arrays
+D. An index on more than one field where multiple fields are arrays
+答案：B
+解釋：只要索引的欄位中「有任一個欄位是陣列」，該索引就是 Multikey Index，適用於單一欄位或複合索引，但複合索引中只能有一個陣列欄位。
+
+What happens when you create an index on an array field?
+當你在陣列欄位上建立索引時，MongoDB 會發生什麼事？
+A. Only the first element in the array is indexed
+B. MongoDB creates one index entry for the entire array
+C. MongoDB creates an index key for each element in the array
+D. MongoDB ignores array fields
+答案：C
+解釋：MongoDB 會為陣列中的每一個元素建立索引鍵，讓查詢可以直接比對元素而非掃描整個陣列。
+
+Which of the following statements about multikey indexes is correct?
+以下哪一個關於 Multikey Index 的敘述是正確的？
+A. Multikey indexes must be manually specified
+B. Multikey indexes only work with numeric arrays
+C. Multikey indexes are automatically created when indexing an array field
+D. Multikey indexes cannot be used for queries
+答案：C
+解釋：只要索引欄位是陣列，MongoDB 會自動建立 Multikey Index，不需要額外指定。
+
+In a compound index, how many array fields are allowed?
+在複合索引中，最多可以有幾個陣列欄位？
+A. 1
+B. 2
+C. 5
+D. Unlimited
+答案：A
+解釋：MongoDB 限制一個複合索引中「最多只能有一個陣列欄位」，否則無法建立索引。
+
+Which command creates a single field multikey index on the accounts array?
+以下哪個指令可在 accounts 陣列欄位上建立單一欄位的 Multikey Index？
+A. db.customers.createIndex(accounts)
+B. db.customers.createIndex({ accounts: 1 })
+C. db.customers.createIndex([accounts])
+D. db.customers.ensureIndex({ accounts: 1 })
+答案：B
+解釋：使用 createIndex() 並指定陣列欄位與排序方向即可，MongoDB 會自動判斷為 Multikey Index。
+
+Which method is used to view all indexes in a collection?
+哪一個方法可用來查看集合中所有索引？
+A. db.customers.indexes()
+B. db.customers.showIndexes()
+C. db.customers.getIndexes()
+D. db.customers.explainIndexes()
+答案：C
+解釋：getIndexes() 會列出集合中目前存在的所有索引，包括 Multikey Index。
+
+What does the IXSCAN stage indicate in an explain plan for a multikey query?
+在使用 Multikey Index 的查詢 explain 計畫中，IXSCAN 代表什麼？
+A. Sorting documents in memory
+B. Full collection scan
+C. Reading documents only
+D. Query is using an index
+答案：D
+解釋：IXSCAN 表示查詢正在使用索引（包含 Multikey Index），是效能良好的查詢狀態。
+
+What does the COLLSCAN stage indicate when querying an array field?
+在查詢陣列欄位時，出現 COLLSCAN 代表什麼？
+A. MongoDB is using a multikey index
+B. MongoDB is scanning the entire collection
+C. MongoDB is sorting using index order
+D. MongoDB is reading cached results
+答案：B
+解釋：COLLSCAN 表示未使用索引而進行全表掃描，通常代表缺少合適的 Multikey Index。
+
+Lesson 4: Working with Compound Indexes in MongoDB
+
+What is a compound index?
+什麼是 Compound Index（複合索引）？
+A. An index that supports queries that combine the field name and the value into one string
+B. An index that supports queries against unknown or arbitrary fields
+C. An index that contains references to multiple fields within a document
+D. An index that supports queries that are run on two collections at the same time
+答案：C
+解釋：複合索引是在同一個索引結構中同時包含多個欄位及其排序方式，用來加速多欄位查詢。
+
+What is the main characteristic of a compound index?
+複合索引的主要特性是什麼？
+A. Index on a single field only
+B. Index on multiple fields
+C. Index only supports array fields
+D. Index only supports sorting
+答案：B
+解釋：複合索引是建立在多個欄位之上的索引結構，可同時支援多條件查詢與排序。
+
+Which of the following statements about compound indexes is correct?
+以下哪一個關於複合索引的敘述是正確的？
+A. Compound indexes can include unlimited array fields
+B. Compound indexes cannot be used for sorting
+C. Compound indexes can become multikey indexes if they include an array field
+D. Compound indexes are created automatically by MongoDB
+答案：C
+解釋：只要複合索引中包含陣列欄位，就會自動成為 Multikey Index，但整個索引只能有一個陣列欄位。
+
+What is the maximum number of array fields allowed in a compound index?
+一個複合索引最多可以包含幾個陣列欄位？
+A. 0
+B. 1
+C. 2
+D. Unlimited
+答案：B
+解釋：MongoDB 規定一個索引中最多只能有一個欄位是陣列，否則無法建立索引。
+
+Why does the order of fields matter in a compound index?
+為什麼複合索引中欄位順序很重要？
+A. It affects document size
+B. It affects index name
+C. It affects query optimization and index usability
+D. It affects write concern
+答案：C
+解釋：複合索引遵循前綴原則，欄位順序會直接影響哪些查詢能有效使用該索引以及排序是否能被索引支援。
+
+What is the recommended order of fields in a compound index?
+複合索引中建議的欄位順序是什麼？
+A. Sort, Range, Equality
+B. Range, Sort, Equality
+C. Equality, Sort, Range
+D. The order does not matter
+答案：C
+解釋：建議順序為 Equality（相等條件）→ Sort（排序）→ Range（範圍），可讓查詢最佳化並減少處理成本。
+
+Which type of query condition should be placed first in a compound index?
+在複合索引中，哪種類型的查詢條件應該放在第一個欄位？
+A. Range query
+B. Sort field
+C. Equality match
+D. Projection field
+答案：C
+解釋：相等條件能快速縮小搜尋範圍，應放在索引最前面以減少需要掃描的索引鍵數量。
+
+What benefit does index-based sorting provide?
+使用索引排序的好處是什麼？
+A. Improves write performance
+B. Eliminates in-memory sorting
+C. Reduces index size
+D. Allows unlimited array fields
+答案：B
+解釋：若排序順序與索引一致，MongoDB 可直接依索引順序回傳結果，避免在記憶體中進行 SORT。
+
+What does it mean when a query is covered by an index?
+什麼情況下稱為「索引覆蓋查詢（Covered Query）」？
+A. The query uses multiple indexes
+B. The query requires fetching documents from memory
+C. All required fields are returned directly from the index
+D. The query includes a sort stage
+答案：C
+解釋：當查詢所需的欄位全部包含在索引中，MongoDB 不需 FETCH 文件即可回傳結果，即為覆蓋查詢。
+
+Which execution stage indicates a covered query in explain output?
+在 explain 結果中，哪個階段代表索引覆蓋查詢？
+A. FETCH
+B. SORT
+C. COLLSCAN
+D. PROJECTION_COVERED
+答案：D
+解釋：PROJECTION_COVERED 表示所有需要的資料皆由索引提供，無需從集合中讀取文件。
+
+What does the IXSCAN stage indicate in a compound index query?
+在使用複合索引的查詢中，IXSCAN 代表什麼？
+A. In-memory sorting
+B. Full collection scan
+C. Index scan is being used
+D. Projection only
+答案：C
+解釋：IXSCAN 表示 MongoDB 正在使用索引（包含複合索引）進行查詢，是效能良好的執行計畫。
+
+Lesson 5: Deleting MongoDB Indexes
+
+What is the impact of deleting an index that supports a query?
+刪除正在支援查詢的索引會造成什麼影響？
+A. Query performance improves
+B. Query performance is negatively affected
+C. Query will fail
+D. Query behavior is unchanged
+答案：B
+解釋：刪除支援查詢的索引會導致 MongoDB 可能改用 COLLSCAN 全表掃描，查詢效能因此下降。
+
+Which command deletes a single index from a MongoDB collection?
+哪一個指令可用來刪除單一索引？
+A. deleteIndex()
+B. dropIndexes()
+C. dropIndex()
+D. removeIndex()
+答案：C
+解釋：dropIndex() 用於刪除集合中的單一索引，可使用索引名稱或索引鍵指定。
+
+Which index in a MongoDB collection cannot be deleted?
+MongoDB 集合中哪一個索引無法被刪除？
+A. Compound index
+B. Multikey index
+C. Text index
+D. _id index
+答案：D
+解釋：每個集合都預設存在 _id 索引，該索引由 MongoDB 內部使用，不可刪除。
+
+Which command removes all indexes except the default _id index?
+哪一個指令會刪除集合中除了 _id 以外的所有索引？
+A. dropIndex()
+B. dropIndexes()
+C. getIndexes()
+D. hideIndex()
+答案：B
+解釋：dropIndexes() 會刪除集合中所有使用者建立的索引，但保留預設的 _id 索引。
+
+Before deleting an index, which command should be used to evaluate its impact on query performance?
+在刪除索引前，應使用哪個指令評估對查詢效能的影響？
+A. dropIndex()
+B. dropIndexes()
+C. getIndexes()
+D. hideIndex()
+答案：D
+解釋：hideIndex() 會讓 MongoDB 查詢時不使用該索引但仍維護索引資料，可安全評估移除索引對效能的影響。
+
+Which statement about hideIndex() is correct?
+以下哪一項對 hideIndex() 的描述是正確的？
+A. Hidden indexes are deleted permanently
+B. Hidden indexes are not updated
+C. Hidden indexes are ignored by the query planner
+D. Hidden indexes cause queries to fail
+答案：C
+解釋：被隱藏的索引不會被查詢規劃器使用，但 MongoDB 仍會持續更新索引鍵，方便日後快速還原使用。
+
+
+
+Lesson 6: 整合模擬考
+
+
+Which statement best describes a MongoDB index?
+下列哪一項最能正確描述 MongoDB 索引？
+A. Stores a full copy of the collection
+B. Improves query performance by scanning all documents
+C. Improves query performance by reducing scanned documents
+D. Is required for every query
+答案：C
+解釋：索引透過減少需掃描的文件數量來提升查詢效能，是 MongoDB 查詢最佳化的核心機制。
+
+What happens if you insert a document with a duplicate value into a unique indexed field?
+若在 unique index 欄位插入重複值，會發生什麼事？
+A. Document is inserted and old one removed
+B. Document is inserted and both remain
+C. Duplicate key error, document inserted
+D. Duplicate key error, document not inserted
+答案：D
+解釋：unique index 會阻止重複值寫入，MongoDB 會回傳 duplicate key error，且文件不會被插入。
+
+Which index type is automatically created for every MongoDB collection?
+MongoDB 每個集合預設會自動建立哪一種索引？
+A. Single field index
+B. Compound index
+C. Multikey index
+D. _id index
+答案：D
+解釋：每個集合都自動建立 _id 索引，用於唯一識別文件且不可刪除。
+
+What is a multikey index in MongoDB?
+MongoDB 中什麼是 Multikey Index？
+A. An index on multiple collections
+B. An index where one indexed field contains an array
+C. An index on multiple fields with multiple arrays
+D. An index used only for sorting
+答案：B
+解釋：只要索引欄位中包含陣列，該索引即為 multikey index，可用於單一欄位或複合索引。
+
+In a compound index, how many fields can be arrays?
+在複合索引中，最多可以有幾個欄位是陣列？
+A. 0
+B. 1
+C. 2
+D. Unlimited
+答案：B
+解釋：MongoDB 規定複合索引中只能有一個欄位是陣列，否則無法建立索引。
+
+Which execution stage indicates that MongoDB is using an index?
+哪一個 explain() 執行階段代表 MongoDB 正在使用索引？
+A. COLLSCAN
+B. FETCH
+C. SORT
+D. IXSCAN
+答案：D
+解釋：IXSCAN 代表 MongoDB 透過索引掃描資料，而非進行全表掃描。
+
+Which command deletes a single index from a collection?
+哪一個指令用來刪除單一索引？
+A. deleteIndex()
+B. dropIndexes()
+C. dropIndex()
+D. removeIndex()
+答案：C
+解釋：dropIndex() 可透過索引名稱或索引鍵刪除指定索引。
+
+Which command removes all indexes except the default _id index?
+哪一個指令會刪除集合中除了 _id 以外的所有索引？
+A. dropIndex()
+B. dropIndexes()
+C. getIndexes()
+D. hideIndex()
+答案：B
+解釋：dropIndexes() 會刪除所有使用者建立的索引，但 _id 索引會被保留。
+
+What is the impact of deleting an index that supports a query?
+刪除正在支援查詢的索引會造成什麼影響？
+A. Query performance improves
+B. Query performance is negatively affected
+C. Query will fail
+D. Query behavior is unchanged
+答案：B
+解釋：移除索引後查詢可能退化為 COLLSCAN，導致效能下降但不會失敗。
+
+Before deleting an index, which command should be used to evaluate its impact on query performance?
+在刪除索引前，應使用哪個指令評估對查詢效能的影響？
+A. dropIndex()
+B. dropIndexes()
+C. getIndexes()
+D. hideIndex()
+答案：D
+解釋：hideIndex() 會讓查詢不使用該索引但仍維護索引資料，能安全評估效能影響並快速還原。
+
+Lesson 7: Introduction to MongoDB Aggregation
+
+哪一項任務「無法」在聚合管道（Aggregation Pipeline）中完成？
+A. 根據特定條件篩選文件 (Filtering documents based on a criteria)
+B. 將文件分組以計算摘要 (Grouping documents together to calculate summaries)
+C. 永久修改資料庫中的原始文件 (Permanently altering the original documents in the database)
+D. 計算多個文件中某個欄位的總和 (Calculating the total sum of a field across many documents)
+答案：C 
+解釋：Aggregation 只是對資料進行分析、彙總並回傳結果，過程是不會（does not permanently alter）改變資料庫中的原始文件的。
+
+Which method is used to perform an aggregation operation in MongoDB? 
+A. db.collection.aggregation() 
+B. db.collection.aggregate() 
+C. db.collection.group() 
+D. db.collection.filter() 
+答案：B 
+解釋：正確的指令名稱是 aggregate()，它接受一個陣列作為參數來定義聚合管線（Aggregation Pipeline）。
+
+What is the correct definition of a "Stage" in an aggregation pipeline? 
+A. A separate database where data is stored 
+B. A series of operations completed at the same time 
+C. A single operation performed on the data in the pipeline 
+D. A method used to import data from outside sources 
+答案：C 
+解釋：Stage（階段）是管線中的單一操作步驟，資料會依序經過這些階段處理，但不會永久改變原始資料。
+
+In an aggregation pipeline, how are the stages organized and executed? 
+A. Stages are executed in random order 
+B. Stages are executed simultaneously (in parallel) 
+C. Stages are completed one at a time, in a specified order 
+D. Only one stage can be used per aggregation command 
+答案：C 
+解釋：Aggregation Pipeline 是一系列按順序（in order）逐一完成的階段，前一個階段的輸出會成為下一個階段的輸入。
+
+Which stage is used to filter documents to match a specific criteria, similar to the find() method? 
+A. $sort 
+B. $match 
+C. $group 
+D. $project 
+答案：B 
+解釋：$match 的功能就是篩選，讓符合條件的文件進入管線的下一個階段。
+
+When using the $group stage, which field MUST be specified to define the grouping criteria? 
+A. $id 
+B. _id 
+C. groupKey 
+D. customerId 
+答案：B 
+解釋：在 $group 階段中，必須使用 _id 欄位來指定分組的基準（Key）。
+
+Which stage would you use if you wanted to output documents in a specific descending or ascending order? 
+A. $limit 
+B. $match 
+C. $sort 
+D. $unwind 
+答案：C 
+解釋：$sort 階段用於將文件排序，例如 { total: -1 } 表示依照 total 欄位進行降冪排序。
+
+What does the $unwind stage do in an aggregation pipeline? 
+A. Combines multiple documents into one 
+B. Deconstructs an array field into multiple documents 
+C. Joins two different collections together 
+D. Removes specific fields from a document 
+答案：B 
+解釋：$unwind 會將陣列欄位展開，陣列中的每個元素都會對應生成一筆新的文件，常用於處理巢狀陣列資料。
+
+Which of the following describes the structure of an aggregation command? 
+A. db.collection.aggregate({ $stage1 }, { $stage2 }) 
+B. db.collection.aggregate([ { $stage1 }, { $stage2 } ]) 
+C. db.collection.aggregate( { pipeline: [ stage1, stage2 ] } ) 
+D. db.collection.aggregate("stage1", "stage2") 
+答案：B 
+解釋：aggregate() 方法接收一個包含各個階段物件的「陣列 (Array)」，因此必須使用方括號 [] 包裹。
+
+What is the primary purpose of the $lookup stage? 
+A. To filter documents based on a search string 
+B. To perform a join with another collection 
+C. To limit the number of documents returned 
+D. To rename fields in the output documents 
+答案：B 
+解釋：$lookup 類似 SQL 的 JOIN，可以用來關聯同一個資料庫中另一個集合（collection）的資料。
+
+
+Which of the following tasks cannot be completed with an aggregation pipeline[官方]?
+A. Filtering for relevant pieces of data Correct!
+B. Finding data from outside sources
+C. Grouping documents
+D. Calculating total values from a field across many documents
+答案：B 
+解釋：B. You cannot use aggregation to find data from outside sources.  
+
+Select an answer choice and then click "See Results" to submit. Which command performs an aggregation operation by using an aggregation pipeline? (Select one.)[官方]
+A. group()
+B. filter()
+C. aggregation()
+D. aggregate()
+答案：D 
+解釋：D aggregate() performs an aggregation operation by using an aggregation pipeline. aggregate() takes an array of aggregation stages to form the pipeline. An aggregation function is written as db.collection.aggregate().
+
+
+Lesson 8: Using $match and $group Stages in a MongoDB Aggregation Pipeline
+
+What is the main benefit of placing a $match stage as early as possible in an aggregation pipeline? 
+A. It allows the pipeline to use indexes and reduces the number of documents to process 
+B. It automatically sorts the documents in ascending order 
+C. It permanently changes the field names in the original collection 
+D. It allows the $group stage to be skipped entirely 
+答案：A 
+解釋：將 $match 放在管線越前面的位置，可以利用索引來過濾資料，減少後續階段需要處理的文件數量，進而提升效能。
+
+In the $group stage, what does the _id field represent? 
+A. The unique identifier of the original document 
+B. The group key used to aggregate documents by distinct values 
+C. The name of the collection being queried 
+D. A random number generated by the database 
+答案：B 
+解釋：在 $group 階段中，_id 用於定義分組鍵（group key），MongoDB 會根據這個鍵的每個唯一值輸出一個彙總文件。
+
+Which of the following is the correct syntax for a $match stage filtering for a specific state? 
+A. { $match: { "state" = "CA" } } 
+B. { $filter: { "state": "CA" } } 
+C. { $match: { "state": "CA" } } 
+D. { $match: [ "state", "CA" ] } 
+答案：C 
+解釋：$match 的語法與 find() 相同，使用大括號物件格式 { "field_name": "value" }。
+
+In the $group stage, what is an "accumulator" used for? 
+A. To filter out documents that don't match the group key 
+B. To perform calculations like $count or $sum on grouped documents 
+C. To rename the collection in the database 
+D. To prevent the pipeline from using too much memory 
+答案：B 
+解釋：累加器（accumulator）運算子（如 $count、$sum、$avg）用於在分組後對資料進行計算。
+
+Review the following code. What will be the output of this pipeline? db.zips.aggregate([ { $match: { state: "CA" } }, { $group: { _id: "$city", totalZips: { $count : { } } } } ]) 
+A. A list of all zip codes in the city of California 
+B. A single document containing the total number of cities in the US 
+C. One document for each unique city in California, showing the count of zip codes for that city 
+D. A list of all states that have a city named CA 
+答案：C 
+解釋：此管線先篩選出 state 為 "CA" 的文件，然後按 city 分組，並計算每個城市所擁有的郵遞區號總數。
+
+Which of the following describes the output of a $group stage? 
+A. It returns the same number of documents that entered the stage 
+B. It returns one document for each unique value of the group key 
+C. It returns a single array containing all documents 
+D. It returns only the fields that were used in the $match stage 
+答案：B 
+解釋：$group 階段會壓縮資料，針對分組鍵（group key）的每一個不重複值（distinct value），最終只輸出一個對應的文件。
+
+What is the correct way to reference a field name as a group key inside the $group stage (e.g., the city field)? 
+A. "city" 
+B. "$city" 
+C. { city } 
+D. field(city) 
+答案：B 
+解釋：在聚合階段中，引用文件中的欄位值作為表達式時，必須在欄位名稱前加上錢字號 $ 並用引號括起來，例如 "$city"。
+
+Lesson 2: Using $match and $group Stages in a MongoDB Aggregation Pipeline
+
+在聚合管道（Aggregation Pipeline）中，儘早放置 $match 階段（Stage）的主要好處是什麼？ 
+A. 讓管道能夠使用索引（Indexes）並減少需要處理的文件數量 
+B. 自動將文件按升冪順序排序 
+C. 永久更改原始集合（Collection）中的欄位名稱 
+D. 允許完全跳過 $group 階段 
+答案：A 
+解釋：將 $match 儘可能放在管線早期，可以利用索引來過濾資料，減少後續階段需要處理的文件（Documents）數量，從而提升處理效能。
+
+在 $group 階段中，_id 欄位代表什麼？ 
+A. 原始文件的唯一識別碼（Unique identifier） 
+B. 用於按不重複值聚合文件的群組鍵（Group Key） 
+C. 正在被查詢的集合名稱 
+D. 資料庫產生的隨機數字 
+答案：B 
+解釋：在 $group 階段中，_id 用於定義分組鍵。MongoDB 會根據這個鍵的每個唯一值（Unique value）輸出一個彙總文件。
+
+下列哪一項是使用 $match 階段過濾特定「州」（State）的正確語法？ 
+A. { $match: { "state" = "CA" } } 
+B. { $filter: { "state": "CA" } } 
+C. { $match: { "state": "CA" } } 
+D. { $match: [ "state", "CA" ] } 
+答案：C 
+解釋：$match 的語法與 find() 查詢相同，使用大括號物件格式 { "field_name": "value" }。
+
+在 $group 階段中，「累加器」（Accumulator）的用途是什麼？ 
+A. 過濾掉不符合群組鍵的文件 
+B. 對分組後的文件執行計算，如 $count 或 $sum 
+C. 重新命名資料庫中的集合 
+D. 防止管道佔用過多記憶體 
+答案：B 
+解釋：累加器運算子（如 $count、$sum、$avg）用於在分組（Grouped）後對資料進行統計與計算。
+
+請閱讀以下代碼，此管道的輸出結果會是什麼？ db.zips.aggregate([ { $match: { state: "CA" } }, { $group: { _id: "$city", totalZips: { $count : { } } } } ]) 
+A. 加州（California）境內所有郵遞區號（Zip codes）的列表 
+B. 包含美國城市總數的單一文件 
+C. 加州內每個唯一城市的一筆文件，並顯示該城市的郵遞區號總數 
+D. 所有包含名為 "CA" 的城市的州列表 
+答案：C 
+解釋：此管線先篩選出 state 為 "CA" 的文件，然後按城市（city）分組，並計算（$count）每個城市所擁有的郵遞區號數量。
+
+下列何者描述了 $group 階段的輸出特性？ 
+A. 回傳與進入該階段時相同數量的文件 
+B. 針對群組鍵（Group Key）的每個唯一值回傳一筆文件 
+C. 回傳包含所有文件的單一陣列（Array） 
+D. 僅回傳在 $match 階段中使用的欄位 
+答案：B 
+解釋：$group 階段會壓縮資料。對於分組鍵的每一個不重複值（Distinct value），最終只會輸出一個對應的彙總文件。
+
+在 $group 階段中，引用欄位名稱作為群組鍵（例如 city 欄位）的正確方式為何？ 
+A. "city" 
+B. "$city" 
+C. { city } 
+D. field(city) 
+答案：B 
+解釋：在聚合表達式中引用文件內的欄位值時，必須在欄位名稱前加上錢字號 $ 並用引號括起來，例如 "$city"。
+
+
+Lesson 3: Using $sort and $limit Stages in a MongoDB Aggregation Pipeline
+
+在聚合管道（Aggregation Pipeline）中，使用 $sort 階段（Stage）的主要目的是什麼？ 
+A. 根據特定值過濾（Filter）文件 
+B. 依照指定的順序（如升冪或降冪）排列文件 
+C. 限制傳遞到下一個階段的文件數量 
+D. 使用唯一的群組鍵（Group Key）對文件進行分組 
+答案：B 
+解釋：$sort 階段用於對進入的文件進行排序，可以指定一個或多個欄位進行升冪（1）或降冪（-1）排列。
+
+在 $sort 階段中，哪一個數值代表「降冪」（Descending）排序？ 
+A. 1 
+B. 0 
+C. -1 
+D. DESC 
+答案：C 
+解釋：在 MongoDB 的排序語法中，數值 1 代表升冪（Ascending），數值 -1 代表降冪（Descending）。
+
+在聚合管道中，$limit 階段的作用是什麼？ 
+A. 限制可以存儲在集合（Collection）中的文件數量 
+B. 指定允許傳遞到下一個階段的最大文件數量 
+C. 限制每個文件中顯示的欄位（Fields）數量 
+D. 防止管道消耗過多的 CPU 效能 
+答案：B 
+解釋：$limit 階段用於限制處理的結果數量，只允許指定數量的文件通過管線進入下一個階段或作為最終輸出。
+
+在一個需要先排序後限制結果的「前 5 名」（Top 5）查詢中，常見的階段順序為何？ 
+A. { $limit: 5 }, { $sort: { score: -1 } } 
+B. { $sort: { score: -1 } }, { $limit: 5 } 
+C. { $match: { score: 5 } }, { $limit: 1 } 
+D. { $group: { _id: "$score" } }, { $limit: 5 } 
+答案：B 
+解釋：為了取得前 5 名，通常先使用 $sort 進行降冪排序（-1），然後再使用 $limit 取得排序後的前 5 筆資料。
+
+下列哪一項是將輸出限制為 10 筆文件的正確語法？ 
+A. { $limit: { count: 10 } } 
+B. { $max: 10 } 
+C. { $limit: 10 } 
+D. { $match: { limit: 10 } } 
+答案：C 
+解釋：$limit 階段的語法非常簡單，直接接一個正整數（Positive integer）即可。
+
+對於那些不在 $limit 階段指定數量內的文件，會發生什麼事？ 
+A. 它們會從資料庫中被刪除 
+B. 它們會被移動到另一個獨立的集合中 
+C. 它們會從管道中被丟棄，不再進行後續處理 
+D. 它們會自動排序並添加到結果的末尾 
+答案：C 
+解釋：$limit 只是管線中的一個過濾器，不符合數量限制的文件會被丟棄，但不會影響資料庫中的原始數據（Original data）。
+
+如果你想將產品按價格從「最低到最高」排序，你的 $sort 階段應該長什麼樣子？ 
+A. { $sort: { price: -1 } } 
+B. { $sort: { price: 0 } } 
+C. { $sort: { price: 1 } } 
+D. { $sort: { price: "ascending" } } 
+答案：C 
+解釋：由低到高是升冪排序（Ascending），因此應該將欄位 price 的值設為 1。
+
+下列關於 $sort 與 $limit 關係的敘述，何者正確？ 
+A. $sort 必須永遠放在 $limit 之前 
+B. $limit 必須永遠放在 $sort 之前 
+C. 它們可以以任何順序使用，但順序會改變最終的結果 
+D. $sort 與 $limit 不能在同一個管道中使用 
+答案：C 
+解釋：雖然它們可以以任何順序使用，但順序極其重要。先排序再限制通常用於獲取「最高/最低」的資料；先限制再排序則只會對隨機抓取的樣本進行排序。
+
+Lesson 4: Using $project, $count, and $set Stages in a MongoDB Aggregation Pipeline
+
+在聚合管道（Aggregation Pipeline）中，$project 階段（Stage）的主要用途是什麼？ 
+A. 將文件中的陣列（Array）展開為多個文件 
+B. 指定要包含、排除或新增欄位（Fields）來改變文件的結構 
+C. 根據特定條件對文件進行分組（Group） 
+D. 限制傳遞到下一個階段的文件數量 
+答案：B 
+解釋：$project 用於篩選要顯示的欄位、移除不需要的欄位，甚至可以建立新的欄位或修改現有的欄位名稱。
+
+在 $project 階段中，如果你想「排除」某個欄位，應該將該欄位的值設為多少？ 
+A. 1 
+B. 0 
+C. -1 
+D. null 
+答案：B 
+解釋：在投影（Projection）操作中，1 代表包含（Include），0 代表排除（Exclude）。
+
+關於 $count 階段，下列敘述何者正確？ 
+A. 它會回傳集合中所有原始文件的總數 
+B. 它會輸出一個包含指定名稱及計算結果的文件，代表通過該階段的文件總量 
+C. 它必須與 $group 階段一起使用才能運作 
+D. 它會計算文件中陣列元素的數量 
+答案：B 
+解釋：$count 階段會計算傳入該階段的文件總數，並將結果儲存在你指定的字串標籤中，例如 { $count: "total_records" }。
+
+如果你想在不改變文件現有結構的情況下，新增一個欄位或更新現有欄位，應該使用哪個階段？ 
+A. $project 
+B. $match 
+C. $set 
+D. $limit 
+答案：C 
+解釋：$set 階段（在舊版本中也稱為 $addFields）允許你在保留所有現有欄位的同時，增加新的欄位或修改現有的欄位值。
+
+下列哪一項是使用 $count 階段將結果命名為 "active_users" 的正確語法？ 
+A. { $count: { name: "active_users" } } 
+B. { $count: "active_users" } 
+C. { $sum: "active_users" } 
+D. { $match: { count: "active_users" } } 
+答案：B 
+解釋：$count 的語法非常直接，後面接一個字串（String）作為輸出的欄位名稱。
+
+在 $project 階段中，除了 _id 之外，是否可以同時混合使用包含（1）和排除（0）的操作？ 
+A. 可以，MongoDB 會自動處理 
+B. 不可以，除了 _id 以外，投影必須全是包含或全是排除 
+C. 只有在處理巢狀文件（Nested documents）時才可以 
+D. 取決於資料庫的版本 
+答案：B 
+解釋：這是一個經典限制。在同一個 $project 階段中，你不能既指定包含某些欄位又指定排除另一些欄位（除非是針對 _id）。
+
+下列哪一個階段最適合用來「重新命名」（Rename）一個欄位並輸出？ 
+A. $match 
+B. $limit 
+C. $project 
+D. $sort 
+答案：C 
+解釋：透過 $project，你可以寫成 { new_name: "$old_name" } 來實現欄位重命名的效果。
+
+假設你有一個管線：[ { $match: { status: "A" } }, { $count: "total" } ]。如果符合條件的文件有 5 筆，最終輸出會是什麼？ 
+A. 5 
+B. [ 1, 1, 1, 1, 1 ] 
+C. { "total": 5 } 
+D. { "count": 5 } 
+答案：C 
+解釋：$count 階段會輸出一個文件（Document），其中的鍵名（Key）是你指定的字串，值則是文件的總計數。
+
+
+Lesson 5: Using the $out Stage in a MongoDB Aggregation Pipeline
+
+
+在聚合管道（Aggregation Pipeline）中，$out 階段（Stage）的主要用途是什麼？ 
+A. 將聚合結果輸出為一個 PDF 檔案 
+B. 將聚合管道的結果文件寫入到指定的集合（Collection）中 
+C. 暫時隱藏不符合條件的文件 
+D. 將資料匯出到外部的 SQL 資料庫 
+答案：B 
+解釋：$out 階段會將管線處理後的結果持久化（Persist），儲存到同一個資料庫中的另一個集合內。
+
+關於 $out 階段在管道中的位置，下列敘述何者正確？ 
+A. 它必須是管道中的第一個階段 
+B. 它可以用在管道中的任何位置 
+C. 它必須是管道中的最後一個階段 
+D. 它必須放在 $match 階段之前 
+答案：C 
+解釋：$out 必須作為聚合管道的最後一個階段（Final stage），一旦執行，資料就會被寫入目標集合。
+
+如果 $out 指定的目標集合（Target collection）已經存在，執行後會發生什麼事？ 
+A. 聚合結果會附加（Append）在現有資料之後 
+B. 聚合操作會報錯並停止執行 
+C. $out 會完全替換（Replace）現有的集合內容 
+D. MongoDB 會自動建立一個帶有時間戳記的新集合 
+答案：C 
+解釋：這是一個重要特性，$out 會將現有的集合替換掉。如果聚合成功完成，原本集合內的舊資料將會丟失。
+
+下列哪一項是使用 $out 階段將結果存入名為 "report_data" 集合的正確語法？ 
+A. { $out: { collection: "report_data" } } 
+B. { $out: "report_data" } 
+C. { $writeTo: "report_data" } 
+D. { $save: "report_data" } 
+答案：B 
+解釋：$out 的語法非常簡單，直接接一個字串（String）作為目標集合的名稱。
+
+使用 $out 階段時，下列哪一項限制是正確的？ 
+A. 無法將結果寫入到另一個資料庫（Database）中的集合 
+B. 它可以同時將結果寫入到多個不同的集合 
+C. 它不會寫入任何索引，目標集合的索引需要另外建立 
+D. 它只能處理少於 100 筆的文件 
+答案：A 
+解釋：在標準的 $out 操作中，目標集合必須位於與來源資料相同的資料庫內（不能跨資料庫寫入）。
+
+在什麼樣的情境下最適合使用 $out 階段？ 
+A. 只需要在畫面上查看臨時的統計結果時 
+B. 需要將複雜計算後的結果保存下來，供後續應用程式快速查詢時 
+C. 想要刪除集合中的特定欄位時 
+D. 當資料庫磁碟空間不足時 
+答案：B 
+解釋：$out 常用於「預計算」（Pre-computation）場景，將耗時的聚合結果存成一個實體集合（即實體化視圖 Materialized View 的概念），以提升後續讀取效能。
+
+如果聚合管道在執行到 $out 期間發生錯誤，原本存在的目標集合會被刪除嗎？ 
+A. 會，一旦啟動 $out 就會先刪除目標集合 
+B. 不會，MongoDB 只有在聚合成功完成後才會替換目標集合 
+C. 會，但 MongoDB 會保留一筆錯誤紀錄 
+D. 不確定，取決於錯誤的類型 
+答案：B 
+解釋：$out 具有原子性替換的特性，只有當整個管線成功執行完畢，才會原子化地替換掉目標集合，這能保護現有資料不會因為計算失敗而消失。
+
+
+Lesson 001: MongoDB Overview and the Document Model
+
+
+Which of the following value types are supported by MongoDB BSON? (Select one.)
+以下哪一組是 MongoDB BSON 支援的資料型別？
+A. String, Integer, Boolean, Date
+B. String, Integer, Boolean, Date, Binary, ObjectId, Array
+C. String, Integer, XML, Date
+D. String, Integer, Boolean, Set
+正確答案：B
+解釋：BSON 支援多種型別，包含 String、Number、Boolean、Date、Binary、ObjectId、Array 與 Embedded Document，XML 與 Set 並非 BSON 型別。
+
+Which BSON type is automatically generated by MongoDB as the default value for the _id field if not provided? (Select one.)
+若未指定 _id，MongoDB 預設會自動產生哪一種 BSON 型別？
+A. String
+B. UUID
+C. ObjectId
+D. Integer
+正確答案：C
+解釋：MongoDB 在未指定 _id 時，會自動產生 ObjectId 作為唯一識別值。
+
+You have the following three documents. Which of them can coexist in the same MongoDB collection? (Select one.)
+下列三個文件，哪些可以同時存在於同一個 MongoDB collection 中？
+
+Document A
+{ "_id": 1, "name": "Alice", "age": 30 }
+
+Document B
+{ "_id": 2, "name": "Bob", "email": "bob@test.com" }
+
+Document C
+{ "_id": 3, "name": "Charlie", "age": "thirty" }
+
+A. Only Document A and B
+B. Only Document A and C
+C. Only Document B and C
+D. Document A, B, and C
+正確答案：D
+解釋：MongoDB 採用 schema-less 設計，同一個 collection 中的文件可以有不同欄位結構與資料型別。
+
+Which statement best describes MongoDB’s document model? (Select one.)
+下列哪一項最能正確描述 MongoDB 的文件模型？
+A. All documents in a collection must have identical fields
+B. Documents are stored in tables with fixed schemas
+C. Documents are stored as flexible JSON-like structures
+D. Documents must follow a predefined relational schema
+正確答案：C
+解釋：MongoDB 使用彈性的文件模型，以類 JSON 的 BSON 格式儲存資料，不強制要求固定結構。
+
+Which query returns all documents where the age field exists, regardless of its value? (Select one.)
+下列哪個查詢可回傳所有包含 age 欄位的文件，不論其值為何？
+A. { age: { $exists: true } }
+B. { age: { $exist: true } }
+C. { age: { $ne: null } }
+D. { age: true }
+正確答案：A
+解釋：$exists 用來判斷欄位是否存在，$exist 為錯誤語法。
+
+What happens if you insert a document with a duplicate value into a unique indexed field? (Select one.)
+若在 unique index 欄位插入重複值，會發生什麼事？
+A. Document is inserted and old one removed
+B. Document is inserted and both remain
+C. Duplicate key error, document inserted
+D. Duplicate key error, document not inserted
+正確答案：D
+解釋：unique index 會阻止重複值寫入，MongoDB 會回傳 duplicate key error，且文件不會被插入。
+
+Which command creates a compound index on the fields status and createdAt? (Select one.)
+下列哪個指令會建立一個 status 與 createdAt 的複合索引？
+A. db.orders.createIndex(status, createdAt)
+B. db.orders.createIndex({ status: 1, createdAt: 1 })
+C. db.orders.createIndex([{ status: 1 }, { createdAt: 1 }])
+D. db.orders.createIndex({ status: "asc", createdAt: "asc" })
+正確答案：B
+解釋：createIndex 需以物件方式指定欄位與排序方向，1 表示升冪。
+
+Which query can efficiently use the following compound index? (Select one.)
+
+db.customers.createIndex({ active: 1, age: 1 })
+
+
+A. { age: 30 }
+B. { active: true }
+C. { age: 30, active: true }
+D. { active: true, age: { $gte: 25 } }
+正確答案：D
+解釋：複合索引可依照前綴規則使用，active 為 equality 條件，age 為 range 條件，完全符合索引設計。
+
+Which command allows you to check whether an index is used by a query? (Select one.)
+下列哪個指令可用來確認查詢是否有使用索引？
+A. getIndexes()
+B. explain()
+C. stats()
+D. profile()
+正確答案：B
+解釋：explain() 會顯示查詢執行計畫，包含 IXSCAN、COLLSCAN 等階段。
+
+What is the effect of deleting the only index that supports a frequently used query? (Select one.)
+刪除唯一支援常用查詢的索引會造成什麼影響？
+A. Query performance improves
+B. Query fails
+C. Query performance degrades
+D. Query behavior is unchanged
+正確答案：C
+解釋：刪除索引後，查詢可能退化為全表掃描，導致效能下降。
+
+
+
+
+
+
+Lesson 002: CRUD
+
+Which MongoDB operation inserts a single document into a collection? (Select one.)
+下列哪一個 MongoDB 操作可插入單一文件？
+A. insert()
+B. insertOne()
+C. insertMany()
+D. bulkWrite()
+正確答案：B
+解釋：insertOne() 專門用來插入單一文件，insert() 已被標示為 deprecated。
+
+What is the result of executing the following update operation? (Select one.)
+
+db.users.updateOne(
+  { username: "alex" },
+  { $set: { active: true } },
+  { upsert: true }
+)
+
+此操作的結果為何？
+A. Updates the first matching document only
+B. Updates all matching documents
+C. Inserts a new document if no match is found
+D. Throws an error if no document matches
+正確答案：C
+解釋：當 upsert 為 true 且查無符合條件的文件時，MongoDB 會建立新文件。
+
+
+
+Which query returns all documents where the age field exists, regardless of its value? (Select one.)
+下列哪個查詢可回傳所有包含 age 欄位的文件，不論其值為何？
+A. { age: { $exists: true } }
+B. { age: { $exist: true } }
+C. { age: { $ne: null } }
+D. { age: true }
+正確答案：A
+解釋：$exists 用來判斷欄位是否存在，$exist 為錯誤語法。
+
+What happens if you insert a document with a duplicate value into a unique indexed field? (Select one.)
+若在 unique index 欄位插入重複值，會發生什麼事？
+A. Document is inserted and old one removed
+B. Document is inserted and both remain
+C. Duplicate key error, document inserted
+D. Duplicate key error, document not inserted
+正確答案：D
+解釋：unique index 會阻止重複值寫入，MongoDB 會回傳 duplicate key error，且文件不會被插入。
+
+下列哪個指令會建立一個 status 與 createdAt 的複合索引？
+A. db.orders.createIndex(status, createdAt)
+B. db.orders.createIndex({ status: 1, createdAt: 1 })
+C. db.orders.createIndex([{ status: 1 }, { createdAt: 1 }])
+D. db.orders.createIndex({ status: "asc", createdAt: "asc" })
+正確答案：B
+解釋：createIndex 需以物件方式指定欄位與排序方向，1 表示升冪。
+
+Which query can efficiently use the following compound index? (Select one.)
+
+db.customers.createIndex({ active: 1, age: 1 })
+
+
+A. { age: 30 }
+B. { active: true }
+C. { age: 30, active: true }
+D. { active: true, age: { $gte: 25 } }
+正確答案：D
+解釋：複合索引可依照前綴規則使用，active 為 equality 條件，age 為 range 條件，完全符合索引設計。
+
+
+Which command allows you to check whether an index is used by a query? (Select one.)
+下列哪個指令可用來確認查詢是否有使用索引？
+A. getIndexes()
+B. explain()
+C. stats()
+D. profile()
+正確答案：B
+解釋：explain() 會顯示查詢執行計畫，包含 IXSCAN、COLLSCAN 等階段。
+
+What is the effect of deleting the only index that supports a frequently used query? (Select one.)
+刪除唯一支援常用查詢的索引會造成什麼影響？
+A. Query performance improves
+B. Query fails
+C. Query performance degrades
+D. Query behavior is unchanged
+正確答案：C
+解釋：刪除索引後，查詢可能退化為全表掃描，導致效能下降。
+
+【證照高頻陷阱題】Which insert command is properly formed? (Select one.)
+下列哪一個 insert 指令語法正確？
+
+A.db.users.insertOne("name":"Amy","age":30)
+B.db.users.insertOne({ name:"Amy", age:30 })
+C.db.users.insertOne([{ name:"Amy", age:30 }])
+D.db.users.insert({ name:"Amy", age:30 }, { ordered:true })
+正確答案：B
+解釋：insertOne() 只能接受單一 document，且必須是 JSON 物件，A 少了大括號，C 是陣列格式錯誤，D 為舊版 insert 語法且參數錯誤。
+
+'What is the result of the following update operation? (Select one.)
+
+db.products.updateOne(
+  { sku: "A100" },
+  { price: 99 }
+)
+
+原始文件：{ sku:"A100", name:"Pen", price:120, stock:50 }
+
+結果為何？'
+A. Only price is updated, other fields remain
+B. price is updated and name removed
+C. Entire document is replaced with { price:99 }
+D. Operation fails due to missing update operator
+
+正確答案：C
+解釋：未使用更新運算子（如 $set）時，MongoDB 會將整份文件替換成新文件，只剩 price 欄位，其餘欄位全部消失。
+
+
+2.3 Given a $set update scenario, identify the output and state change
+
+3. What is the effect of the following update? (Select one.)
+
+db.products.updateOne(
+  { sku: "A100" },
+  { $set: { price: 99 } }
+)
+
+
+A. Replaces entire document
+B. Adds price field only if it doesn’t exist
+C. Updates price and preserves other fields
+D. Removes all other fields
+
+正確答案：C
+解釋：$set 只會更新指定欄位，其餘欄位保持不變，是最安全、最常用的更新方式。
+
+2.4 Identify the correct upsert command
+
+4.【證照高頻陷阱題】Which command correctly performs an upsert? (Select one.)
+
+A.
+
+db.users.updateOne(
+  { email:"a@test.com" },
+  { $set:{ active:true } }
+)
+
+
+B.
+
+db.users.updateOne(
+  { email:"a@test.com" },
+  { $set:{ active:true } },
+  true
+)
+
+
+C.
+
+db.users.updateOne(
+  { email:"a@test.com" },
+  { $set:{ active:true } },
+  { upsert:true }
+)
+
+
+D.
+
+db.users.insertOne(
+  { email:"a@test.com", active:true },
+  { upsert:true }
+)
+
+
+正確答案：C
+解釋：upsert 必須在 options 物件中明確指定 { upsert:true }，B 參數格式錯誤，D insertOne 不支援 upsert。
+
+2.5 Identify the correct update expression for updating multiple documents
+
+5.【證照高頻陷阱題】Which command updates all matching documents? (Select one.)
+
+A.
+
+db.users.update(
+  { active:false },
+  { $set:{ active:true } }
+)
+
+
+B.
+
+db.users.updateOne(
+  { active:false },
+  { $set:{ active:true } }
+)
+
+
+C.
+
+db.users.updateMany(
+  { active:false },
+  { $set:{ active:true } }
+)
+
+
+D.
+
+db.users.replaceOne(
+  { active:false },
+  { active:true }
+)
+
+
+正確答案：C
+解釋：updateMany() 是唯一明確保證會更新所有符合條件文件的指令，update() 行為不明確且已不建議使用。
