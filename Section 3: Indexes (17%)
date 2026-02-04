@@ -1,0 +1,692 @@
+Section 3: Indexes (17%)
+
+3.1 Identify which index would improve performance for a query doing collection scan
+3.2 Identify which index improves performance for equality match on array field
+3.3 Identify which index helps with sorting on two fields in a scan
+3.4 Identify how many indexes exist in a given collection
+3.5 Identify the trade-offs of using indexes and the ramifications of deleting them
+3.6 Identify potential performance issues from explain plan output, especially when an index is not used
+
+
+
+Lesson 1: Index Fundamentals & Performance (索引基礎與效能)
+
+Which command creates a compound index on the fields status and createdAt? (Select one.)
+下列哪個指令會建立一個 status 與 createdAt 的複合索引？
+A. db.orders.createIndex(status, createdAt)
+B. db.orders.createIndex({ status: 1, createdAt: 1 })
+C. db.orders.createIndex([{ status: 1 }, { createdAt: 1 }])
+D. db.orders.createIndex({ status: "asc", createdAt: "asc" })
+正確答案：B
+解釋：createIndex 需以物件方式指定欄位與排序方向，1 表示升冪。
+
+What happens if you insert a document with a duplicate value into a unique indexed field? (Select one.)
+若在 unique index 欄位插入重複值，會發生什麼事？
+A. Document is inserted and old one removed
+B. Document is inserted and both remain
+C. Duplicate key error, document inserted
+D. Duplicate key error, document not inserted
+正確答案：D
+解釋：unique index 會阻止重複值寫入，MongoDB 會回傳 duplicate key error，且文件不會被插入。
+
+Which query can efficiently use the following compound index? (Select one.)
+db.customers.createIndex({ active: 1, age: 1 })
+A. { age: 30 }
+B. { active: true }
+C. { age: 30, active: true }
+D. { active: true, age: { $gte: 25 } }
+正確答案：D
+解釋：複合索引可依照前綴規則使用，active 為 equality 條件，age 為 range 條件，完全符合索引設計。
+
+Which command allows you to check whether an index is used by a query? (Select one.)
+下列哪個指令可用來確認查詢是否有使用索引？
+A. getIndexes()
+B. explain()
+C. stats()
+D. profile()
+正確答案：B
+解釋：explain() 會顯示查詢執行計畫，包含 IXSCAN、COLLSCAN 等階段。
+
+What is the effect of deleting the only index that supports a frequently used query? (Select one.)
+刪除唯一支援常用查詢的索引會造成什麼影響？
+A. Query performance improves
+B. Query fails
+C. Query performance degrades
+D. Query behavior is unchanged
+正確答案：C
+解釋：刪除索引後，查詢可能退化為全表掃描，導致效能下降。
+
+What is the primary purpose of an index in MongoDB?
+aMongoDB 索引的主要目的為何？
+A. Reduce document size
+B. Improve query performance
+C. Automatically sort all collections
+D. Improve write performance
+答案：B
+解釋：索引的核心價值是加速查詢，讓 MongoDB 不必掃描整個 collection，而是透過索引快速定位文件。
+
+Which statement best describes how MongoDB stores index data?
+A. Indexes store all document fields
+B. Indexes store a small, ordered portion of the data
+C. Indexes duplicate entire collections
+D. Indexes only exist in memory
+答案：B
+解釋：索引只儲存「部分欄位資料＋指向文件的 reference」，而且是有序結構，才能高效搜尋。
+
+What happens when MongoDB executes a query without using an index?
+A. Uses index cache
+B. Performs a collection scan
+C. Uses aggregation pipeline
+D. Returns unsorted results only
+答案：B
+解釋：沒有索引時，MongoDB 只能做 Collection Scan，逐筆讀取所有文件，效能最差。
+
+
+Which operation is more expensive when many indexes exist on a collection?
+A. find
+B. aggregate
+C. insert
+D. explain
+答案：C
+解釋：每次寫入（insert / update / delete）都必須同步更新所有索引，索引越多，寫入成本越高。
+*讀取（Find/Aggregate）受惠： 索引越多，查詢時就越容易找到捷徑，不用翻遍整本書（全表掃描），所以速度會變快。
+*寫入（Insert）受累： 當你往書裡增加一頁新內容時，你必須手動更新後面所有的關鍵字索引表。如果你有 10 個索引，資料庫每插入一筆資料，就要額外執行 10 次索引更新動作。
+
+How many indexes are created by default for a new collection?
+A. 0
+B. 1
+C. 2
+D. Depends on schema
+答案：B
+解釋：MongoDB 預設只會建立一個 _id 單一欄位索引。
+
+
+
+Which statement about indexes is TRUE?
+A. Indexes improve query performance with no trade-offs
+B. Indexes reduce disk I/O
+C. Indexes slow down all queries
+D. Indexes are auto-created by MongoDB
+答案：B
+解釋：索引能減少實際需要讀取的文件數量，直接降低 disk I/O。
+
+A. 世上沒有白吃的午餐。代價就是寫入變慢（如你上一題所見）以及磁碟空間消耗。
+C. 索引會顯著加速查詢。只有當索引建立不當（例如欄位基數太低）時，才可能對效能無感或造成微小負擔。
+D. MongoDB 只會自動為每個集合建立 _id 的唯一索引。其他的索引（如針對使用者名稱、日期等）都必須由開發者根據查詢需求手動建立。
+
+Which index type is created automatically when indexing an array field?
+A. Compound index
+B. Hashed index
+C. Multikey index
+D. Text index
+答案：C
+解釋：只要索引欄位是 array，MongoDB 會自動轉成 Multikey index，不用手動指定。
+
+Which of the following can be a multikey index? (Select all that apply)
+A. Single field index on an array
+B. Compound index with one array field
+C. Compound index with two array fields
+D. Index on _id
+答案：A、B
+解釋：Multikey 允許 一個 array 欄位，但不能同時索引多個 array 欄位。1. 這是多鍵索引最基本的型態。當你在一個包含陣列的欄位上建立索引時，MongoDB 會為陣列中的每個元素建立一個索引條目。2. 複合索引可以包含一個陣列欄位。例如，索引 { a: 1, b: 1 }，如果 b 是陣列，這仍然是一個有效的多鍵索引。3. 這是 MongoDB 的一項核心限制。一個複合索引中不能包含超過一個陣列欄位。這是為了避免索引條目數量因為笛卡兒積（Cartesian product）而爆炸性增長，導致效能崩潰。4. 雖然 _id 欄位預設有索引，但 MongoDB 的規範規定 _id 欄位不能儲存陣列值。因此，_id 上的索引永遠不會是多鍵索引。
+
+
+What happens if a query requires sorted output but no suitable index exists?
+A. MongoDB fails the query
+B. MongoDB sorts results in memory
+C. MongoDB creates a temporary index
+D. MongoDB ignores sort
+答案：B
+解釋：沒有索引支援排序時，MongoDB 需要在 memory 中排序，非常吃資源。
+
+Which index best supports queries on { age: 30 }?
+A. Compound index { name: 1, age: 1 }
+B. Single field index { age: 1 }
+C. Multikey index { age: 1 }
+D. Text index
+答案：B
+解釋：單一欄位查詢，最精準就是 Single Field Index。
+
+Why is the order of fields important in a compound index?
+A. Affects storage size
+B. Determines index name
+C. Determines query usability and sort order
+D. Determines write speed only
+答案：C
+解釋：複合索引遵守 前綴原則（Prefix Rule），欄位順序會直接影響可支援的查詢。
+
+Given index { a: 1, b: 1 }, which query can use this index?
+A. { b: 1 }
+B. { a: 1 }
+C. { b: 1, a: 1 } only
+D. { c: 1 }
+答案：B
+解釋：可以用 {a} 或 {a, b}，但不能只查 {b}。
+
+Which statement about “Every query should use an index” is correct?
+A. It is always mandatory
+B. It is a best practice guideline
+C. MongoDB enforces it
+D. Queries without indexes are invalid
+答案：B
+解釋：這是效能最佳實務建議，不是強制規則。
+
+What is the main disadvantage of having too many indexes?
+A. Increased memory usage
+B. Slower write performance
+C. Slower read performance
+D. Larger document size
+答案：B
+解釋：索引越多，寫入時要更新的結構越多，寫效能會明顯下降。
+
+ Which index type supports indexing multiple fields?
+A. Single field index
+B. Compound index
+C. Hashed index
+D. TTL index
+答案：B
+解釋：複合索引可同時索引多個欄位，是多條件查詢的關鍵武器！
+
+Can MongoDB automatically detect and create indexes based on usage?
+A. Yes
+B. No
+C. Only in Atlas
+D. Only for _id
+答案：B
+解釋：MongoDB 不會自動建索引，但 Atlas 會「建議」你該怎麼建。
+
+What does an index entry point to?
+A. Another index
+B. Document identity
+C. Collection name
+D. Schema definition
+答案：B
+解釋：索引儲存的是「欄位值 + 指向文件的 reference」。
+
+Which of the following improves query performance the MOST?
+A. Adding more RAM
+B. Increasing document size
+C. Creating proper indexes
+D. Increasing write concern
+答案：C
+解釋：索引是效能優化 CP 值最高的方式，沒有之一！
+
+Which statement about multikey indexes is TRUE?
+A. Must be manually specified
+B. Cannot be compound
+C. Automatically created for array fields
+D. Can index multiple array fields
+答案：C
+解釋：只要欄位是 array，MongoDB 會自動變成 multikey index，但只能有一個 array 欄位。
+
+Lesson 2: Creating a Single Field Index in MongoDB
+
+
+Which method is used to create a single field index in MongoDB?
+MongoDB 中用來建立單一欄位索引的方法是？
+A. create()
+B. createIndex()
+C. addIndex()
+D. ensureIndex()
+答案：B
+解釋：MongoDB 使用 createIndex() 來建立索引，需在方法中指定欄位與排序方向。
+
+What does a single field index support?
+單一欄位索引支援哪些功能？
+A. Queries and sorts on one field
+B. Queries on multiple fields
+C. Automatic sharding
+D. Aggregation pipelines only
+答案：A
+解釋：單一欄位索引可有效支援「單一欄位」的查詢與排序。
+
+Which of the following is a correct syntax to create a single field index?
+以下哪一個是正確的單一欄位索引建立語法？
+A. db.coll.createIndex(fieldname)
+B. db.coll.createIndex({ fieldname: 1 })
+C. db.coll.createIndex([fieldname])
+D. db.coll.index({ fieldname: "asc" })
+答案：B
+解釋：createIndex() 需要傳入一個物件，指定欄位名稱與排序方向（1 或 -1）。
+
+What does the value 1 indicate when creating an index?
+建立索引時，數值 1 代表什麼？
+A. Text index
+B. Hashed index
+C. Ascending order
+D. Descending order
+答案：C
+解釋：1 代表遞增排序（Ascending），-1 則代表遞減排序（Descending）。
+
+Which option enforces uniqueness when creating a single field index?
+建立單一欄位索引時，哪個選項可以強制唯一性？
+A. { required: true }
+B. { unique: true }
+C. { distinct: true }
+D. { primary: true }
+答案：B
+解釋：{ unique: true } 會確保索引欄位中的值不可重複。
+
+What happens if duplicate values already exist when creating a unique index?
+若欄位中已存在重複值，建立 unique index 會發生什麼事？
+A. MongoDB removes duplicates automatically
+B. MongoDB creates the index anyway
+C. Index creation fails
+D. Old documents are replaced
+答案：C
+解釋：若資料中已有重複值，MongoDB 不會建立 unique index，並回傳錯誤。
+
+Which command lists all indexes in a collection?
+哪一個指令可查看集合中所有索引？
+A. db.coll.indexes()
+B. db.coll.showIndexes()
+C. db.coll.getIndexes()
+D. db.coll.explainIndexes()
+答案：C
+解釋：getIndexes() 會列出集合內所有已建立的索引。
+
+Which method helps determine whether a query is using an index?
+哪個方法可用來判斷查詢是否使用索引？
+A. stats()
+B. getIndexes()
+C. explain()
+D. profile()
+答案：C
+解釋：explain() 會顯示查詢的執行計畫（Execution Plan）。
+
+What does the IXSCAN stage indicate in an explain plan?
+在 explain 結果中，IXSCAN 代表什麼？
+A. Collection scan
+B. Index scan
+C. In-memory sort
+D. Document fetch only
+答案：B
+解釋：IXSCAN 表示 MongoDB 正在使用索引掃描，是理想的查詢狀態。
+
+What does the COLLSCAN stage indicate?
+COLLSCAN 階段代表什麼？
+A. Using multiple indexes
+B. Index merge
+C. Full collection scan
+D. Cached result
+答案：C
+解釋：COLLSCAN 表示進行全表掃描，代表沒有使用索引，效能較差。
+
+What does the FETCH stage represent in an execution plan?
+FETCH 階段代表什麼？
+A. Sorting documents
+B. Reading documents from disk
+C. Reading actual documents after index scan
+D. Writing documents
+答案：C
+解釋：FETCH 通常搭配 IXSCAN，代表依索引找到位置後，再讀取實際文件內容。
+
+What does the SORT stage indicate in explain output?
+explain 中出現 SORT 代表什麼？
+A. Sorting using index
+B. Sorting in memory
+C. Sorting during insert
+D. Sorting during index creation
+答案：B
+解釋：SORT 代表在記憶體中進行排序，通常表示沒有索引支援該排序條件。
+
+What type of index is created when a single field index is built on an array field?
+當單一欄位索引建立在陣列欄位上時，會變成哪種索引？
+A. Compound index
+B. Hashed index
+C. Multikey index
+D. TTL index
+答案：C
+解釋：只要索引欄位是陣列，MongoDB 會自動建立 Multikey index。
+
+What happens if you insert a document with a duplicate value into a unique indexed field?
+若在 unique index 欄位插入重複值，會發生什麼事？
+A. Document is inserted and old one removed
+B. Document is inserted and both remain
+C. Duplicate key error, document inserted
+D. Duplicate key error, document not inserted
+答案：D
+解釋：unique index 會阻止重複值寫入，MongoDB 會回傳 duplicate key error，且不會插入文件。
+
+Which statement best describes a single field index?
+以下哪個最正確描述單一欄位索引？
+A. Supports efficient querying against one field
+B. Supports efficient querying against multiple fields
+C. Only works on scalar values
+D. Automatically created for all fields
+答案：A
+解釋：單一欄位索引專門優化「單一欄位」的查詢，可用於純量或陣列欄位。
+
+Lesson 3: Creating a Multikey Index in MongoDB
+
+What is a multikey index?
+什麼是 Multikey Index（多鍵索引）？
+A. An index on one field only where the field is not an array
+B. An index where one of the indexed fields contains an array
+C. An index on more than one field where none of the fields are arrays
+D. An index on more than one field where multiple fields are arrays
+答案：B
+解釋：只要索引的欄位中「有任一個欄位是陣列」，該索引就是 Multikey Index，適用於單一欄位或複合索引，但複合索引中只能有一個陣列欄位。
+
+What happens when you create an index on an array field?
+當你在陣列欄位上建立索引時，MongoDB 會發生什麼事？
+A. Only the first element in the array is indexed
+B. MongoDB creates one index entry for the entire array
+C. MongoDB creates an index key for each element in the array
+D. MongoDB ignores array fields
+答案：C
+解釋：MongoDB 會為陣列中的每一個元素建立索引鍵，讓查詢可以直接比對元素而非掃描整個陣列。
+
+Which of the following statements about multikey indexes is correct?
+以下哪一個關於 Multikey Index 的敘述是正確的？
+A. Multikey indexes must be manually specified
+B. Multikey indexes only work with numeric arrays
+C. Multikey indexes are automatically created when indexing an array field
+D. Multikey indexes cannot be used for queries
+答案：C
+解釋：只要索引欄位是陣列，MongoDB 會自動建立 Multikey Index，不需要額外指定。
+
+In a compound index, how many array fields are allowed?
+在複合索引中，最多可以有幾個陣列欄位？
+A. 1
+B. 2
+C. 5
+D. Unlimited
+答案：A
+解釋：MongoDB 限制一個複合索引中「最多只能有一個陣列欄位」，否則無法建立索引。
+
+Which command creates a single field multikey index on the accounts array?
+以下哪個指令可在 accounts 陣列欄位上建立單一欄位的 Multikey Index？
+A. db.customers.createIndex(accounts)
+B. db.customers.createIndex({ accounts: 1 })
+C. db.customers.createIndex([accounts])
+D. db.customers.ensureIndex({ accounts: 1 })
+答案：B
+解釋：使用 createIndex() 並指定陣列欄位與排序方向即可，MongoDB 會自動判斷為 Multikey Index。
+
+Which method is used to view all indexes in a collection?
+哪一個方法可用來查看集合中所有索引？
+A. db.customers.indexes()
+B. db.customers.showIndexes()
+C. db.customers.getIndexes()
+D. db.customers.explainIndexes()
+答案：C
+解釋：getIndexes() 會列出集合中目前存在的所有索引，包括 Multikey Index。
+
+What does the IXSCAN stage indicate in an explain plan for a multikey query?
+在使用 Multikey Index 的查詢 explain 計畫中，IXSCAN 代表什麼？
+A. Sorting documents in memory
+B. Full collection scan
+C. Reading documents only
+D. Query is using an index
+答案：D
+解釋：IXSCAN 表示查詢正在使用索引（包含 Multikey Index），是效能良好的查詢狀態。
+
+What does the COLLSCAN stage indicate when querying an array field?
+在查詢陣列欄位時，出現 COLLSCAN 代表什麼？
+A. MongoDB is using a multikey index
+B. MongoDB is scanning the entire collection
+C. MongoDB is sorting using index order
+D. MongoDB is reading cached results
+答案：B
+解釋：COLLSCAN 表示未使用索引而進行全表掃描，通常代表缺少合適的 Multikey Index。
+
+Lesson 4: Working with Compound Indexes in MongoDB
+
+What is a compound index?
+什麼是 Compound Index（複合索引）？
+A. An index that supports queries that combine the field name and the value into one string
+B. An index that supports queries against unknown or arbitrary fields
+C. An index that contains references to multiple fields within a document
+D. An index that supports queries that are run on two collections at the same time
+答案：C
+解釋：複合索引是在同一個索引結構中同時包含多個欄位及其排序方式，用來加速多欄位查詢。
+
+What is the main characteristic of a compound index?
+複合索引的主要特性是什麼？
+A. Index on a single field only
+B. Index on multiple fields
+C. Index only supports array fields
+D. Index only supports sorting
+答案：B
+解釋：複合索引是建立在多個欄位之上的索引結構，可同時支援多條件查詢與排序。
+
+Which of the following statements about compound indexes is correct?
+以下哪一個關於複合索引的敘述是正確的？
+A. Compound indexes can include unlimited array fields
+B. Compound indexes cannot be used for sorting
+C. Compound indexes can become multikey indexes if they include an array field
+D. Compound indexes are created automatically by MongoDB
+答案：C
+解釋：只要複合索引中包含陣列欄位，就會自動成為 Multikey Index，但整個索引只能有一個陣列欄位。
+
+What is the maximum number of array fields allowed in a compound index?
+一個複合索引最多可以包含幾個陣列欄位？
+A. 0
+B. 1
+C. 2
+D. Unlimited
+答案：B
+解釋：MongoDB 規定一個索引中最多只能有一個欄位是陣列，否則無法建立索引。
+
+Why does the order of fields matter in a compound index?
+為什麼複合索引中欄位順序很重要？
+A. It affects document size
+B. It affects index name
+C. It affects query optimization and index usability
+D. It affects write concern
+答案：C
+解釋：複合索引遵循前綴原則，欄位順序會直接影響哪些查詢能有效使用該索引以及排序是否能被索引支援。
+
+What is the recommended order of fields in a compound index?
+複合索引中建議的欄位順序是什麼？
+A. Sort, Range, Equality
+B. Range, Sort, Equality
+C. Equality, Sort, Range
+D. The order does not matter
+答案：C
+解釋：建議順序為 Equality（相等條件）→ Sort（排序）→ Range（範圍），可讓查詢最佳化並減少處理成本。
+
+Which type of query condition should be placed first in a compound index?
+在複合索引中，哪種類型的查詢條件應該放在第一個欄位？
+A. Range query
+B. Sort field
+C. Equality match
+D. Projection field
+答案：C
+解釋：相等條件能快速縮小搜尋範圍，應放在索引最前面以減少需要掃描的索引鍵數量。
+
+What benefit does index-based sorting provide?
+使用索引排序的好處是什麼？
+A. Improves write performance
+B. Eliminates in-memory sorting
+C. Reduces index size
+D. Allows unlimited array fields
+答案：B
+解釋：若排序順序與索引一致，MongoDB 可直接依索引順序回傳結果，避免在記憶體中進行 SORT。
+
+What does it mean when a query is covered by an index?
+什麼情況下稱為「索引覆蓋查詢（Covered Query）」？
+A. The query uses multiple indexes
+B. The query requires fetching documents from memory
+C. All required fields are returned directly from the index
+D. The query includes a sort stage
+答案：C
+解釋：當查詢所需的欄位全部包含在索引中，MongoDB 不需 FETCH 文件即可回傳結果，即為覆蓋查詢。
+
+Which execution stage indicates a covered query in explain output?
+在 explain 結果中，哪個階段代表索引覆蓋查詢？
+A. FETCH
+B. SORT
+C. COLLSCAN
+D. PROJECTION_COVERED
+答案：D
+解釋：PROJECTION_COVERED 表示所有需要的資料皆由索引提供，無需從集合中讀取文件。
+
+What does the IXSCAN stage indicate in a compound index query?
+在使用複合索引的查詢中，IXSCAN 代表什麼？
+A. In-memory sorting
+B. Full collection scan
+C. Index scan is being used
+D. Projection only
+答案：C
+解釋：IXSCAN 表示 MongoDB 正在使用索引（包含複合索引）進行查詢，是效能良好的執行計畫。
+
+Lesson 5: Deleting MongoDB Indexes
+
+What is the impact of deleting an index that supports a query?
+刪除正在支援查詢的索引會造成什麼影響？
+A. Query performance improves
+B. Query performance is negatively affected
+C. Query will fail
+D. Query behavior is unchanged
+答案：B
+解釋：刪除支援查詢的索引會導致 MongoDB 可能改用 COLLSCAN 全表掃描，查詢效能因此下降。
+
+Which command deletes a single index from a MongoDB collection?
+哪一個指令可用來刪除單一索引？
+A. deleteIndex()
+B. dropIndexes()
+C. dropIndex()
+D. removeIndex()
+答案：C
+解釋：dropIndex() 用於刪除集合中的單一索引，可使用索引名稱或索引鍵指定。
+
+Which index in a MongoDB collection cannot be deleted?
+MongoDB 集合中哪一個索引無法被刪除？
+A. Compound index
+B. Multikey index
+C. Text index
+D. _id index
+答案：D
+解釋：每個集合都預設存在 _id 索引，該索引由 MongoDB 內部使用，不可刪除。
+
+Which command removes all indexes except the default _id index?
+哪一個指令會刪除集合中除了 _id 以外的所有索引？
+A. dropIndex()
+B. dropIndexes()
+C. getIndexes()
+D. hideIndex()
+答案：B
+解釋：dropIndexes() 會刪除集合中所有使用者建立的索引，但保留預設的 _id 索引。
+
+Before deleting an index, which command should be used to evaluate its impact on query performance?
+在刪除索引前，應使用哪個指令評估對查詢效能的影響？
+A. dropIndex()
+B. dropIndexes()
+C. getIndexes()
+D. hideIndex()
+答案：D
+解釋：hideIndex() 會讓 MongoDB 查詢時不使用該索引但仍維護索引資料，可安全評估移除索引對效能的影響。
+
+Which statement about hideIndex() is correct?
+以下哪一項對 hideIndex() 的描述是正確的？
+A. Hidden indexes are deleted permanently
+B. Hidden indexes are not updated
+C. Hidden indexes are ignored by the query planner
+D. Hidden indexes cause queries to fail
+答案：C
+解釋：被隱藏的索引不會被查詢規劃器使用，但 MongoDB 仍會持續更新索引鍵，方便日後快速還原使用。
+
+
+
+Lesson 6: 整合模擬考
+
+
+Which statement best describes a MongoDB index?
+下列哪一項最能正確描述 MongoDB 索引？
+A. Stores a full copy of the collection
+B. Improves query performance by scanning all documents
+C. Improves query performance by reducing scanned documents
+D. Is required for every query
+答案：C
+解釋：索引透過減少需掃描的文件數量來提升查詢效能，是 MongoDB 查詢最佳化的核心機制。
+
+What happens if you insert a document with a duplicate value into a unique indexed field?
+若在 unique index 欄位插入重複值，會發生什麼事？
+A. Document is inserted and old one removed
+B. Document is inserted and both remain
+C. Duplicate key error, document inserted
+D. Duplicate key error, document not inserted
+答案：D
+解釋：unique index 會阻止重複值寫入，MongoDB 會回傳 duplicate key error，且文件不會被插入。
+
+Which index type is automatically created for every MongoDB collection?
+MongoDB 每個集合預設會自動建立哪一種索引？
+A. Single field index
+B. Compound index
+C. Multikey index
+D. _id index
+答案：D
+解釋：每個集合都自動建立 _id 索引，用於唯一識別文件且不可刪除。
+
+What is a multikey index in MongoDB?
+MongoDB 中什麼是 Multikey Index？
+A. An index on multiple collections
+B. An index where one indexed field contains an array
+C. An index on multiple fields with multiple arrays
+D. An index used only for sorting
+答案：B
+解釋：只要索引欄位中包含陣列，該索引即為 multikey index，可用於單一欄位或複合索引。
+
+In a compound index, how many fields can be arrays?
+在複合索引中，最多可以有幾個欄位是陣列？
+A. 0
+B. 1
+C. 2
+D. Unlimited
+答案：B
+解釋：MongoDB 規定複合索引中只能有一個欄位是陣列，否則無法建立索引。
+
+Which execution stage indicates that MongoDB is using an index?
+哪一個 explain() 執行階段代表 MongoDB 正在使用索引？
+A. COLLSCAN
+B. FETCH
+C. SORT
+D. IXSCAN
+答案：D
+解釋：IXSCAN 代表 MongoDB 透過索引掃描資料，而非進行全表掃描。
+
+Which command deletes a single index from a collection?
+哪一個指令用來刪除單一索引？
+A. deleteIndex()
+B. dropIndexes()
+C. dropIndex()
+D. removeIndex()
+答案：C
+解釋：dropIndex() 可透過索引名稱或索引鍵刪除指定索引。
+
+Which command removes all indexes except the default _id index?
+哪一個指令會刪除集合中除了 _id 以外的所有索引？
+A. dropIndex()
+B. dropIndexes()
+C. getIndexes()
+D. hideIndex()
+答案：B
+解釋：dropIndexes() 會刪除所有使用者建立的索引，但 _id 索引會被保留。
+
+What is the impact of deleting an index that supports a query?
+刪除正在支援查詢的索引會造成什麼影響？
+A. Query performance improves
+B. Query performance is negatively affected
+C. Query will fail
+D. Query behavior is unchanged
+答案：B
+解釋：移除索引後查詢可能退化為 COLLSCAN，導致效能下降但不會失敗。
+
+Before deleting an index, which command should be used to evaluate its impact on query performance?
+在刪除索引前，應使用哪個指令評估對查詢效能的影響？
+A. dropIndex()
+B. dropIndexes()
+C. getIndexes()
+D. hideIndex()
+答案：D
+解釋：hideIndex() 會讓查詢不使用該索引但仍維護索引資料，能安全評估效能影響並快速還原。
+
+
+
+
+
+
+
+
