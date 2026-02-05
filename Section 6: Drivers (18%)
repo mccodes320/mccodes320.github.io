@@ -1,0 +1,34 @@
+Section 6: Drivers (18%)
+
+6.1 Define what the XX driver is
+6.2 Define how the XX application connects/uses the XX driver
+6.3 Define the components of the URI string used by MongoClient to connect
+6.4 Identify what connection pooling is and the advantages it offers
+6.5 Identify correct syntax to insertOne and insertMany using XX driver
+6.6 Identify correct syntax to updateOne and updateMany using XX driver
+6.7 Identify correct syntax to deleteOne and deleteMany using XX driver
+6.8 Identify correct syntax to findOne and findMany using XX driver
+6.9 Identify correct syntax to create aggregation pipelines using XX driver
+6.10 Identify the difference in syntax between MongoDB Query Language (MQL) and Aggregation
+
+
+6.3 Define the components of the URI string used by MongoClient to connect 在 MongoDB 連接字串 mongodb+srv://user:pass@cluster.mongodb.net/test?retryWrites=true 中，+srv 的主要作用是什麼？ A. It enables encryption for the connection / 開啟連線加密 B. It uses DNS SRV records to simplify cluster connection and configuration / 使用 DNS SRV 記錄來簡化集群連線與配置 C. It increases the write concern level / 提高寫入確認層級 D. It is required for connecting to a local instance / 連接到本地實例時必須使用 正確答案：B 解釋：+srv 協議允許用戶使用更短的連線字串，驅動程式會自動透過 DNS 獲取節點清單，無需手動列出所有主機地址。
+
+6.4 Identify what connection pooling is and the advantages it offers 關於 MongoDB 驅動程式中的 連線池 (Connection Pooling)，下列敘述何者正確？ A. It creates a new connection for every single database request / 為每個資料庫請求建立新連線 B. It maintains a set of reusable connections to reduce the overhead of opening/closing connections / 維持一組可重用的連線，減少頻繁開啟/關閉連線的開銷 C. It is only available in the Enterprise version / 僅在企業版提供 D. It limits the database to only one user at a time / 限制資料庫一次只能供一位用戶使用 正確答案：B 解釋：連線池能大幅提升效能，因為建立 TCP/TLS 連線是非常耗時的操作。驅動程式預設會管理連線池。
+
+6.5 - 6.8 Identify correct syntax for CRUD using Driver 使用 Node.js 驅動程式執行更新時，下列程式碼片段何者能正確將所有 status 為 "D" 的文檔之 quantity 設為 0？ A. db.collection('products').update({ status: "D" }, { $set: { quantity: 0 } }) B. db.collection('products').updateOne({ status: "D" }, { $set: { quantity: 0 } }) C. db.collection('products').updateMany({ status: "D" }, { $set: { quantity: 0 } }) D. db.collection('products').updateMany({ status: "D" }, { quantity: 0 }) 正確答案：C 解釋：updateMany 用於更新多筆文檔。選項 D 錯誤，因為在更新操作中必須使用原子運算子（如 $set），否則會導致整份文檔被替換（視驅動程式版本而定，但在 Modern Drivers 中通常要求明確的 Operator）。
+
+6.9 Identify correct syntax to create aggregation pipelines using XX driver 在使用驅動程式建立聚合管道（Aggregation Pipeline）時，管道階段（Stages）應該以何種資料結構傳遞給 aggregate() 方法？ A. A single JSON Object / 單個 JSON 物件 B. An Array of Objects / 物件陣列 C. A comma-separated string / 以逗號分隔的字串 D. A Map data structure / Map 資料結構 正確答案：B 解釋：聚合管道是一個有序的陣列，每個元素代表一個過濾或轉換的階段（Stage），如 [ { $match: ... }, { $group: ... } ]。
+
+6.10 Identify the difference in syntax between MQL and Aggregation Framework 關於 MongoDB 查詢語言 (MQL) 與 聚合框架 (Aggregation Framework) 的語法差異，下列何者正確？ A. MQL can use $group but Aggregation cannot / MQL 可以使用 $group 但聚合不行 B. MQL is used within find(), while Aggregation uses a pipeline array to transform data / MQL 用於 find()，而聚合使用管道陣列來轉換數據 C. Aggregation is faster than MQL for simple primary key lookups / 對於簡單的主鍵查詢，聚合比 MQL 更快 D. MQL does not support $match / MQL 不支援 $match 正確答案：B 解釋：MQL 主要用於 find() 進行簡單過濾與投影；聚合框架則提供更強大的功能（如 $group, $unwind, $lookup），透過一系列階段來處理數據。
+
+
+
+
+
+
+
+
+
+
+
