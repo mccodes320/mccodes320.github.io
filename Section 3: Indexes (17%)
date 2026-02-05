@@ -684,6 +684,43 @@ D. hideIndex()
 解釋：hideIndex() 會讓查詢不使用該索引但仍維護索引資料，能安全評估效能影響並快速還原。
 
 
+Which command allows you to check whether an index is used by a query? (Select one.)
+下列哪個指令可用來確認查詢是否有使用索引？
+A. getIndexes()
+B. explain()
+C. stats()
+D. profile()
+正確答案：B
+解釋：explain() 會顯示查詢執行計畫，包含 IXSCAN、COLLSCAN 等階段。
+
+What is the effect of deleting the only index that supports a frequently used query? (Select one.)
+刪除唯一支援常用查詢的索引會造成什麼影響？
+A. Query performance improves
+B. Query fails
+C. Query performance degrades
+D. Query behavior is unchanged
+正確答案：C
+解釋：刪除索引後，查詢可能退化為全表掃描，導致效能下降。
+
+
+3.1 Identify which index would improve performance for a query doing collection scan 當 explain() 顯示 COLLSCAN（集合掃描）且查詢效能緩慢時，哪種動作最能改善效能？ A. Increase the RAM of the server / 增加伺服器記憶體 B. Create an index on the fields used in the query filter / 在查詢過濾條件的欄位上建立索引 C. Restart the MongoDB instance / 重啟 MongoDB 實例 D. Convert the collection to a capped collection / 將集合轉換為固定大小集合 正確答案：B 解釋：COLLSCAN 代表 MongoDB 必須檢查集合中的每個文檔。建立合適的索引會將執行計畫改為 IXSCAN（索引掃描），顯著提升查詢效率。
+
+3.2 Identify which index improves performance for equality match on array field 假設文檔格式為 { "user": "Alex", "tags": ["tech", "music"] }。若要優化 db.coll.find({ "tags": "tech" }) 的查詢，應建立哪種索引？ A. Single field index on "user" / 在 "user" 欄位建立單一欄位索引 B. Multikey index on "tags" / 在 "tags" 欄位建立多鍵索引 C. Text index on "tags" / 在 "tags" 欄位建立文本索引 D. Unique index on "tags" / 在 "tags" 欄位建立唯一索引 正確答案：B 解釋：當索引欄位包含陣列值時，MongoDB 會自動建立「多鍵索引 (Multikey Index)」，為陣列中的每個元素建立索引條目。
+
+3.3 Identify which index helps with sorting on two fields in a scan 若一個查詢包含 { "last_name": 1, "first_name": 1 } 的排序需求，下列哪種索引最能支持此操作？ A. Two separate single field indexes on "last_name" and "first_name" / 分別在兩個欄位建立單一欄位索引 B. A compound index on { "last_name": 1, "first_name": 1 } / 在這兩個欄位建立複合索引 C. A hashed index on "last_name" / 在 "last_name" 建立雜湊索引 D. Indexes cannot support sorting on multiple fields / 索引無法支援多欄位排序 正確答案：B 解釋：複合索引（Compound Index）的欄位順序必須與排序順序（或完全相反的順序）匹配，才能避免內存排序（In-memory sort）。
+
+3.4 Identify how many indexes exist in a given collection 在一個新建立且僅包含自增 ID 的集合中，執行 db.collection.getIndexes().length 預設會回傳多少？ A. 0 B. 1 C. 2 D. Depends on the storage engine / 取決於儲存引擎 正確答案：B 解釋：除非特別指定，否則所有 MongoDB 集合在建立時都會自動在 _id 欄位上建立一個預設索引。
+
+3.5 Identify the trade-offs of using indexes and the ramifications of deleting them 關於在集合中建立過多索引的權衡（Trade-offs），下列敘述何者正確？ A. It speeds up both read and write operations / 它會同時加快讀取與寫入速度 B. It improves read performance but slows down write operations / 它提升讀取效能，但會降低寫入效能 C. It decreases disk space usage / 它會減少磁碟空間佔用 D. It has no impact on system memory / 它對系統記憶體沒有影響 正確答案：B 解釋：索引雖然能加速查詢，但每次插入、更新或刪除文檔時，MongoDB 都必須同時更新索引，因此會增加寫入延遲並消耗更多磁碟空間與記憶體。
+
+3.6 Identify potential performance issues from explain plan output 觀察 explain("executionStats") 的輸出結果，下列哪一個數值最能直接反應索引效率不佳（可能需要建立新索引）？ A. nReturned: 100 B. executionTimeMillis: 0 C. totalKeysExamined: 10000 (當 nReturned 為 10 時) D. totalDocsExamined: 0 正確答案：C 解釋：totalKeysExamined（掃描的索引鍵數）遠大於 nReturned（回傳的文檔數）代表查詢過濾效率低，索引未能精確鎖定目標數據。
+
+
+
+
+
+
+
 
 
 
