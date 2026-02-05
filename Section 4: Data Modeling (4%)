@@ -1,0 +1,11 @@
+Section 4: Data Modeling 模擬試題
+4.1 Given parent-child collections, identify which relationships should be embedded and which should be linked 在考慮一對多（One-to-Many）關係時，下列哪種情況最適合使用 內嵌（Embedding） 而非引用（Linking）？ A. The related data is frequently updated while the parent document remains static / 關聯數據頻繁更新，但父文檔保持不變 B. The child documents are large and grow indefinitely / 子文檔體積巨大且會無限增長 C. The child documents are frequently read together with the parent document / 子文檔經常與父文檔一起被讀取 D. The related data needs to be shared across multiple parent collections / 關聯數據需要被多個父集合共享 正確答案：C 解釋：內嵌的優勢在於「單次 I/O」即可讀取所有相關數據。如果數據總是一起被使用，且子文檔數量有限（不會超過 16MB 限制），內嵌是首選。
+
+4.2 Identify anti-pattern data modeling examples 在 MongoDB 中，「無限制增長的陣列（Unbounded Arrays）」被視為一種反模式（Anti-pattern），這主要是為了避免什麼問題？ A. Exceeding the 16MB BSON document size limit / 超過 16MB 的 BSON 文檔大小限制 B. Slowing down collection scans / 減慢全表掃描速度 C. Automatic index deletion / 索引自動刪除 D. Replication lag / 副本集同步延遲 正確答案：A 解釋：如果將所有數據（例如社交媒體的所有評論）存在單一文檔的陣列中，當數據量極大時會觸發 16MB 限制，並導致寫入性能嚴重下降（因為每次更新都要重新分配磁碟空間）。
+
+這部分的內容主要側重於 MongoDB Atlas 的實際操作介面，雖然佔分比重僅有 2%，但它是實作考題（Hands-on labs）中非常基礎的操作。
+
+Section 5: Tools and Tooling 模擬試題
+5.1 Given a scenario, load the Atlas Sample Dataset and use Data Explorer to find the first document in a collection 在 MongoDB Atlas 控制台中，若要載入官方提供的測試數據（如 sample_mflix 或 sample_weatherdata），應在哪個功能選項下操作？ A. Database Access / 資料庫訪問控制 B. Network Access / 網路訪問控制 C. "..." (Ellipsis) button on the Cluster view -> "Load Sample Dataset" / 集群視圖中的 "..." 按鈕 -> "Load Sample Dataset" D. Command Line Interface (mongosh) / 命令行介面 正確答案：C 解釋：Atlas 提供了一個便捷的按鈕，讓用戶能一鍵將多個範例數據集（Sample Datasets）導入 Cluster，用於學習或測試功能。
+
+5.1.1 (Follow-up) Identification in Data Explorer 在使用 Atlas Data Explorer 瀏覽集合時，如果沒有設置任何 Filter，顯示的第一個文檔（First Document）通常是基於什麼排序？ A. Natural order (order on disk) / 自然順序（磁碟存儲順序） B. Alphabetical order of the _id / _id 的字母順序 C. Newest document first / 最新建立的文檔優先 D. Sorted by the first field defined / 依據第一個定義的欄位排序 正確答案：A 解釋：當你直接在 Data Explorer 打開一個集合而不輸入任何查詢語句時，預設顯示的是自然順序（Natural Order），這代表數據在磁碟上實際存儲的順序。
