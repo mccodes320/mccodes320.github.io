@@ -26,13 +26,192 @@ Section 2: CRUD (51%)
 
 Lesson 1: Introduction to MongoDB Aggregation
 
-哪一項任務「無法」在聚合管道（Aggregation Pipeline）中完成？
-A. 根據特定條件篩選文件 (Filtering documents based on a criteria)
-B. 將文件分組以計算摘要 (Grouping documents together to calculate summaries)
-C. 永久修改資料庫中的原始文件 (Permanently altering the original documents in the database)
-D. 計算多個文件中某個欄位的總和 (Calculating the total sum of a field across many documents)
-答案：C 
-解釋：Aggregation 只是對資料進行分析、彙總並回傳結果，過程是不會（does not permanently alter）改變資料庫中的原始文件的。
+Which MongoDB operation inserts a single document into a collection? (Select one.)
+下列哪一個 MongoDB 操作可插入單一文件？
+A. insert()
+B. insertOne()
+C. insertMany()
+D. bulkWrite()
+正確答案：B
+解釋：insertOne() 專門用來插入單一文件，insert() 已被標示為 deprecated。
+
+
+【證照高頻陷阱題】Which insert command is properly formed? (Select one.)
+下列哪一個 insert 指令語法正確？
+
+A.db.users.insertOne("name":"Amy","age":30)
+B.db.users.insertOne({ name:"Amy", age:30 })
+C.db.users.insertOne([{ name:"Amy", age:30 }])
+D.db.users.insert({ name:"Amy", age:30 }, { ordered:true })
+正確答案：B
+解釋：insertOne() 只能接受單一 document，且必須是 JSON 物件，A 少了大括號，C 是陣列格式錯誤，D 為舊版 insert 語法且參數錯誤。
+
+
+
+What is the result of the following update operation? (Select one.)
+
+db.products.updateOne(
+  { sku: "A100" },
+  { price: 99 }
+)
+
+原始文件：{ sku:"A100", name:"Pen", price:120, stock:50 }
+
+結果為何？'
+A. Only price is updated, other fields remain
+B. price is updated and name removed
+C. Entire document is replaced with { price:99 }
+D. Operation fails due to missing update operator
+
+正確答案：C
+解釋：未使用更新運算子（如 $set）時，MongoDB 會將整份文件替換成新文件，只剩 price 欄位，其餘欄位全部消失。
+
+### 2.3 Given a $set update scenario, identify the output and state change
+
+ What is the effect of the following update? (Select one.)
+
+db.products.updateOne(
+  { sku: "A100" },
+  { $set: { price: 99 } }
+)
+
+
+A. Replaces entire document
+B. Adds price field only if it doesn’t exist
+C. Updates price and preserves other fields
+D. Removes all other fields
+
+正確答案：C
+解釋：$set 只會更新指定欄位，其餘欄位保持不變，是最安全、最常用的更新方式。
+
+### 2.4 Identify the correct upsert command
+
+【證照高頻陷阱題】Which command correctly performs an upsert? (Select one.)
+
+A.
+
+db.users.updateOne(
+  { email:"a@test.com" },
+  { $set:{ active:true } }
+)
+
+
+B.
+
+db.users.updateOne(
+  { email:"a@test.com" },
+  { $set:{ active:true } },
+  true
+)
+
+
+C.
+
+db.users.updateOne(
+  { email:"a@test.com" },
+  { $set:{ active:true } },
+  { upsert:true }
+)
+
+
+D.
+
+db.users.insertOne(
+  { email:"a@test.com", active:true },
+  { upsert:true }
+)
+
+
+正確答案：C
+解釋：upsert 必須在 options 物件中明確指定 { upsert:true }，B 參數格式錯誤，D insertOne 不支援 upsert。
+
+### 2.5 Identify the correct update expression for updating multiple documents
+
+【證照高頻陷阱題】Which command updates all matching documents? (Select one.)
+
+A.
+
+db.users.update(
+  { active:false },
+  { $set:{ active:true } }
+)
+
+
+B.
+
+db.users.updateOne(
+  { active:false },
+  { $set:{ active:true } }
+)
+
+
+C.
+
+db.users.updateMany(
+  { active:false },
+  { $set:{ active:true } }
+)
+
+
+D.
+
+db.users.replaceOne(
+  { active:false },
+  { active:true }
+)
+
+
+正確答案：C
+解釋：updateMany() 是唯一明確保證會更新所有符合條件文件的指令，update() 行為不明確且已不建議使用。
+
+2.6 - 2.10：基礎查詢與併發
+Q1 [2.6]: 當使用 findAndModify 修改文檔時，如果有另一個併發操作（如 update）在同一時間修改同一個文檔，findAndModify 如何確保原子性（Atomicity）？ A. 它會鎖定整個資料庫 B. 它保證對單個文檔的操作是原子的 C. 它會拋出 WriteConflictException 並停止 D. 它會自動將操作拆分為兩步執行 正確答案：B 解釋：MongoDB 保證對單個文檔的操作是原子的，即使在併發環境下，findAndModify 也會安全地修改該文檔。
+
+Q2 [2.9]: 假設集合中有文檔 { "tags": ["red", "blue"] }，執行查詢 db.coll.find({ "tags": "red" }) 會發生什麼？ A. 找不到任何文檔，因為必須精確匹配整個陣列 B. 會匹配該文檔 C. 會報錯，因為 tags 是陣列 D. 只有使用 $in 才能匹配 正確答案：B 解釋：在 MongoDB 中，對陣列欄位進行等值查詢時，如果陣列中包含該元素，則視為匹配。
+
+2.11 - 2.15：進階查詢、邏輯與投影
+Q3 [2.12]: 考慮文檔 { "results": [ { "s": 8 }, { "s": 15 } ] }。下列哪個查詢能確保 同一個陣列元素 同時滿足大於 10 且小於 20？ A. { "results.s": { $gt: 10, $lt: 20 } } B. { "results": { $elemMatch: { "s": { $gt: 10, $lt: 20 } } } } C. { "results.s": { $in: [11, 12, 13] } } D. 以上皆可 正確答案：B 解釋：$elemMatch 強制要求陣列中至少有一個元素滿足所有指定條件。選項 A 可能會匹配到一個元素滿足 $gt 10，另一個元素滿足 $lt 20 的情況。
+
+Q4 [2.15]: 執行以下哪一個投影（Projection）會導致錯誤？ A. db.coll.find({}, { name: 1, _id: 0 }) B. db.coll.find({}, { name: 1, age: 0 }) C. db.coll.find({}, { _id: 0 }) D. db.coll.find({}, { "contact.email": 1 }) 正確答案：B 解釋：除了 _id 欄位外，你不能在同一個投影中混合使用「包含（1）」和「排除（0）」模式。
+
+2.16 - 2.19：游標、計數與搜尋索引
+Q5 [2.16]: 在 mongo shell 中，如果想手動迭代游標（Cursor）並獲取所有結果，應該使用哪個方法？ A. cursor.all() B. cursor.toArray() C. cursor.fetchAll() D. cursor.flush() 正確答案：B 解釋：toArray() 會將游標遍歷並將所有文檔載入到一個陣列中。
+
+Q6 [2.18]: 在定義 MongoDB Atlas Search 索引時，哪一個欄位類型（Type）最適合用於全文檢索（Full-text search）？ A. string B. autocomplete C. text D. document 正確答案：A 解釋：在 Atlas Search 的 mappings 定義中，通常將欄位類型設為 string 以支援標準分析器處理。
+
+2.20 - 2.22：聚合框架 (Aggregation)
+Q7 [2.21]: 在 $lookup 操作中，如果不指定 as 參數會發生什麼？ A. 預設存放在 joined_result 欄位 B. 查詢會報錯 C. 結果會直接合併到根文檔 D. 查詢會執行但結果被丟棄 正確答案：B 解釋：as 是 $lookup 階段的必填參數，用於指定存放聯表結果的輸出欄位名稱。
+
+Q8 [2.22]: 關於 $out 階段的描述，哪一項是正確的？ A. 它會將結果追加（Append）到現有集合末尾 B. 如果目標集合已存在，它會替換掉整個集合 C. 它可以在聚合管道的中間位置使用 D. 它只能輸出到不同的資料庫 正確答案：B 解釋：$out 會建立一個新集合或覆蓋（Replace）現有的同名集合，且必須是管道的最後一個階段。
+
+2.6 Analyze findAndModify behavior when another operation is run concurrently 當使用 findAndModify 修改文檔時，如果有另一個併發操作（如 update）在同一時間修改同一個文檔，findAndModify 如何確保原子性（Atomicity）？ A. It locks the entire database / 它會鎖定整個資料庫 B. It guarantees that the operation on a single document is atomic / 它保證對單個文檔的操作是原子的 C. It throws a WriteConflictException and stops / 它會拋出 WriteConflictException 並停止 D. It automatically splits the operation into two steps / 它會自動將操作拆分為兩步執行 正確答案：B 解釋：MongoDB 保證對單個文檔的操作（Single Document Operation）是原子的，即使在併發環境下，findAndModify 也會確保該文檔在讀取與更新之間不會被其他操作穿插。
+
+2.9 Identify documents matched by a query with equality on an array field 假設集合中有文檔 { "tags": ["red", "blue", "green"] }，執行查詢 db.coll.find({ "tags": "red" }) 的結果為何？ A. No documents matched / 找不到任何文檔 B. The document is matched / 會匹配該文檔 C. Error: tags is an array / 會報錯，因為 tags 是陣列 D. Only $in can match array elements / 只有使用 $in 才能匹配陣列元素 正確答案：B 解釋：在 MongoDB 中，對陣列欄位進行等值查詢時，如果陣列中包含該元素，則視為匹配，不需要精確匹配整個陣列。
+
+2.12 Identify documents matched by an $elemMatch expression 考慮文檔 { "results": [ { "s": 8 }, { "s": 15 } ] }，哪一個查詢能確保「同一個」陣列元素同時滿足大於 10 且小於 20？ A. { "results.s": { $gt: 10, $lt: 20 } } B. { "results": { $elemMatch: { "s": { $gt: 10, $lt: 20 } } } } C. { "results.s": { $in: [11, 15] } } D. Both A and B / A 與 B 皆可 正確答案：B 解釋：$elemMatch 強制要求陣列中至少有一個元素滿足所有指定條件。選項 A 可能會匹配到「元素 1 滿足 $gt 10」且「元素 2 滿足 $lt 20」的情況（即所謂的交叉匹配）。
+
+2.15 Identify the incorrect projection from a set of expressions 執行以下哪一個投影（Projection）會導致錯誤？ A. db.coll.find({}, { name: 1, _id: 0 }) B. db.coll.find({}, { name: 1, age: 0 }) C. db.coll.find({}, { _id: 0 }) D. db.coll.find({}, { "contact.email": 1 }) 正確答案：B 解釋：除了 _id 欄位外，你不能在同一個投影中混合使用「包含（1）」和「排除（0）」模式。
+
+2.21 Analyze aggregation expression with $lookup and identify the output 在執行 $lookup 階段時，輸出欄位（由 as 指定）的資料類型為何？ A. Object (Document) / 物件 (文檔) B. Array / 陣列 C. String / 字串 D. Boolean / 布林值 正確答案：B 解釋：即使 $lookup 只找到一個匹配的文檔，它也會將結果放入一個陣列中。
+
+2.22 Analyze aggregation expression with $out and identify the output 關於聚合管道中的 $out 階段，下列敘述何者正確？ A. It appends results to an existing collection / 它會將結果追加到現有集合 B. It can be placed anywhere in the pipeline / 它可以放在管道的任何位置 C. It replaces the existing collection if it already exists / 如果目標集合已存在，它會替換掉整個集合 D. It only works for sharded collections / 它僅適用於分片集合 正確答案：C 解釋：$out 必須是管道的最後一個階段，且如果目標集合已存在，它會用輸出的結果集完全覆蓋該集合。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+###########################################################################################
+
+
 
 Which method is used to perform an aggregation operation in MongoDB? 
 A. db.collection.aggregation() 
@@ -433,6 +612,48 @@ D. 不確定，取決於錯誤的類型
 答案：B 
 解釋：$out 具有原子性替換的特性，只有當整個管線成功執行完畢，才會原子化地替換掉目標集合，這能保護現有資料不會因為計算失敗而消失。
 
+What is the result of executing the following update operation? (Select one.)
 
+db.users.updateOne(
+  { username: "alex" },
+  { $set: { active: true } },
+  { upsert: true }
+)
+
+此操作的結果為何？
+A. Updates the first matching document only
+B. Updates all matching documents
+C. Inserts a new document if no match is found
+D. Throws an error if no document matches
+正確答案：C
+解釋：當 upsert 為 true 且查無符合條件的文件時，MongoDB 會建立新文件。
+
+
+
+Which query returns all documents where the age field exists, regardless of its value? (Select one.)
+下列哪個查詢可回傳所有包含 age 欄位的文件，不論其值為何？
+A. { age: { $exists: true } }
+B. { age: { $exist: true } }
+C. { age: { $ne: null } }
+D. { age: true }
+正確答案：A
+解釋：$exists 用來判斷欄位是否存在，$exist 為錯誤語法。
+
+What happens if you insert a document with a duplicate value into a unique indexed field? (Select one.)
+若在 unique index 欄位插入重複值，會發生什麼事？
+A. Document is inserted and old one removed
+B. Document is inserted and both remain
+C. Duplicate key error, document inserted
+D. Duplicate key error, document not inserted
+正確答案：D
+解釋：unique index 會阻止重複值寫入，MongoDB 會回傳 duplicate key error，且文件不會被插入。
+
+下列哪個指令會建立一個 status 與 createdAt 的複合索引？
+A. db.orders.createIndex(status, createdAt)
+B. db.orders.createIndex({ status: 1, createdAt: 1 })
+C. db.orders.createIndex([{ status: 1 }, { createdAt: 1 }])
+D. db.orders.createIndex({ status: "asc", createdAt: "asc" })
+正確答案：B
+解釋：createIndex 需以物件方式指定欄位與排序方向，1 表示升冪。
 
 
