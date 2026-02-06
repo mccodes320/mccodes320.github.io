@@ -1,0 +1,58 @@
+Associate Data Modeler Practice Questions
+
+A collection has 10 million documents. There is already an index on the collection, and an index scan is indicated in the winning query plan for a `find()` command with a filter. The query plan shows that the number of documents examined (`executionStats.totalDocsExamined`) is much larger than the number of documents returned (`executionStats.nReturned`). The query represents the main workload on that collection.
+
+What might improve this indexing strategy?
+
+(Choose 1)
+
+a.
+Add an index for each field in the query filter.
+b.
+Leave the index as-is unless the query plan shows indication of high locking contention.
+c.
+Use a compound index to reduce the number of documents that require further filtering.
+d.
+Keep indexes as they are as long as the number of documents scanned all fit in memory.
+
+A data modeler is required to implement a JSON Schema validation for a new MongoDB collection named 'books'. The schema should enforce that each book document contains a "title" (string), "author" (string), "publishedYear" (integer), and "genres" (array of strings). Additionally, the "genres" array should only contain unique values.
+
+Which MongoDB commands correctly applies this validation?
+
+(Choose 1)
+
+a.
+db.createCollection("books", { validator: { $jsonSchema: { bsonType: "object", required: ["title", "author", "publishedYear"], properties: { title: { bsonType: "string" }, author: { bsonType: "string" }, publishedYear: { bsonType: "int" }, genres: { bsonType: "array", items: { bsonType: "string" } } } } } })
+b.
+db.createCollection("books", { validator: { $jsonSchema: { bsonType: "object", required: ["title", "author", "publishedYear", "genres"], properties: { title: { bsonType: "string" }, author: { bsonType: "string" }, publishedYear: { bsonType: "double" }, genres: { bsonType: "array", uniqueItems: true, items: { bsonType: "string" } } } } } })
+c.
+db.createCollection("books", { validator: { $jsonSchema: { bsonType: "object", required: ["title", "author", "publishedYear", "genres"], properties: { title: { bsonType: "string" }, author: { bsonType: "string" }, publishedYear: { bsonType: "int" }, genres: { bsonType: "array", items: { bsonType: "int" } } } } } })
+d.
+db.createCollection("books", { validator: { $jsonSchema: { bsonType: "object", required: ["title", "author", "publishedYear", "genres"], properties: { title: { bsonType: "string" }, author: { bsonType: "string" }, publishedYear: { bsonType: "int" }, genres: { bsonType: "array", uniqueItems: true, items: { bsonType: "string" } } } } } })
+
+
+
+A data modeler is updating a MongoDB schema in a way that allows for backward compatibility with existing application code. The existing collection named 'users' contains documents with fields like username, email, and createdAt. The schema needs to be updated to include a new field lastLoginDate.
+
+Which approach implements the Schema Versioning pattern in MongoDB?
+
+(Choose 1)
+
+a.
+Create a new collection users_v2 and copy all existing documents from the users collection into it. Add the `lastLoginDate` field to all documents in users_v2. Modify the application to use the users_v2 collection for new data.
+b.
+Update all existing documents in the users collection by adding the `lastLoginDate field` with a default value. Then, modify the application to check for the `lastLoginDate` field in each document.
+c.
+Add a `schema_version` field to the new schema version of the users collection. Documents matching the new schema must have 'schema_version' set to 2, allowing the application to check for this field.
+d.
+Apply an incremental update strategy for the users collection, introducing the `lastLoginDate field` to a specified number of documents in each phase.
+
+
+
+
+
+
+
+
+
+
