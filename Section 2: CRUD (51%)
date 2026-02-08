@@ -48,6 +48,10 @@ D.db.users.insert({ name:"Amy", age:30 }, { ordered:true })
 
 
 
+
+### 2.3 Given a $set update scenario, identify the output and state change
+
+
 What is the result of the following update operation? (Select one.)
 
 db.products.updateOne(
@@ -66,9 +70,7 @@ D. Operation fails due to missing update operator
 正確答案：C
 解釋：未使用更新運算子（如 $set）時，MongoDB 會將整份文件替換成新文件，只剩 price 欄位，其餘欄位全部消失。
 
-### 2.3 Given a $set update scenario, identify the output and state change
-
- What is the effect of the following update? (Select one.)
+What is the effect of the following update? (Select one.)
 
 db.products.updateOne(
   { sku: "A100" },
@@ -89,33 +91,26 @@ D. Removes all other fields
 【證照高頻陷阱題】Which command correctly performs an upsert? (Select one.)
 
 A.
-
 db.users.updateOne(
   { email:"a@test.com" },
   { $set:{ active:true } }
 )
 
-
 B.
-
 db.users.updateOne(
   { email:"a@test.com" },
   { $set:{ active:true } },
   true
 )
 
-
 C.
-
 db.users.updateOne(
   { email:"a@test.com" },
   { $set:{ active:true } },
   { upsert:true }
 )
 
-
 D.
-
 db.users.insertOne(
   { email:"a@test.com", active:true },
   { upsert:true }
