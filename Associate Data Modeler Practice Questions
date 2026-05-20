@@ -1,5 +1,7 @@
 Associate Data Modeler Practice Questions
 
+1.
+
 A collection has 10 million documents. There is already an index on the collection, and an index scan is indicated in the winning query plan for a `find()` command with a filter. The query plan shows that the number of documents examined (`executionStats.totalDocsExamined`) is much larger than the number of documents returned (`executionStats.nReturned`). The query represents the main workload on that collection.
 
 What might improve this indexing strategy?
@@ -14,6 +16,10 @@ c.
 Use a compound index to reduce the number of documents that require further filtering.
 d.
 Keep indexes as they are as long as the number of documents scanned all fit in memory.
+
+=> A
+
+2.
 
 A data modeler is required to implement a JSON Schema validation for a new MongoDB collection named 'books'. The schema should enforce that each book document contains a "title" (string), "author" (string), "publishedYear" (integer), and "genres" (array of strings). Additionally, the "genres" array should only contain unique values.
 
@@ -30,7 +36,9 @@ db.createCollection("books", { validator: { $jsonSchema: { bsonType: "object", r
 d.
 db.createCollection("books", { validator: { $jsonSchema: { bsonType: "object", required: ["title", "author", "publishedYear", "genres"], properties: { title: { bsonType: "string" }, author: { bsonType: "string" }, publishedYear: { bsonType: "int" }, genres: { bsonType: "array", uniqueItems: true, items: { bsonType: "string" } } } } } })
 
+=> D
 
+3.
 
 A data modeler is updating a MongoDB schema in a way that allows for backward compatibility with existing application code. The existing collection named 'users' contains documents with fields like username, email, and createdAt. The schema needs to be updated to include a new field lastLoginDate.
 
@@ -46,6 +54,519 @@ c.
 Add a `schema_version` field to the new schema version of the users collection. Documents matching the new schema must have 'schema_version' set to 2, allowing the application to check for this field.
 d.
 Apply an incremental update strategy for the users collection, introducing the `lastLoginDate field` to a specified number of documents in each phase.
+
+
+=> B
+
+
+3.
+
+A developer is building a web application that uses MongoDB as its main database. The developer wants to design a queuing system natively in MongoDB so that the application can process incoming workloads from the queue.
+
+The queuing system has no historical data retention requirements. It also should not process any requests older than 60 seconds and should minimize storage space requirements.
+
+What solution meets the needs of the queuing system?
+
+
+a.
+A standard collection that the application deletes documents from after processing
+b.
+A capped collection with the size parameter set to 60 and a `created_date` date field
+c.
+A standard collection with a TTL index with the `expireAfterSeconds` parameter set to 60
+d.
+A timeseries collection with the `bucketMaxSpanSeconds` parameter set to 60 and `granularity` of seconds
+
+=> C
+
+4.
+
+A developer is designing a schema for a healthcare application with patient records, each including personal information and a unique medical profile. Considering query performance and data retrieval efficiency, how should the developer model this relationship?
+
+(Choose 1)
+
+Incorrect - 0 out of 1 correct answer chosen
+
+a.
+Store patient personal information and medical profiles in separate collections, linking them with a patientId.
+b.
+Embed the medical profile directly within the patient record document for single-query access to both personal and medical information.
+c.
+Implement the Subset Pattern and keep only the most frequently accessed medical data in the patient record and storing the rest in a separate collection.
+d.
+Use the Document Versioning Pattern to ensure that each update to a patient's medical profile creates a new version of the document.
+
+=> C
+
+
+4.
+
+A developer is modeling a banking application.There are two entities to model: Loan and Payment. A Loan entity can be related to many Payment entities. A Loan can be referenced by a unique identifier. A Payment cannot be identified without referencing the Loan it is related to.
+
+In this analysis, are the Loan and Payment entities strong or weak?
+
+
+(Choose 1)
+
+a.
+Loan is a weak entity and Payment is a weak entity.
+b.
+Loan is a weak entity and Payment is a strong entity.
+c.
+Loan is a strong entity and Payment is a strong entity.
+d.
+Loan is a strong entity and Payment is a weak entity.
+
+=> B
+
+
+5.
+
+A data modeler is designing a MongoDB-based system for an online retail platform. The product catalog's schema has evolved over time, with new attributes being added and existing ones being modified.
+
+To maintain backward compatibility and support efficient queries across multiple versions of product documents, what schema versioning strategy should the data modeler implement?
+
+(Choose 1)
+
+Correct Answer
+
+a.
+Keep all versions of a product document in separate collections, such as products_v1, products_v2, and create a new collection for each schema iteration.
+b.
+Add a version field to each product document, and increment this field whenever a schema change occurs.
+c.
+Implement a polymorphic schema where each product document is allowed to have a unique structure without a specific versioning field.
+d.
+Use foreign key references between documents of different schema versions and maintain a master document to track the version of each user document.
+
+=> B
+
+
+6.
+
+A data modeler aims to optimize performance for multiple queries within the 'employeeRecords' collection.
+
+Considering the queries "db.employeeRecords.find({ 'employeeId': 5 }).sort({ 'departmentId': 1, 'officeId': 1 })" and "db.employeeRecords.find({ 'departmentId': 3, 'employeeId': 4 }).sort({ 'officeId': 1 })", which indexing strategy should be applied to enhance response times for both?
+
+a.
+Index on { employeeId: 1, departmentId:1, officeId: 1}
+b.
+Index on { departmentId:1, employeeId: 1, officeId: 1}
+c.
+Index on { officeId: 1, departmentId:1, employeeId: 1 }
+d.
+Index on { departmentId:1, officeId: 1, employeeId: 1 }
+
+=> A
+
+7.
+
+A data modeler is aiming to determine usage patterns for impactful queries concerning frequency and importance. What method assists in identifying these patterns?
+
+
+a.
+Selecting queries randomly and disregarding their individual importance
+b.
+Arranging queries based solely on their alphabetical sequence
+c.
+Actively ranking queries by both their frequency and relative importance
+d.
+Sorting queries according to their character length
+
+=> C
+
+
+
+8.
+
+A developer is modeling an application for a university. Two entities in this model are Student and Class. Each Student can be associated with multiple Classes. Each Class can be associated with multiple Students.
+
+What is the relationship between Students and Classes?
+
+(Choose 1)
+
+a.
+One-to-many
+b.
+One-to-one
+c.
+Many-to-many
+d.
+One-to-squillions
+
+=>C
+
+9.
+
+
+A MongoDB application database has an ad-hoc request to insert documents into the orders and tracking_info collections simultaneously. If one insert fails, both operations should not be persisted in either collection.
+
+What action will meet the requirement?
+
+(Choose 1)
+
+a.
+Use the `insertOne()` method to insert documents into each collection.
+b.
+Use the `insertMany()` method to insert documents into each collection.
+c.
+Start a transaction, run each `insertOne()` method, and then run `endSession()`.
+d.
+Start a transaction, run each `insertOne()` method, and then run `commitTransaction()`.
+
+=> D
+
+10.
+
+A developer is modeling an application where a collection named inventory is queried frequently by a numeric field called item_number.
+
+What operation speeds up operations that query by item_number?
+
+(Choose 1)
+
+a.
+db.inventory.createIndex( { "item_number": 1 } )
+b.
+db.inventory.createIndex( { "item_number": "text" } )
+c.
+db.inventory.createIndex( { "$**": 1 }, { wildcard_projection: { "item_number": 0 } } )
+d.
+db.collection.createIndex( { "item_number.$**": 1 } )
+
+=>A
+
+11.
+
+
+What method returns data from the orders collection using mongosh?
+
+(Choose 1)
+
+a.
+db.orders.findMany()
+b.
+db.orders.find()
+c.
+db.orders.findFirst()
+d.
+db.orders.find_one()
+
+=>B
+
+12.
+
+A developer is building a web application that uses MongoDB as its main database. The developer wants to design a queuing system natively in MongoDB so that the application can process incoming workloads from the queue.
+
+The queuing system has no historical data retention requirements. It also should not process any requests older than 60 seconds and should minimize storage space requirements.
+
+What solution meets the needs of the queuing system?
+
+
+
+(Choose 1)
+
+a.
+A standard collection that the application deletes documents from after processing
+b.
+A capped collection with the size parameter set to 60 and a `created_date` date field
+c.
+A standard collection with a TTL index with the `expireAfterSeconds` parameter set to 60
+d.
+A timeseries collection with the `bucketMaxSpanSeconds` parameter set to 60 and `granularity` of seconds
+
+=> C
+
+
+13.
+
+What are TWO characteristics of Clustered Indexes in MongoDB?
+
+
+(Choose 2)
+
+a.
+A clustered index can be created anytime on a collection.
+b.
+A clustered index can only be created when a collection is created.
+c.
+Collections with clustered indexes can also be capped collections.
+d.
+A cluster index can also be a TTL index if `expireAfterSeconds` is specified when creating it.
+e.
+Clustered indexes can be hidden with the `db.collection.hideIndex("Indexname")` command.
+
+=>BD
+
+14. 
+
+A developer is modeling a banking application.There are two entities to model: Loan and Payment. A Loan entity can be related to many Payment entities. A Loan can be referenced by a unique identifier. A Payment cannot be identified without referencing the Loan it is related to.
+
+In this analysis, are the Loan and Payment entities strong or weak?
+
+
+(Choose 1)
+
+a.
+Loan is a weak entity and Payment is a weak entity.
+b.
+Loan is a weak entity and Payment is a strong entity.
+c.
+Loan is a strong entity and Payment is a strong entity.
+d.
+Loan is a strong entity and Payment is a weak entity.
+
+=>D
+
+
+
+
+
+
+15.
+
+A data modeler is modeling an application to manage inventory data for a bookseller. The application needs to store a book's title, author name, SKU, edition, and publication date.
+
+How should the data modeler model the Book entity?
+
+
+(Choose 1)
+
+a.
+Model Book as a book's title, author name, SKU, edition, publication date, and the date it was last purchased.
+b.
+Model Book as a book's title, author name, SKU, edition, and publication date.
+c.
+Model Book as the book's title.
+d.
+Model Book as a book's title and author name.
+
+=>B
+
+16.
+
+
+While performing an isolated load test on a single, read-only API call, a data modeler notices that the number of read commands per second is far fewer than the number of getMore.
+
+What is the cause of this observation?
+
+
+(Choose 1)
+
+a.
+The number of documents in the result-set of the query is larger than the cursor batch size.
+b.
+The query is always hitting the result cache, and no documents are loaded from disk at all.
+c.
+The query is returning documents which are sequentially loaded from disk.
+d.
+Another process is issuing commands against the database, and therefore the query is not running in isolation.
+=>A
+
+
+17.
+
+A data modeler is examining the following query:
+
+db.myCollection.find(
+   { size: { $gte: 100, $lte: 200 } }
+).explain("executionStats")
+The explain method provides this result:
+
+{
+   queryPlanner: {
+         ...
+         winningPlan: {
+            queryPlan: {
+               stage: 'COLLSCAN',
+               ...
+            }
+         }
+   },
+   executionStats: {
+      executionSuccess: true,
+      nReturned: 3,
+      executionTimeMillis: 0,
+      totalKeysExamined: 0,
+      totalDocsExamined: 1000,
+      executionStages: {
+         stage: 'COLLSCAN',
+         ...
+      },
+      ...
+   },
+   ...
+}
+What action should the data modeler take to improve the query performance?
+
+(Choose 1)
+
+a.
+Ensure that relevant fields in the queries are indexed.
+b.
+Increase the number of fields returned by a query (projection) to fetch more data at once and reduce subsequent scans.
+c.
+Avoid using aggregation pipeline stages like $match, $project, and $group.
+d.
+Ignore query optimization and focus on hardware upgrades to resolve collection scan issues.
+
+=>A
+
+
+
+18. 
+
+What describes a one-to-one relationship among entities?
+
+(Choose 1)
+
+a.
+Entities in a one-to-one relationship must be stored in separate collections.
+b.
+Fields belonging to two or more entities can be included in a single document.
+c.
+Documents must store entities with a one-to-one relationship in a sub-document.
+d.
+A one-to-one relationship is not possible without a foreign key.
+
+=>B
+
+19.
+
+A data modeler is determining the optimal pattern for a data model in a database application.
+
+- Aggregated time-based metrics are reported daily from the collection.
+
+- The collection has more read than write operations.
+
+- The collection is time series.
+
+What is the benefit of storing the aggregation results from the collection in the database, rather than computing them on demand?
+
+(Choose 1)
+
+a.
+Storing the aggregated results ensures that the database avoids performing repetitive calculations.
+b.
+Storing the aggregated results allows the same query plan to be used.
+c.
+Storing the aggregated results increases data cardinality.
+d.
+Storing the aggregated results allows similar data to be grouped together.
+
+=>A
+
+20. 
+
+An e-commerce application collects information about their products, sales, and statistics of the products. A data modeler needs employ a design that optimizes the read performance of statistics by month.
+
+What design approach should the data modeler take to achieve this goal?
+
+(Choose 1)
+
+a.
+Store each sale with an embedded product sub-document in a single collection.
+b.
+Maintain two collections for product and sales. Perform real-time calculations for statistics upon each query.
+c.
+Manage three collections: Products, Sales, and ProductStats. Employ the computed pattern to store aggregated statistics.
+d.
+Use a single collection for sales data and apply a map-reduce function to calculate statistics in real time.
+
+
+=>C
+
+21.
+
+Given the following schema of a user profile document for a sample MongoDB web application, how should the schema be improved for better data access considerations?
+
+
+{
+  _id: ObjectId("65410d39e761093cbad4239f"),
+  username: "Smith",
+  password: "P@ssword!",
+  access_level: "root",
+  phone_home: "123-456-7890",
+  phone_cell: "000-123-4567",
+  address: "123 Back street",
+  zip: "12345"
+}
+
+
+(Choose 1)
+
+a.
+{ _id: ObjectId("65410d39e761093cbad4239f"), username: "Smith", password: "P@ssword!", access_level: "root", phone_home: "123-456-7890", phone_cell: "000-123-4567", address: ["123 Back street", "12345"] }
+b.
+{ _id: ObjectId("65410d39e761093cbad4239f"), username: "Smith", password: "P@ssword!", access_level: "root", phone: ["123-456-7890", "000-123-4567"], address: "123 Back street", zip: "12345" }
+c.
+{ _id: ObjectId("65410d39e761093cbad4239f"), user: { username: "Smith", password: "P@ssword!", access_level: "root", }, phone_home: "123-456-7890", phone_cell: "000-123-4567", address: "123 Back street", zip: "12345" }
+d.
+{ _id: ObjectId("65410d39e761093cbad4239f"), username: "Smith", password: "P@ssword!", access_level: "root", contact: { phone_home: "123-456-7890", phone_cell: "000-123-4567", }, address: { street: "123 Back street", zip: "12345" } }
+
+=>C
+
+22.
+
+A MongoDB developer is responsible for monitoring index use. Which command should be used to get statistics regarding the use of each index for a 'users' collection?
+
+(Choose 1)
+
+a.
+db.users.getIndexes()
+b.
+db.users.aggregate( [ { $indexStats: { } } ] )
+c.
+db.users.explain()
+d.
+db.users.explain("executionStats")
+
+=> B
+
+
+23.
+
+A developer is modeling an application where the main entity `User` can be related to several `Address` entities. The developer needs to ensure that data that is accessed together is stored together.
+
+How should the developer implement this?
+
+
+(Choose 1)
+
+a.
+Embed the Addresses as an array of subdocuments in each `User`.
+b.
+Reference the Addresses in an array in each `User`.
+c.
+Store the Addresses with a reference to its `User`.
+d.
+Embed `User` as a document in each `Address`.
+
+=> A
+
+
+24.
+A data modeler is setting up a MongoDB collection named "vehicles" to store information about different types of vehicles. The schema should include a field "type" which must only contain one of the following values: "Car", "Truck", "Motorcycle", or "Bicycle".
+
+Which MongoDB command correctly sets up the schema validation to enforce this constraint?
+
+a.
+``` db.createCollection("vehicles", { validator: { $jsonSchema: { bsonType: "object", properties: { type: { enum: ["Car", "Truck", "Motorcycle", "Bicycle"], description: "Must be either Car, Truck, Motorcycle, or Bicycle" } } } } }) ```
+b.
+``` db.createCollection("vehicles", { validator: { $jsonSchema: { bsonType: "object", properties: { type: { bsonType: "string", enum: ["Car", "Truck", "Motorcycle"], description: "Must be either Car, Truck, or Motorcycle" } } } } }) ```
+c.
+``` db.createCollection("vehicles", { validator: { $jsonSchema: { bsonType: "object", properties: { type: { bsonType: "string", pattern: "^(Car|Truck|Motorcycle|Bicycle)$", description: "Must be either Car, Truck, Motorcycle, or Bicycle" } } } } }) ```
+d.
+``` db.createCollection("vehicles", { validator: { $jsonSchema: { bsonType: "object", properties: { type: { bsonType: "array", items: { enum: ["Car", "Truck", "Motorcycle", "Bicycle"], description: "Must be either Car, Truck, Motorcycle, or Bicycle" } } } } } }) ```
+
+=> A
+
+
+
+
+
+
+
+
 
 
 
