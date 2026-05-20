@@ -1,5 +1,7 @@
 Associate Data Modeler Practice Questions
 
+ref: https://learn.mongodb.com/learn/course/associate-data-modeler-practice-questions/prep-questions/practice-questions
+
 1.
 
 A collection has 10 million documents. There is already an index on the collection, and an index scan is indicated in the winning query plan for a `find()` command with a filter. The query plan shows that the number of documents examined (`executionStats.totalDocsExamined`) is much larger than the number of documents returned (`executionStats.nReturned`). The query represents the main workload on that collection.
