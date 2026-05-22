@@ -1,4 +1,4 @@
-# Lesson 1: Overview and the Document Model (8%)
+# Lesson 1: Overview and the Document Model
 
 
 https://learn.mongodb.com/learn/course/mongodb-and-the-document-model-2025-12-31/lesson-1-overview-of-the-document-model/learn?client=customer
@@ -310,6 +310,378 @@ Document 的 Key-Value pairs 支援多種資料類型：
 
 解釋：MongoDB 使用彈性的文件模型，以類 JSON 的 BSON 格式儲存資料，不強制要求固定結構。
 
+
+
+
+# Lesson 2: Data Types in MongoDB
+
+
+
+
+### 一、 JSON 型態表列與規範
+
+| 型態名稱 | JSON 空間與格式規範 | BSON 對應型態 |
+| :--- | :--- | :--- |
+| **String** | UTF-8 編碼字串，帶雙引號 | String |
+| **Number** | 雙精度浮點數（JSON 唯一的數字型態） | Double (預設), Int32, Int64, Decimal128 |
+| **Object** | 經由 `{}` 包裹的無序 Key-Value 對 | Object (Embedded Document) |
+| **Array** | 經由 `[]` 包裹的有序值列表 | Array |
+| **true** | 字面值 `true`（1 byte 文字） | Boolean (0x01) |
+| **false** | 字面值 `false`（1 byte 文字） | Boolean (0x00) |
+| **null** | 字面值 `null` | Null |
+
+String 
+
+Characters that represent text   
+
+Single or double quotes(引號)  
+
+
+Number
+
+* Integers => 32/64 bit  
+
+* Floating-point values  
+ 
+
+Objecy
+
+curly braces
+
+Key-value pairs
+
+Embed document
+
+物件用大括號表示,封裝相key-value pairs
+透過將物件崁入父文件中
+
+Dates
+
+* Represented as a timestamp
+* Efficient for querying and sorting
+* Epoch (millisceonds since January 1, 1970)
+
+Compact
+
+* Efficient for storage
+* Easy to covert
+* Fast comaprisons and computations
+
+ObjectId
+* _id
+* Unique Identifier
+* Must be unique
+* MongoDB will automatically generate unique Object for _id
+
+* 是一個24自元的十六進制
+* 由Timestamp+Random Value+Counter 組成, 以確保其唯一性
+
+
+
+
+
+
+### Question 1
+**Which of the following statements about the _id field in MongoDB is true? (Select all that apply.)
+
+* (A) It provides a unique identifier for each document.
+* (B) It must be defined explicitly by the user when inserting a document.
+* (C) If omitted during document insertion, MongoDB generates an ObjectId automatically.
+* (D) It is required for every document in MongoDB.
+
+**Answer:** ACD
+
+**Explanation:**
+* **A:** The _id field in MongoDB is a unique field that’s used to identify each document in a collection. It ensures that each document has a distinct identifier and allows for efficient querying and data retrieval.
+* **B:** 
+The _id field does not have to be explicitly defined by the user. If it’s not provided during document insertion, MongoDB will automatically generate a unique ObjectId for the _id field.
+* **C:** The _id field in MongoDB is necessary for each document and must be unique. If it’s not provided during document insertion, MongoDB will automatically create an ObjectId for the _id field.
+* **D:** Every document in MongoDB must have an _id field. If it’s not provided during document insertion, MongoDB will automatically create an ObjectId for the _id field.
+
+---
+
+### Question 2
+**Which of the following data types is used for high-precision calculations and financial data in BSON? (Select one.)**
+
+* (a) Boolean
+* (b) Decimal128
+* (c) Int32
+* (d) Null
+
+**Answer:** B
+
+**Explanation:**
+
+A: In BSON, boolean values are used to represent binary state data with values of true or false. They cannot be used for high-precision calculations or financial data.
+B: In BSON, the decimal128 data type is used for high-precision calculations and financial data.
+C: In BSON, the int32 data type is a 32-bit integer. Because integers are whole numbers only, they are unable to process fractional or decimal values that are required for financial data or high-precision calculations.
+D: In BSON, null represents the absence of a value and cannot be used for calculations of any kind.
+
+
+
+# Lesson 3: Managing Databases, Collections, and Documents in Atlas
+
+
+<img width="2513" height="1558" alt="image" src="https://github.com/user-attachments/assets/ff2872dd-3f0f-4cae-9acf-30241e615cab" />
+
+<img width="1739" height="1187" alt="image" src="https://github.com/user-attachments/assets/45d338b4-ff27-46d3-bef8-a41887aaba16" />
+
+<img width="1707" height="1082" alt="image" src="https://github.com/user-attachments/assets/b36adbe0-bd8c-441f-b226-4c962a4363bd" />
+
+LAB主要就是如何建立一個collection, 跟新增一筆資料, 再到CLI做FindOne
+
+
+QA
+
+
+In Atlas, how do you perform a simple query to find specific data? (Select one.)
+
+a.
+Select the Browse Collections option.
+b.
+View your data in table format.
+c.
+It isn't possible to perform a simple query in Atlas.
+d.
+Enter field-value pairs in the filter bar on the Collections tab.
+
+Answer: D
+
+**Explanation:**
+A: The Browse Collections option allows you to navigate your collections, but to perform a simple query in Atlas, you need to enter field-value pairs directly in the filter bar on the Collections tab.
+
+B: Viewing data in table format in Atlas helps to visualize your documents, but to perform a simple query, you must enter field-value pairs in the filter bar on the Collections tab.
+
+
+C:It is possible to perform simple queries directly in Atlas. To find specific data, you must enter field-value pairs in the filter bar on the Collections tab.
+
+
+D: To perform a simple query in Atlas to find specific data, you must enter field-value pairs directly in the filter bar on the Collections tab.
+
+
+
+You are working with the memorabilia collection in the Atlas UI and need to add a new document for an autographed photo from the movie The Alamo, which is signed by three people. What best describes the steps you should take? (Select one.)
+
+a.
+Click Create Database followed by Insert Document, enter the field names and corresponding data types, click the Add to Existing Collection button.
+b.
+Click Insert Document, choose a view, enter the field names and corresponding data types, click Insert.
+c.
+In the document view filter bar, insert the "new" keyword followed by a JSON document with the field-value pairings, then click Apply.
+
+Answer: A
+
+**Explanation:**
+
+A:The Insert Document button is found on the Document view once a collection is selected and cannot be accessed from the Create Database modal. The Create Database button is used to create a new database and an initial collection within that database.
+
+
+B:To add a new document to the memorabilia collection from the Atlas UI, click the Insert Document button to open the Insert Document modal, where you can add the document field-value pairings. Once all field-value pairings are added, click the Insert button.
+
+C:The filter bar on the document view in the Atlas UI can only be used to query for documents. To insert documents into a collection, you must first click the Insert Document button, add the appropriate field-value pairings, and then click the Insert button.
+
+
+
+Lesson 4: Data Relationships
+
+Entities
+Attributes
+Relationship
+1. one to one
+2. ont to many
+3. many to many
+
+* 1. Entities
+  unique and independent(ex. a persion, a product, an organization or location, for example.)
+  Represented by documents
+  Grouped in collection
+* 2. Attributes
+     Characteristics that describe an entity
+     Field-value pairs
+     
+
+QA
+
+In our movies collection, which is an example of a one-to-many relationship? (Select one.)
+
+a.
+Movies and the theaters that are showing them.
+b.
+A movie and the studio that released it.
+c.
+A movie and its cast members.
+d.
+Theaters and the movies they are showing.
+
+
+
+Answer: C
+
+**Explanation:**
+
+A:A movie typically is shown in many theaters at the same time, and a theater typically shows many movies at the same time. This represents a many-To-many relationship, not a one-to-many relationship.
+B:A movie is released by a single studio, not multiple studios. This represents a one-to-one relationship.
+C:A movie typically has many cast members. This represents a one-to-many relationship.
+D: A theater typically shows many films at once, and a movie typically plays in many theaters, which represents a many-to-many relationship.
+
+
+
+In the context of a movie database application, which of the following is an example of an entity? (Select one.)
+
+a.
+The rating of a movie.
+b.
+A document representing a movie tracked in the database application.
+c.
+The genre of a movie.
+d.
+The release date of a movie.
+
+Answer: B
+
+**Explanation:**
+
+
+A:The rating of a movie is an attribute, not an entity. The movie is the entity that is being described by the rating attribute.
+
+
+B:A movie is a distinct object in the database application. We would want to have documents per movie that we keep together in a collection.
+
+
+C:The genre of a movie is an attribute, not an entity. The movie is the entity that is being described by the genre attribute.
+
+
+D: The release date is an attribute of that movie. The movie is the entity that is being described by the release date attribute.
+
+
+Lesson 5: Embedding and Referencing
+
+
+Embedding
+
+1 to 1
+1 to Many
+
+Embedding preferred for one-to-many
+
+1. Access as single unit
+2. Small, fixed-size related data
+3. Minimize database operations
+
+
+Referencing
+
+1. Independent acces
+2. Large or growing documents
+
+再有大文複雜的數據時, 使用引用叫好
+
+
+<img width="1710" height="887" alt="image" src="https://github.com/user-attachments/assets/6e6901fa-5686-438f-9560-b4cb08e17324" />
+
+減少多對多, 以避免複雜性
+
+QA
+
+What is the typical approach for modeling a one-to-one relationship in MongoDB, where one entity is related to exactly one other entity? (Select one.)
+
+a.
+Embedding
+b.
+Referencing
+c.
+Flattening
+d.
+Normalizing
+
+
+
+Answer: A
+
+**Explanation:**
+
+A:To model a one-to-one relationship in MongoDB, the typical approach is to embed the data. Embedding keeps related data together within the parent document, simplifying queries and allowing all related information to be stored and retrieved in a single document.
+
+B:Referencing is not the preferred approach for modeling a one-to-one relationship, as it involves storing related data in separate documents, which can increase complexity.
+
+C: Flattening refers to reducing nested data structures and is not specifically related to modeling a one-to-one relationship in MongoDB.
+
+D: While normalizing data is the standard practice for relational databases, the core principle of data modeling for MongoDB is "Data that is accessed together should be stored together." Normalization goes against this principle.
+
+
+
+You are designing a MongoDB schema for a movie database. There are approximately 40 movie genres represented in the database. A movie will typically belong to a few genres, and each genre could include thousands of movies.
+
+If you want to include the genre information for each movie, while also being able to query for all movies within a genre, how should you model the relationship between movies and genres? 
+
+a.
+Embed the genres directly within the movie document.
+b.
+Reference the genres in the movie document using an array of genre IDs.
+c.
+Embed the movie documents within each genre document.
+d.
+Reference the movies in each genre document using an array of movie IDs.
+
+Answer: A
+
+**Explanation:**
+
+A:Embedding genres within the movie document is suitable for this many-to-many relationship. Since each movie will likely not have more than a few genres, the genres can be directly embedded without fear of bloating the documents.
+
+
+B:Referencing the genres in the movie document using an array of genre IDs is suitable for some many-to-many relationships, but does not provide any benefit in this scenario. You would need to run a second query for just a few results, leading to slower application performance. Embedding would provide the same results in a single query.
+
+
+C:Embedding movies within each genre document is not suitable for this many-to-many relationship. Potentially thousands of movies belong to a given genre, and an array of thousands of movies can quickly consume too much space, leading to bloated documents.
+
+
+D: Referencing movies in each genre document using an array of movie IDs does not meet the requirement to include genre information within each movie documents and is not recommended. With potentially thousands of movies per genre, these arrays could grow very large, leading to document bloat and performance issues during updates.
+
+
+
+
+
+
+
+
+
+
+MongoDB and the Document Model
+In this unit, you learned how to:
+
+Describe MongoDB’s document model and the structure of documents
+Explain the purpose of a flexible schema
+List data types supported by MongoDB
+Create a database and collection in the Atlas UI
+Insert a document in a collection using the Atlas UI
+Identify different types of data relationships: one-to-one, one-to-many, and many-to-many
+Distinguish between embedding and referencing and when to use them
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ### Question 7
 *Which query returns all documents where the age field exists, regardless of its value? (Select one.)
 下列哪個查詢可回傳所有包含 age 欄位的文件，不論其值為何？
@@ -339,43 +711,6 @@ Document 的 Key-Value pairs 支援多種資料類型：
 * D. Indexes are auto-created by MongoDB
 **Answer:** B
 解釋：索引能減少實際需要讀取的文件數量，直接降低 disk I/O。
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
