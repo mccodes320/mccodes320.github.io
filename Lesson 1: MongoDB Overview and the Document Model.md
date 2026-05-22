@@ -1,5 +1,9 @@
 # Lesson 1: Overview and the Document Model (8%)
 
+
+https://learn.mongodb.com/learn/course/mongodb-and-the-document-model-2025-12-31/lesson-1-overview-of-the-document-model/learn?client=customer
+
+
 ## 本章重點
 1. MongoDB 架構階層定義 
 2. Document Structure
