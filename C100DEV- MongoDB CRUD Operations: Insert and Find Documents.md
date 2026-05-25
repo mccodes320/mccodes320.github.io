@@ -397,6 +397,51 @@ db.routes.find({
   ]
 })
 ```
+
+$and
+
+db.<collection>.find({
+  $and: [
+    {<expression>},
+    {<expression>},
+    ...
+  ]
+})
+
+$or
+
+db.<collection>.find({
+  $or: [
+    {<expression 1>},
+    {<expression 2>},
+    ...
+  ]
+})
+
+
+db.routes.find({ $or: [{ dst_airport: "SEA" }, { src_airport: "SEA" }] })
+
+db.routes.find({
+  $and: [{ "airline": "Southwest Airlines" }, { "stops": { $gte: 1 } }],
+})
+
+4. 複合邏輯查詢範例（$and 巢狀包包含 $or）
+
+```sql
+db.routes.find({
+  $and: [
+    { $or: [
+      { dst_airport: "SEA" },
+      { src_airport: "SEA" }
+    ]},
+    { $or: [
+      { airline: "American Airlines" },
+      { airplane: 320 }
+    ]},
+  ]
+})
+```
+
 QA
 
 *-*-*
@@ -474,58 +519,70 @@ db.routes.find({ "airline.name": "Turkish Airlines", stops: 0 })
 
 ---
 
-* Conclusion: MongoDB CRUD Operations: Insert and Find Documents
+# Conclusion: MongoDB CRUD Operations - Insert and Find Documents
 
+In this unit, you learned how to insert and find documents in a MongoDB collection. You built queries by using the following comparison and logical operators, as well as array querying techniques.
 
+---
 
-MongoDB CRUD Operations: Insert and Find Documents
-In this unit, you learned how to insert and find documents in a MongoDB collection. You built queries by using the following comparison operators:
+## Key Concepts Covered
 
-$gt (greater than)
-$lt (less than)
-$lte (less than or equal to)
-$gte (greater than or equal to)
-You also used the following logical operators:
+### 1. Comparison Operators
+* **`$gt`** : Greater than (大於)
+* **`$lt`** : Less than (小於)
+* **`$lte`** : Less than or equal to (小於或等於)
+* **`$gte`** : Greater than or equal to (大於或等於)
 
-$and
-$or
-Finally, you learned how to query elements in an array and how to use the $elemMatch operator.
+### 2. Logical Operators
+* **`$and`** : Joins query clauses with a logical `AND` (邏輯與)
+* **`$or`** : Joins query clauses with a logical `OR` (邏輯或)
 
+### 3. Array Querying
+* Querying elements inside an array.
+* Utilizing the **`$elemMatch`** operator to match documents containing an array field with at least one element that matches all specified query criteria.
 
-Resources
+---
+
+## Resources
 Use the following resources to learn more about inserting and finding documents in MongoDB:
 
-Lesson 01: Inserting Documents in a MongoDB Collection
-MongoDB Docs: insertOne()
-MongoDB Docs: insertMany()
-Lesson 02: Finding Documents in a MongoDB Collection
-MongoDB Docs: find()
-MongoDB Docs: $in
-Lesson 03: Finding Documents by Using Comparison Operators
-MongoDB Docs: Comparison Operators
-Lesson 04: Querying on Array Elements in MongoDB
-MongoDB Docs: $elemMatch
-MongoDB Docs: Querying Arrays
-Lesson 05: Finding Documents by Using Logical Operators
-MongoDB Docs: Logical Operators
+### Lesson 01: Inserting Documents in a MongoDB Collection
+* [MongoDB Docs: insertOne()](https://www.mongodb.com/docs/manual/reference/method/db.collection.insertOne/)
+* [MongoDB Docs: insertMany()](https://www.mongodb.com/docs/manual/reference/method/db.collection.insertMany/)
 
-Associate Certification Course
-By completing this unit, you've finished 30% of the CRUD content necessary for the Associate Developer Certification exam.
+### Lesson 02: Finding Documents in a MongoDB Collection
+* [MongoDB Docs: find()](https://www.mongodb.com/docs/manual/reference/method/db.collection.find/)
+* [MongoDB Docs: $in](https://www.mongodb.com/docs/manual/reference/operator/query/in/)
 
-If you're interested in continuing, your next step is to review the following units:
+### Lesson 03: Finding Documents by Using Comparison Operators
+* [MongoDB Docs: Comparison Operators](https://www.mongodb.com/docs/manual/reference/operator/query-comparison/)
 
-Unit 01: Getting Started with MongoDB Atlas
-Unit 02: The MongoDB Document Model
-Unit 03: Connecting to a MongoDB Database
-Unit 05: MongoDB CRUD: Replace and Delete
-Unit 06: MongoDB CRUD: Reading Query Results
-Unit 07: MongoDB Aggregation
-Unit 08: MongoDB Indexes
-Unit 09: MongoDB Atlas Search
-Unit 10: MongoDB Data Modeling
-Unit 11: MongoDB Transactions
+### Lesson 04: Querying on Array Elements in MongoDB
+* [MongoDB Docs: $elemMatch](https://www.mongodb.com/docs/manual/reference/operator/query/elemMatch/)
+* [MongoDB Docs: Querying Arrays](https://www.mongodb.com/docs/manual/tutorial/query-arrays/)
 
+### Lesson 05: Finding Documents by Using Logical Operators
+* [MongoDB Docs: Logical Operators](https://www.mongodb.com/docs/manual/reference/operator/query-logical/)
 
+---
+
+## Associate Certification Course Progress
+
+Progress Update: By completing this unit, you've finished 30% of the CRUD content necessary for the Associate Developer Certification exam.
+
+### Next Steps
+If you're interested in continuing your certification preparation, your next step is to review the following units:
+
+* Unit 01: Getting Started with MongoDB Atlas
+* Unit 02: The MongoDB Document Model
+* Unit 03: Connecting to a MongoDB Database
+* Unit 05: MongoDB CRUD: Replace and Delete
+* Unit 06: MongoDB CRUD: Reading Query Results
+* Unit 07: MongoDB Aggregation
+* Unit 08: MongoDB Indexes
+* Unit 09: MongoDB Atlas Search
+* Unit 10: MongoDB Data Modeling
+* Unit 11: MongoDB Transactions
 
 
 
