@@ -634,21 +634,19 @@ d:This will not be flagged as an error. Consider why it's important be careful w
 MongoDB Aggregation
 In this unit, you learned how to use aggregation in MongoDB and create an aggregation pipeline. You also learned how to use several of the most common aggregation stages, including:
 
-$match
 
-$group
 
-$sort
+| Stage      | 用途說明              |
+| ---------- | ----------------- |
+| `$match`   | 篩選條件（類似 find）     |
+| `$group`   | 分組並進行聚合（如總數、平均）   |
+| `$project` | 選擇/修改欄位內容（可改欄位名稱） |
+| `$sort`    | 排序                |
+| `$limit`   | 取前 N 筆資料          |
+| `$skip`    | 跳過前 N 筆資料         |
+| `$unwind`  | 展開陣列欄位，每個元素變成一筆文件 |
+| `$lookup`  | 關聯查詢（類似 SQL JOIN） |
 
-$limit
-
-$project
-
-$count
-
-$set
-
-$out
 
 Resources
 Use the following resources to learn more about inserting and finding documents in MongoDB:
