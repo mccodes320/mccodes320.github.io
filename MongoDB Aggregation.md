@@ -56,63 +56,56 @@ db.users.aggregate([
 ])
 ```
 
-QA
-
+### 題目 (Question)
+---
 Which of the following tasks cannot be completed with an aggregation pipeline? (Select one.)
 
-a.
-Filtering for relevant pieces of data
-b.
-Finding data from outside sources
-c.
-Grouping documents
-d.
-Calculating total values from a field across many documents
+a. Filtering for relevant pieces of data  
+b. Finding data from outside sources  
+c. Grouping documents  
+d. Calculating total values from a field across many documents
+
+**正確答案：B**
 
 
-=>B
 
-a:You can filter for relevant pieces of data by using aggregation, but can you change the documents in the database?
+### 選項解析 (Explanation)
 
-
-b:You cannot use aggregation to find data from outside sources.
-
-
-c:You can group documents together by using aggregation, but can you change those documents in the database?
-
-
-d:You can calculate totals from a group of documents by using aggregation, but can you change those documents in the database?
+* **a. Filtering for relevant pieces of data**
+  * You can filter for relevant pieces of data by using aggregation, but can you change the documents in the database?
+* **b. Finding data from outside sources**
+  * **(Correct)** You cannot use aggregation to find data from outside sources.
+* **c. Grouping documents**
+  * You can group documents together by using aggregation, but can you change those documents in the database?
+* **d. Calculating total values from a field across many documents**
+  * You can calculate totals from a group of documents by using aggregation, but can you change those documents in the database?
 
 
 
 
-Select an answer choice and then click "See Results" to submit.
-
+### 題目 (Question)
+---
 Which command performs an aggregation operation by using an aggregation pipeline? (Select one.)
 
-a.
-group()
-b.
-filter()
-c.
-aggregation()
-d.
-aggregate()
+a. group()
+b. filter()
+c. aggregation()
+d. aggregate()
+
+**正確答案：D**
 
 
-=>d
 
+### 選項解析 (Explanation)
 
-a:group is a stage that can be used in an aggregation pipeline. It does not perform an aggregation operation.
-
-
-b:group is a stage that can be used in an aggregation pipeline. It does not perform an aggregation operation.
-
-
-c:group is a stage that can be used in an aggregation pipeline. It does not perform an aggregation operation.
-
-
-d:aggregate() performs an aggregation operation by using an aggregation pipeline. aggregate() takes an array of aggregation stages to form the pipeline. An aggregation function is written as db.collection.aggregate().
+* **a. group()**
+  * group is a stage that can be used in an aggregation pipeline. It does not perform an aggregation operation.
+* **b. filter()**
+  * group is a stage that can be used in an aggregation pipeline. It does not perform an aggregation operation.
+* **c. aggregation()**
+  * group is a stage that can be used in an aggregation pipeline. It does not perform an aggregation operation.
+* **d. aggregate()**
+  * **(Correct)** aggregate() performs an aggregation operation by using an aggregation pipeline. aggregate() takes an array of aggregation stages to form the pipeline. An aggregation function is written as db.collection.aggregate().
 
 # Highlight Zone Challenge: Introduction to MongoDB Aggregation
 
