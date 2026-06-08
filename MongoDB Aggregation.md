@@ -1,8 +1,5 @@
-
-
-
-Lesson 1: Introduction to MongoDB Aggregation
-Lesson 2: Using $match and $group Stages in a MongoDB Aggregation Pipeline
+Lesson 1: Introduction to MongoDB Aggregation  
+Lesson 2: Using $match and $group Stages in a MongoDB Aggregation Pipeline  
 
 ## Introduction to MongoDB Aggregation
 
@@ -44,6 +41,7 @@ $sort: Puts the documents in a specified order
 使用 $addFields 階段（保留原本所有欄位，並加上新欄位）
 這是最常見的用法。當你想從資料庫撈出資料，並在不修改資料庫原始檔案的情況下，動態產生一個 defaultUsername 給前端使用：
 
+```SQL
 db.users.aggregate([
   {
     $addFields: {
@@ -53,7 +51,7 @@ db.users.aggregate([
     }
   }
 ])
-
+```
 
 QA
 
