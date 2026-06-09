@@ -98,6 +98,44 @@ D: In this scenario, adding new documents that contain information about movies 
 Lesson 2: ACID Transactions in MongoDB
 ---
 
+A group of db operations that will be completed as a unit or not at all. 
+
+### Single-document operations are already atomic in MondoDB
+僅影響一個Collection基本上在mongoDB本質上就是原子的
+
+類似updateOne，將修改後的結果同時展示給客戶端
+<img width="1161" height="795" alt="image" src="https://github.com/user-attachments/assets/83c34e30-3982-47de-907e-f98624581f8c" />
+
+### Mulit-document Operations
+相較Single 多個文檔操作本質上就不是原子的，需要額外的步驟
+
+1. Are not inherently atimic
+2. Require extra steps to have ACID properties
+3. 
+<img width="646" height="795" alt="image" src="https://github.com/user-attachments/assets/b580f9dc-1966-448b-a603-0164f4dcb9c8" />
+
+<img width="1199" height="806" alt="image" src="https://github.com/user-attachments/assets/7618a963-2b28-4988-bfc5-b96b39d7cb78" />
+
+### Mulit-document ACID Transcation
+
+1. MongoDB "locks" resources involved in a transcation
+2. Incurs performance cost and affects latency
+3. Use multi-document transcations as a precise(精確) tool。在絕對確定要使用ACID屬性完成多的文檔操作時才被使用
+
+
+### Learn
+
+All single-document operations are atomic。  
+  
+No extra steps are needed to provide ACID propertoes to single-document operations  
+
+<img width="482" height="456" alt="image" src="https://github.com/user-attachments/assets/95ad000e-71c6-43cc-8ded-141b9c215b40" />
+
+
+
+
+
+QA
 
 Which of the following statements are true about multi-document transactions in MongoDB? (Select all that apply.)
 
@@ -163,6 +201,57 @@ D:
 Lesson 3: Using Transactions in MongoDB
 ---
 
+示範多文件交易與中斷多文件交易，帳戶之間的資金轉移。 
+
+因為是資金交易, 預設60秒內完成  
+
+兩個帳戶舉例如下
+<img width="1136" height="757" alt="image" src="https://github.com/user-attachments/assets/34dfe597-981a-4be5-87b0-023ad8425f9f" />
+
+### Session
+
+Used to group database operations that are related to each other and should be run together
+
+
+
+
+Using the mongosh tab, run the following command to create a session variable for the multi-document transaction:
+  
+```SQL
+const session = db.getMongo().startSession()    # 進入mongodb Session
+```
+
+This command creates a new session, but it hasn't started a transaction yet. In the next step, you'll start the transaction using this session
+
+
+Next, start a transaction using the session variable you created:
+ 
+```SQL
+session.startTransaction()                      # 開始交易
+```
+
+Now use the following command to create an account variable which is a reference to the accounts collection using the session you created:
+
+```SQL
+const account = session.getDatabase('bank').getCollection('accounts')                         # 帳戶合集的操作
+```
+```SQL
+account.updateOne({ account_id: "MDB740836066"} , {$inc: {balance: -30}})
+```
+```SQL
+
+account.updateOne({ account_id: "MDB963134500"} , {$inc: {balance: 30}})
+
+```
+
+Finally, complete the transaction on the session using the following command:
+
+```sql
+session.commitTranscation()
+```
+
+
+
 ### Multi-Document Transactions
 ACID transactions in MongoDB are typically used only by applications where values are exchanged between different parties, such as banking or business applications. If you find yourself in a scenario where a multi-document transaction is required, it's very likely that you will complete a transaction with one of MongoDB's drivers. For now, let's focus on completing and canceling multi-document transactions in the shell to become familiar with the steps.
 
@@ -170,15 +259,17 @@ ACID transactions in MongoDB are typically used only by applications where value
 ### Using a Transaction: Video Code
 Here is a recap of the code that's used to complete a multi-document transaction:
 
-const session = db.getMongo().startSession()
+```SQL
+const session = db.getMongo().startSession()    # 進入mongodb Session
 
-session.startTransaction()
+session.startTransaction()                      # 開始交易
 
-const account = session.getDatabase('< add database name here>').getCollection('<add collection name here>')
+const account = session.getDatabase('< add database name here>').getCollection('<add collection name here>')                         # 帳戶合集的操作
 
 //Add database operations like .updateOne() here
 
 session.commitTransaction()
+```
 
 ### Aborting a Transaction
 If you find yourself in a scenario that requires you to roll back database operations before a transaction is completed, you can abort the transaction. Doing so will roll back the database to its original state, before the transaction was initiated.
@@ -199,9 +290,93 @@ session.abortTransaction()
 ```
 
 
+QA
+
+
+You are creating a transaction that does the following:
+
+* Inserts a new savings account into the accounts collection for an existing customer
+
+* Funds the new savings account with $200 from their checking account
+
+The transaction looks like this: 
+
+```sql
+const session = db.getMongo().startSession()
+
+session.startTransaction()
+
+const account = session.getDatabase('bank').getCollection('accounts')
+
+account.insertOne({
+  account_id: "MDB361428849",
+  account_holder: "Donna Wood",
+  account_type: "savings",
+  balance: 200.0,
+  transfers_complete: [],
+  last_updated: new Date()
+})
+account.updateOne( { account_id: "MDB919841472" }, {$inc: { balance: -200.00 }})
+```
+
+
+What method should you use to complete this transaction? (Select one.)
+
+a.
+endTransaction()
+b.
+commitTransaction()
+c.
+endSessions()
+d.
+completeTransaction()
+
+
+==> B
+
+
+A:.endTransaction() is not a valid method in MongoDB.
+
+
+B:We use .commitTransaction() to commit a transaction.session.commitTransaction() should be placed at the end of the transaction.
+
+C:endSessions() expires specific sessions and will not commit a transaction.
+
+D:completeTransaction() is not a valid method in MongoDB.
+
+
+
+
+
+Select one or more answer choices and then click "See Results" to submit.
+
+Which of the following commands will output to the shell if they are successful?
+
+a.
+.startTransaction()
+b.
+.commitTransaction()
+c.
+.abortTransaction()
+
+==> B
 
 
 
 
 
 
+
+
+## Conclusion
+
+
+### MongoDB Transactions
+In this unit, you learned that ACID transactions ensure that database operations, such as transferring funds from one account to another, happen together or not at all. You also explored how ACID transactions work with the document model in MongoDB. Finally, you learned how to create and use multi-document transactions by using the startTransaction() and commitTransaction() commands, and how to cancel multi-document transactions by using the abortTransaction() command.
+
+
+### Resources
+Use the following resources to learn more about ACID transactions in MongoDB:
+
+What are ACID transactions?
+How do ACID transactions work in MongoDB?
