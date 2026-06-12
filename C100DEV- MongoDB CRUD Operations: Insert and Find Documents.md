@@ -123,7 +123,7 @@ db.grades.insertMany([
 ])
 ```
 
-Q&A
+### Q&A
 
 What methods are available in MongoDB for inserting a single document? (Select one.)
 
@@ -138,28 +138,42 @@ d. .insertMany()
 
 ==> A 
 
+### Q&A
+
 Select an answer choice and then click "See Results" to submit.
 
 * What methods are available in MongoDB for inserting multiple documents? (Select one.) *
 
+a.
+.InsertDocument()
+b.
+.inserting()
+c.
+.insertOne()
+d.
+.insertMany()
 
+
+==>  D
 
 ---
 
- Lesson2 : Finding Documents in a MongoDB Collection
+** Lesson2 : Finding Documents in a MongoDB Collection
 
+```sql
 db.<collection>.find()
 
 { field : <value> }
 
 { field : { $eq : <value> } }
+```
 
-
+```sql
 db.<collection>.find({
    <field> : { $in: 
      [<value>, <value>,...]
 })
-
+```
 
 ** Finding Documents in a MongoDB Collection
 
@@ -201,6 +215,8 @@ A: Correct! The find() method is a valid method that's included in the MongoDB S
 
 BCD:  Incorrect. This is not a valid method included in the MongoDB Shell. What method can you use to find documents?
 
+Quiz 
+
 
 You are searching for data on a small area in downtown Chicago with the following zip codes:
 ```
@@ -212,6 +228,17 @@ You are searching for data on a small area in downtown Chicago with the followin
 “60606”
 ```
 Which of the following query documents should you use to ensure that only the documents with the specified zip codes are returned? (Select one.)
+
+a.
+{ zip: { $nin : [ "60601", "60602", "60603", "60604", "60605", "60606"] } }
+b.
+{ zip: { $in : [ "60601", "60602", "60603", "60604", "60605", "60606"] } }
+c.
+{ zip: { $eq : "60601", "60602", "60603", "60604", "60605", "60606" } }
+d.
+{ zip: "60601", "60602", "60603", "60604", "60605", "60606" }
+
+
 
 ==> B
 
