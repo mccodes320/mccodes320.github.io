@@ -1,26 +1,28 @@
 * Lesson 1 : Inserting Documents in a MongoDB Collection
 * Lesson 2 : Finding Documents in a MongoDB Collection
-* Lesson 3: Finding Documents by Using Comparison Operators
-* Lesson 4: Querying on Array Elements in MongoDB
-* Lesson 5: Finding Documents by Using Logical Operators
+* Lesson 3 : Finding Documents by Using Comparison Operators
+* Lesson 4 : Querying on Array Elements in MongoDB
+* Lesson 5 : Finding Documents by Using Logical Operators
 
 
 
 https://learn.mongodb.com/learn/course/mongodb-crud-operations-insert-and-find-documents/lesson-1-inserting-documents-in-a-mongodb-collection/learn
 
+# Lesson 1 : Inserting Documents in a MongoDB Collection
+
 In this unit, you will be introduced to CRUD operations in MongoDB by inserting and finding documents. Inserting and finding documents will help you discover the ease and usability of MongoDB. You'll also build your own queries that use comparison and logical operators. Using operators will make your queries more precise and, in turn, make your application easier to develop. Finally, you'll learn how to query elements in an array. Arrays are a crucial data type that you will encounter frequently, so it's important that you have a solid understanding of how to work with them.  
 
-iesertOne(): 插入單個文檔. 
-insertMany(): 插入多個文檔
+* iesertOne(): 插入單個文檔  
+* insertMany(): 插入多個文檔
 
-```json
+```sql
 db.<collection>.iesertOne() 如果<collection>不存在, 就會自動創建
 db.<collection>.iesertMany([<doc1>,<doc2>])
 ```
 
 QA
 
-Insert a Single Document  
+## Insert a Single Document  
   
 Use insertOne() to insert a document into a collection. Within the parentheses of insertOne(), include an object that contains the document data. Here's an example:
 
@@ -49,7 +51,7 @@ db.grades.insertOne({
 })
 ```
 
-Insert Multiple Documents
+## Insert Multiple Documents
 
 Use insertMany() to insert multiple documents at once. Within insertMany(), include the documents within an array. Each document should be separated by a comma. Here's an example:
 
@@ -146,20 +148,20 @@ Select an answer choice and then click "See Results" to submit.
 * What methods are available in MongoDB for inserting multiple documents? (Select one.) *
 
 a.
-.InsertDocument()
+.InsertDocument()  
 b.
-.inserting()
+.inserting()  
 c.
-.insertOne()
+.insertOne()  
 d.
-.insertMany()
+.insertMany()  
 
 
 ==>  D
 
 ---
 
-** Lesson2 : Finding Documents in a MongoDB Collection
+# Lesson2 : Finding Documents in a MongoDB Collection
 
 ```sql
 db.<collection>.find()
@@ -176,27 +178,24 @@ db.<collection>.find({
 })
 ```
 
-** Finding Documents in a MongoDB Collection
-
+* Finding Documents in a MongoDB Collection  
 Review the following code, which demonstrates how to query documents in MongoDB.
 
-** Find a Document with Equality
-
+* Find a Document with Equality  
 When given equality with an _id field, the find() command will return the specified document that matches the _id. Here's an example:
 
 ```
 db.zips.find({ _id: ObjectId("5c8eccc1caa187d17ca6ed16") })
 ```
 
-** Find a Document by Using the $in Operator
-
+* Find a Document by Using the $in Operator  
 Use the $in operator to select documents where the value of a field equals any value in the specified array. Here's an example:
 
 ```sql
 db.zips.find({ city: { $in: ["PHOENIX", "CHICAGO"] } })
 ```
 
-Quiz 
+### Quiz 
 
 
 What methods are available in MongoDB for finding documents? (Select one.)
@@ -255,6 +254,13 @@ C: Incorrect. This syntax is inaccurate because the $eq operator matches documen
 D: Incorrect. This syntax is inaccurate because the implicit equality operator matches documents that contain only one specified value.
 
 
+筆記:
+
+$eq 的右邊： 只能是一個具體的值（字串、數字、或一個精確的陣列/物件），絕對不能出現逗號分隔的多個純量。
+
+$in 的右邊： 必須是一個中括號 [] 陣列，裡面放所有你允許匹配的複數條件。
+
+$or 的右邊： 必須是一個中括號 [] 陣列，且陣列裡面包的必須是數個獨立且完整的 { 欄位: 條件 } 物件。
 
 
 
@@ -262,8 +268,7 @@ D: Incorrect. This syntax is inaccurate because the implicit equality operator m
 ---
 
 
-
-** Lesson 3: Finding Documents by Using Comparison Operators
+# Lesson 3: Finding Documents by Using Comparison Operators
 
 $gt (greater than) - 大于
 $lt (less than) - 小于
@@ -331,7 +336,7 @@ d.
 
 ---
 
-** Lesson 4: Querying on Array Elements in MongoDB **
+# Lesson 4: Querying on Array Elements in MongoDB **
 
 * Querying on Array Elements in MongoDB *
 
@@ -398,18 +403,19 @@ C: Incorrect. This query will not filter out all documents that contain the stri
 
 ---
 
-* Lesson 5: Finding Documents by Using Logical Operators *
+# Lesson 5: Finding Documents by Using Logical Operators *
 
 
 
-** Finding Documents by Using Logical Operators** 
+* Finding Documents by Using Logical Operators* 
 Review the following logical operators: implicit $and, $or, and $and.
 
-**  Find a Document by Using Implicit $and**  
+*  Find a Document by Using Implicit $and**  
 Use implicit $and to select documents that match multiple expressions. For example:
 
 db.routes.find({ "airline.name": "Southwest Airlines", stops: { $gte: 1 } })
-**  Find a Document by Using the $or Operator** 
+   
+*  Find a Document by Using the $or Operator** 
 Use the $or operator to select documents that match at least one of the included expressions. For example:
 
 ```sql
