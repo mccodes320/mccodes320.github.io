@@ -221,21 +221,24 @@ Quiz
 
 You are searching for data on a small area in downtown Chicago with the following zip codes:
 ```
-“60601”
-“60602”
-“60603”
-“60604”
-“60605”
-“60606”
+“60601” 
+“60602”  
+“60603”  
+“60604” 
+“60605” 
+“60606” 
 ```
 Which of the following query documents should you use to ensure that only the documents with the specified zip codes are returned? (Select one.)
 
 a.
 { zip: { $nin : [ "60601", "60602", "60603", "60604", "60605", "60606"] } }
+
 b.
 { zip: { $in : [ "60601", "60602", "60603", "60604", "60605", "60606"] } }
+
 c.
 { zip: { $eq : "60601", "60602", "60603", "60604", "60605", "60606" } }
+
 d.
 { zip: "60601", "60602", "60603", "60604", "60605", "60606" }
 
