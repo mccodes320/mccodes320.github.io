@@ -622,7 +622,24 @@ If you're interested in continuing your certification preparation, your next ste
 * Unit 11: MongoDB Transactions
 
 
+# Associate Developer Java Practice Quest
 
+6. An `inventory` collection consists of 200 documents.
+
+What method should be used to get all documents from a cursor using mongosh?
+
+(Choose 1)
+
+Correct Answer
+
+a.
+db.inventory.findOne()
+b.
+db.inventory.find().toArray();
+c.
+db.inventory.find();
+d.
+db.inventory.findMany().toArray()
 
 
 
