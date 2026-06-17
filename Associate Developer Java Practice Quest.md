@@ -658,6 +658,14 @@ Answer:  A
 
 
 
+查詢優化器（Query Planner）會去尋找鍵值完全對應 "objs.a" 的索引
+
+多鍵索引（Multikey Index）: 對內嵌文件陣列（Array of Embedded Documents）進行索引優化
+
+db.collection.createIndex({"objs.a": 1})
+
+
+
 
 22. Given the following query(Choose 2):
 db.coll.find({}).sort({"product": 1, "price": 1})
