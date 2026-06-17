@@ -682,5 +682,169 @@ b:
 c:
 d:
 
+# Associate Developer Java Practice Quest
+
+
+7. A collection has documents like the following:
+
+ { _id: 1, name: 'Oatmeal Fruit Cake with Gummy Bears ', price: 11)},
+ { _id: 2, name: 'Cheesecake Trifle with Chocolate Sprinkles ', price: 14)},
+ { _id: 3, name: 'Pistachio Brownie with Walnuts ', price: 5},
+ { _id: 4, name: 'Strawberry Ice Cream Cake with Butterscotch Syrup ', price: 3)}
+How should the 'autocomplete' index be defined to look for matches at the beginning of a word on the name field?
+
+(Choose 1)
+
+Incorrect - 0 out of 1 correct answer chosen
+
+a.
+{  "mappings": { "dynamic": false, "fields": { "name": [   {  "type": "autocomplete", "tokenization": "regexCaptureGroup"} ]     } }}
+
+b.
+{  "mappings": { "dynamic": false, "fields": { "name": [   {  "type": "autocomplete", "tokenization": "edgeGram"} ]    } }}
+
+c.
+{  "mappings": { "dynamic": false, "fields": { "name": [   {  "type": "autocomplete", "tokenization": "nGram"} ]    } }}
+
+d.
+{  "mappings": { "dynamic": false, "fields": { "name": [   {  "type": "autocomplete", "tokenization": "matchNGram"}} ]     } }}
+
+
+## $search 進行自動補全查詢
+
+```
+db.user.createSearchIndex(
+  "default", // 索引名稱
+  {
+    mappings: {
+      dynamic: false,
+      fields: {
+        name: [
+          {
+            type: "autocomplete",
+            tokenization: "edgeGram",
+            minGrams: 2,
+            maxGrams: 15
+          }
+        ]
+      }
+    }
+  }
+)
+
+註： minGrams: 2 代表使用者至少要輸入 2 個字母（例如 "Ch"）才會觸發自動補全提示，這能大幅提升搜尋效能與精準度。
+
+```
+
+對應altrs
+
+``` json
+{
+  "mappings": {
+    "dynamic": false,
+    "fields": {
+      "name": [
+        {
+          "type": "autocomplete",
+          "tokenization": "edgeGram",
+          "minGrams": 2,
+          "maxGrams": 15
+        }
+      ]
+    }
+  }
+}
+```
+
+
+搜尋 "Ch" （預期命中 Cheesecake、Chocolate）
+
+```sql
+db.user.aggregate([
+  {
+    $search: {
+      "index": "default",
+      "autocomplete": {
+        "query": "Ch",
+        "path": "name"
+      }
+    }
+  },
+  { $project: { _id: 1, name: 1, price: 1 } }
+])
+```
+
+1. index: "default"
+含義：指定要使用的 Search Index（搜尋索引）名稱。
+
+說明：你在上一階段透過 createSearchIndex 建立的索引名稱是 "default"。如果你建立了多個不同的搜尋索引（例如一個給商品名稱用、一個給文章內文用），你就必須在這裡填入對應的索引名稱，告訴引擎你要用哪一套規則來搜。
+
+2. autocomplete: { ... }
+含義：指定要使用的 搜尋運算子（Operator）。
+
+說明：$search 支援很多種搜尋方式（例如：精準字串搜尋 text、模糊搜尋 phrase、數值範圍 near 等）。這裡使用 autocomplete，代表你要啟動「自動補全 / 預測字詞」的搜尋模式。它會配合你索引中設定的 edgeGram，去比對單字的開頭。
+
+3. query: "Ch"
+含義：使用者實際輸入的搜尋關鍵字（Search Term）。
+
+說明：這通常是前端搜尋框即時傳進來的字串。在這個範例中，代表使用者輸入了 "Ch"，搜尋引擎會拿這個 "Ch" 去字庫裡比對哪些單字的開頭符合 C-h。
+
+4. path: "name"
+含義：指定要在哪一個資料欄位（Field）進行搜尋。
+
+說明：告訴引擎你要在文件的哪裡找 "Ch"。這裡填寫 "name"，表示要在 name（甜點名稱）這個欄位裡尋找。
+
+補充：如果你的搜尋索引同時開放了多個欄位（例如 name 和 description），你也可以用陣列形式傳入多個路徑，例如："path": ["name", "description"]。
+
+
+
+  
+## $out  將聚合產生的結果直接寫入到指定的集合（Collection）中
+
+
+10. A collection coll in database mdb has the following documents :
+
+{_id: 1, type: "A", value: 60}
+{_id: 2, type: "B", value: 80}
+{_id: 3, type: "C", value: 10}
+After executing the following aggregation pipeline:
+
+db.getSiblingDB("mdb").coll.aggregate([
+    { $out: {db:'test', collection:'results'}} ])
+What are two expected results?
+
+a.
+Collection `results` is created in database `test`.
+b.
+There is a syntax error command. Collection `results` is not created.
+c.
+No documents in collection `coll` are written to collection `results`.
+d.
+All documents in collection `coll` are written to collection `results`.
+
+
+==> Bc
+
+```sql
+{ $out: { db: "<目標資料庫>", collection: "<目標集合>" } }
+```
+
+```sql
+db.getSiblingDB("mdb").coll.aggregate([
+  { $out: { db: 'test', collection: 'results' } }
+])
+```
+1. db.getSiblingDB("mdb").coll：代表切換到 mdb 資料庫，並對 coll 集合執行聚合。
+
+2. $out: {db:'test', collection:'results'}：這是完全正確的跨資料庫語法。它會指示 MongoDB 在 test 資料庫中建立一個名為 results 的新集合。
+
+3. 資料複製行為：因為 $out 之前沒有任何過濾（如 $match）或修改階段，所以 coll 集合內部的所有文件（All documents）都會被原封不動地輸出並寫入到 test.results 中。
+
+
+
+
+
+
+
 
 
