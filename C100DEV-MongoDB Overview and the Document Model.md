@@ -25,13 +25,14 @@ https://learn.mongodb.com/learn/course/mongodb-and-the-document-model-2025-12-31
 
 ### 2. 各階層詳細定義
 
-| 階層名稱 | 中文翻譯 | 關聯式資料庫對應 (RDBMS) | 詳細說明 |
-| :--- | :--- | :--- | :--- |
-| **Cluster** | 集群 | 伺服器群組 / 分散式架構 | **最上層架構。** 由多個 Node（節點）組成的伺服器群組。主要用於實現資料的高可用性（Replica Set）或水平擴充（Sharding）。 |
-| **Node** | 節點 | 單一資料庫伺服器 | **硬體與實例層。** 指的是集群中的單一伺服器或單一 MongoDB 執行實例（Instance），負責實際的資料存取與運算。 |
-| **Database** | 資料庫 | Database (資料庫) | **邏輯儲存層。** 一個節點內可以包含多個獨立的資料庫。每個資料庫擁有自己獨立的儲存檔案與權限控制。 |
-| **Collection** | 集合 | Table (資料表) | **資料分組層。** 一個資料庫內包含多個集合。集合用來存放結構相似的 Document，且在 MongoDB 中不需要預先定義綱要（Schema-less）。 |
-| **Document** | 文件 | Row / Record (資料列/記錄) | **基礎資料儲存單位。** 位於金字塔最底層。MongoDB 使用 BSON（二進位 JSON）格式來儲存具體的資料欄位與內容，是實際儲存資料的地方。 |
+| 階層名稱 | 關聯式資料庫對應 (RDBMS) | 詳細說明 |
+| :--- | :--- | :--- |
+| **Cluster** | 伺服器群組 / 分散式架構 | **最上層架構。** 由多個 Node（節點）組成的伺服器群組。主要用於實現資料的高可用性（Replica Set）或水平擴充（Sharding）。 |
+| **Node** | 單一資料庫伺服器 | **硬體與實例層。** 指的是集群中的單一伺服器或單一 MongoDB 執行實例（Instance），負責實際的資料存取與運算。 |
+| **Database** | Database (資料庫) | **邏輯儲存層。** 一個節點內可以包含多個獨立的資料庫。每個資料庫擁有自己獨立的儲存檔案與權限控制。 |
+| **Collection** | Table (資料表) | **資料分組層。** 一個資料庫內包含多個集合。集合用來存放結構相似的 Document，且在 MongoDB 中不需要預先定義綱要（Schema-less）。 |
+| **Document** | Row / Record (資料列/記錄) | **基礎資料儲存單位。** 位於金字塔最底層。MongoDB 使用 BSON（二進位 JSON）格式來儲存具體的資料欄位與內容，是實際儲存資料的地方。 |
+
 
 ---
 
@@ -87,38 +88,55 @@ BSON (Binary JSON)
 
 ### 一、 JSON 型態表列與規範
 
-| 型態名稱 | JSON 空間與格式規範 | BSON 對應型態 |
+| 型態名稱 | JSON 空間與格式規範 | BSON |
 | :--- | :--- | :--- |
-| **String** | UTF-8 編碼字串，帶雙引號 | String |
+| **String** | UTF-8 編碼字串，帶雙引號 |  |
 | **Number** | 雙精度浮點數（JSON 唯一的數字型態） | Double (預設), Int32, Int64, Decimal128 |
-| **Object** | 經由 `{}` 包裹的無序 Key-Value 對 | Object (Embedded Document) |
-| **Array** | 經由 `[]` 包裹的有序值列表 | Array |
-| **true** | 字面值 `true`（1 byte 文字） | Boolean (0x01) |
-| **false** | 字面值 `false`（1 byte 文字） | Boolean (0x00) |
-| **null** | 字面值 `null` | Null |
+| **Object** | 經由 `{}` 包裹的無序 Key-Value 對 |  |
+| **Array** | 經由 `[]` 包裹的有序值列表 |  |
+| **true** | 字面值 `true`（1 byte 文字） | |
+| **false** | 字面值 `false`（1 byte 文字） | |
+| **null** | 字面值 `null` |  |
+| **Double** | 64-bit (8 bytes) IEEE 754 浮點數 | 擴充-128-bit 高精度 |
+| **32-bit (4 bytes) Integer** | 強型別整數 | ⚠️ (僅能對應 Number) |
+| **64-bit (8 bytes) Integer** | 強型別整數 | ⚠️ (僅能對應 Number) |
+| **ObjectId** | 12-byte 固定長度二進位碼 | 擴充 |
+| **Date** | 64-bit (8 bytes) 整數，儲存 Unix 紀元起算之毫秒數 | 擴充 |
+| **Regular Expression** | 包含樣式（Pattern）與修飾符（Options）的連續字串結構 | 擴充 |
+| **Timestamp** | 64-bit (8 bytes)，前 4 bytes 為秒數，後 4 bytes 為計數器 | 擴充 |
+| **Decimal128** | 128-bit (16 bytes) 高精度浮點數 | 擴充 |
+| **MaxKey** |  | 擴充 |
+| **MinKey** |  | 擴充 |
+| **Binary data** |  | 擴充-用於儲存圖片、UUID 或微型二進位檔案 |
+
+```sql
+db.orders.insertOne({
+  // --- JSON 原生型態 ---
+  String: "這是一串 UTF-8 編碼的字串",
+  Number: 123.45,                                 // JS 預設為雙精度浮點數
+  Object: { subtitle: "內嵌物件", level: 1 },
+  Array: ["蘋果", "香蕉", "橘子"],
+  "true": true,                                   // 布林值 true
+  "false": false,                                 // 布林值 false
+  "null": null,                                   // 空值 null
+
+  // --- BSON 特定與擴充型態 ---
+  Double: 99.99,                                  // 在 BSON 中預設即為 Double
+  "32-bit (4 bytes) Integer": NumberInt(2147483647), // 強型別 32 位元整數
+  "64-bit (8 bytes) Integer": NumberLong("9223372036854775807"), // 強型別 64 位元整數（需用字串包裹避免 JS 精度遺失）
+  ObjectId: new ObjectId(),                       // 自動生成 12-byte 的唯一識別碼
+  Date: new Date(),                               // 儲存當前時間（ISODate，底層為 64-bit 毫秒數）
+  "Regular Expression": /^[a-zA-Z0-9]+$/i,         // 正規表達式字樣與修飾符
+  Timestamp: new Timestamp(0, 0),                 // 僅供內部使用的時間戳記（由伺服器自動填入或初始化）
+  Decimal128: NumberDecimal("123456789.987654321"), // 128-bit 高精度金融級浮點數
+  MaxKey: new MaxKey(),                           // BSON 排序邊界：最大值
+  MinKey: new MinKey(),                           // BSON 排序邊界：最小值
+  "Binary data": new BinData(0, "SGVsbG8gV29ybGQ=") // 二進位資料（此處以 Base64 編碼的 "Hello World" 為例）
+})
+```
+
 
 ---
-
-### 二、 BSON 型態表列與規範
-
-| 型態名稱 | BSON 空間與格式規範 | JSON 是否原生支援？ |
-| :--- | :--- | :---: |
-| **String** | UTF-8 編碼字串，底層帶長度前綴與結束符 |  |
-| **Double** | 64-bit (8 bytes) IEEE 754 浮點數 |  |
-| **Boolean** | 1 byte (0x00 或 0x01) |  |
-| **Null** | 1 byte 固定標記，代表空值 |  |
-| **Array** | 內嵌的文件結構，Key 為字串化的索引 (如 "0", "1") |  |
-| **Object** | 內嵌的標準 BSON 文件，最大深度限制為 100 層 |  |
-| **Integer** | 分為 32-bit (4 bytes) 與 64-bit (8 bytes) 強型別整數 | ⚠️ (僅能對應 Number) |
-| **ObjectId** | 12-byte 固定長度二進位碼 | ❌ |
-| **Date** | 64-bit (8 bytes) 整數，儲存 Unix 紀元起算之毫秒數 | ❌ |
-| **Timestamp** | 64-bit (8 bytes)，前 4 bytes 為秒數，後 4 bytes 為計數器 | ❌ |
-| **Decimal128** | 128-bit (16 bytes) 高精度浮點數 | ❌ |
-| **Binary data** | 自訂長度的二進位位元組陣列，帶有 1 byte 的子型態標記 | ❌ |
-| **Regular Expression** | 包含樣式（Pattern）與修飾符（Options）的連續字串結構 | ❌ |
-| **JavaScript** | 程式碼字串，可選擇性內嵌 Scope 執行環境文件 | ❌ |
-
-
 
 ## 四、 Polymorphic data(多態數據)
 
@@ -138,62 +156,6 @@ Document 的 Key-Value pairs 支援多種資料類型：
 * **Maximum Document Size:** 單一文檔最大限制為 **16 MB**。
     * **目的：** 優化記憶體使用與網路頻寬（bandwidth），防止大物件占用過多資源導致效能瓶頸。若有大檔案需求應使用 GridFS。
 * **Maximum Nesting Levels:** 巢狀結構最大深度限制為 **100 層**。
-
-
----
-
-## 六、 考點補充延伸 (Certification Objectives)
-
-### 1.1 Identify the set of value types MongoDB BSON supports
-相較於 JSON 僅支援 String, Number, Boolean, Null, Array, Object，BSON 額外擴充了許多強型別以利索引與運算。
-
-**核心 BSON 型態清單（考題常考）：**
-* **ObjectId**: 12-byte 的唯一識別碼（包含時間戳記、機器碼、進程 ID 與計數器）。
-* **Date**: 64-bit 整數，儲存自 Unix 紀元以來的毫秒數（帶時區資訊，通常以 UTC 儲存）。
-* **Timestamp**: 內部特殊型態（通常用於 Oplog 複製集同步），與 Date 不同。
-* **String**: UTF-8 編碼的字串。
-* **Integer**: 分為 32-bit (Int32) 與 64-bit (Int64/Long)。
-* **Double**: 64-bit IEEE 754 浮點數（MongoDB 預設的數字型態）。
-* **Decimal128**: 128-bit 高精度浮點數（適用於金融、貨幣計算）。
-* **Binary data**: 用於儲存二進位檔案片段或 UUID。
-* **Boolean**: `true` 或 `false`。
-* **Null**: 空值。
-* **Regular Expression**: 直接儲存正規表達式。
-* **JavaScript**: 包含或不包含 Scope 的 JS 程式碼。
-
-
-
----
-
-### 三、 核心說明與認證考點
-
-#### 1. 通用與數字型態轉換
-* **Number 的分流**：JSON 規範中沒有純整數，所有數字都是浮點數。MongoDB 為了索引效能與精確計數，在底層 BSON 將其嚴格區分為 32-bit Integer、64-bit Integer 與 Double。
-* **Object 限制**：BSON 的內嵌文件（巢狀結構）最大深度限制為 **100 層**。
-
-#### 2. BSON 專屬強型態（JSON 不支援）
-* **ObjectId**：12-byte 的唯一識別碼。底層由「4-byte 時間戳記 + 5-byte 隨機值 + 3-byte 計數器」組成。在 JSON 中通常只能被迫表達為 24 字元的字串。
-* **Date vs Timestamp**：
-    * `Date` 是以 UTC 時間儲存的毫秒級 64-bit 整數，為日常開發使用。
-    * `Timestamp` 是**內部特殊型態**，專門用於 Replica Set 的 Oplog（操作日誌）同步，兩者不可混用。
-* **Decimal128**：**金融計算必考**。128-bit 高精度，專門解決 Double 浮點數運算時產生的微小誤差，適用於交易、貨幣與電商價格計算法。
-* **Binary data**：用於儲存圖片、UUID 或微型二進位檔案。若用 JSON 傳輸必須轉為 Base64（會導致資料體積膨脹約 33%）；BSON 則能以原生二進位大小高效儲存。
-
----
-
-### 各型態核心說明與認證考點
-
-#### 1. 通用與數字型態考點 (JSON 支援或部分支援)
-* **Integer (Int32 / Int64)**：JSON 規範中沒有純整數，所有數字都是浮點數。MongoDB 為了索引效能與精確計數，在 BSON 嚴格區分 32-bit 與 64-bit 整數。
-* **Object (Embedded Document)**：巢狀文件深度限制為 **100 層**，考題常考限制邊界。
-
-#### 2. BSON 專屬強型態考點 (JSON 不支援)
-* **ObjectId**：12-byte 的唯一識別碼。底層結構包含：4-byte 時間戳記（Seconds）+ 5-byte 隨機值（Random value）+ 3-byte 計數器（Counter）。
-* **Date**：以 UTC 時間儲存，底層是毫秒級的 64-bit 整數。
-* **Timestamp**：**內部特殊型態**。一般開發不應使用，它專門用於 Replica Set 的 Oplog（操作日誌）同步，與 Date 完全不同。
-* **Decimal128**：**金融計算必考**。128-bit 高精度，專門解決 Double 浮點數運算時產生的微小誤差，適用於錢包、金融交易與電商價格。
-* **Binary data**：用於儲存圖片、UUID 或微型二進位檔案。若用 JSON 傳輸通常得轉 Base64，這會導致資料體積膨脹約 33%；BSON 則能以原生大小高效儲存。
-
 
 ---
 
