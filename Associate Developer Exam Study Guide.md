@@ -15,6 +15,19 @@ ref
 https://github.com/yixin0829/mongodb-dev-cert-prep
 
 
+
+
+### MongoDB Certification Study Guide / MongoDB 證照考試指南 重點整理（上）
+
+https://askstw.medium.com/mongodb-study-guide-mongodb-%E5%82%99%E8%80%83-%E8%A6%81%E9%BB%9E-%E4%B8%8A-6cd3259a6bbf
+
+### MongoDB Certification Study Guide / MongoDB 證照考試指南 重點整理（下）
+
+https://askstw.medium.com/mongodb-certification-study-guide-1fc53196eea6
+
+### MongoDB Certified Overview / MongoDB 認證 流程
+https://askstw.medium.com/mongodb-certification-overview-448718bec20e
+
 <img width="1917" height="1807" alt="image" src="https://github.com/user-attachments/assets/35208ba3-ccc9-49f1-a0c4-11a794c5f2b9" />
 
 
