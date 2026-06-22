@@ -807,5 +807,34 @@ We used the following commands in the collection to create or delete indexes:
 Finally, we learned how to view the indexes being used in a collection with the getIndexes() command and how to check if the index is being used in a query by executing the explain() command.
 
 
+### GTP 範例題目
+---
+題目 1：[單選題]
 
+你正在為一家跨國物流公司設計高併發（High-concurrency）的包裹追蹤系統。目前 shipments 集合每秒有數萬筆的物流狀態更新（大量寫入）。為了支援客服人員點對點的快速查詢與排序，你被要求評估索引策略。根據 MongoDB 索引的核心原理與成本，以下哪一個敘述最符合官方的最佳實踐（Best Practices）？
+
+A. 為了確保客服的每一個查詢都能維持最高效率，我們應該針對可能被查詢的 15 個欄位各自建立 Single Field Index。
+
+B. 當我們對包含排序（Sort）需求的欄位建立索引後，MongoDB 會依據建立時指定的欄位與方向排序儲存，這能有效消除查詢時在記憶體中進行排序（In-memory sort）的資源消耗。
+
+C. 預設的 _id 索引只包含 _id 欄位，如果我們建立了一個包含 _id 的 Compound Index，原生的 _id 索引就會被自動刪除以節省空間。
+
+D. 為了極大化加速寫入（Insert/Update）效能，我們應該在集合中建立多個 Multikey Index 來分散陣列欄位的寫入壓力。
+
+正確答案： B
+
+核心考點： Index Costs and Sorting Mechanics (索引成本與排序機制)
+
+詳細解析：
+
+選項 B 正確的原因：
+根據你的筆記核心：「Indexes 會依據建立時所提供的索引欄位和排序，將資料儲存在已建立的資料結構中。」當查詢包含 sort() 且該排序欄位已建立對應索引時，MongoDB 可以直接依序遍歷（Walk the index）並回傳結果，這能完全避免高成本的記憶體內排序（In-memory Sort），進而大幅減少 CPU 與記憶體資源的消耗。
+
+其他選項錯誤的原因：
+
+選項 A 錯誤： 筆記明確指出「索引具有寫入效能的成本，在插入新的文件或更新時，也需要針對索引去更動。如果集合有太多索引，反而會造成寫入效能降低。」在每秒數萬筆寫入的高併發場景下，盲目建立 15 個索引會導致嚴重的寫入瓶頸（Write Amplification）。
+
+選項 C 錯誤： 預設的 _id 索引是強制性且不可刪除的，它是由 MongoDB 自動建立且獨佔的，任何自定義的 Compound Index 都無法自動覆蓋或刪除原生的 _id 索引。
+
+選項 D 錯誤： 觀念完全顛倒。Multikey Index 是針對「陣列（Array）」欄位建立的索引，由於陣列中的每個元素都需要在索引結構中建立一個對應的 entry（點點相連），因此 Multikey Index 的寫入與維護成本比普通索引更高，絕不可能用來「分散寫入壓力」。
 
