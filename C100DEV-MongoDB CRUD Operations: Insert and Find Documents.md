@@ -437,6 +437,7 @@ db.routes.find({
 
 $and
 
+```sql
 db.<collection>.find({
   $and: [
     {<expression>},
@@ -444,9 +445,11 @@ db.<collection>.find({
     ...
   ]
 })
+```
 
 $or
 
+```sql
 db.<collection>.find({
   $or: [
     {<expression 1>},
@@ -454,7 +457,7 @@ db.<collection>.find({
     ...
   ]
 })
-
+```
 
 db.routes.find({ $or: [{ dst_airport: "SEA" }, { src_airport: "SEA" }] })
 
@@ -479,17 +482,20 @@ db.routes.find({
 })
 ```
 
-QA
+### Quti
+You want to know which mobile food trucks in your neighborhood, Astoria, are the best spots to eat. Using the inspections collection, you’re making a map of all mobile food trucks nearby that have passed inspection. 
 
-*-*-*
-You want to know which mobile food trucks in your neighborhood, Astoria, are the best spots to eat. Using the inspections collection, you’re making a map of all mobile food trucks nearby that have passed inspection. What should you include in your query document to ensure that you find all the mobile food vendors in Astoria that passed inspection? (Select one.)
+What should you include in your query document to ensure that you find all the mobile food vendors in Astoria that passed inspection? (Select one.)
 
 a.
 { "sector": "Mobile Food Vendor - 881" } ,{ "address.city": "ASTORIA"} , {"result": "Pass"}
+
 b.
 $and: {“Mobile Food Vendor - 881”, “ASTORIA”, “Pass}
+
 c.
 { "sector": "Mobile Food Vendor - 881" , "address.city": "ASTORIA" , "result": "Pass"}
+
 d.
 &and: {“Mobile Food Vendor - 881”, “ASTORIA”, “Pass}
 
