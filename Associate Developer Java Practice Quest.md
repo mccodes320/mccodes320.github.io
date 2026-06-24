@@ -312,20 +312,29 @@ Answer: B
 
 10. A collection coll in database mdb has the following documents :
 
+```json
 {_id: 1, type: "A", value: 60}
 {_id: 2, type: "B", value: 80}
 {_id: 3, type: "C", value: 10}
+```
+
 After executing the following aggregation pipeline:
 
+```sql
 db.getSiblingDB("mdb").coll.aggregate([
     { $out: {db:'test', collection:'results'}} ])
+```
+
 What are two expected results?
 
 (Choose 2)
+ 
+a. Collection `results` is created in database `test`. 
 
-a. Collection `results` is created in database `test`.
 b. There is a syntax error command. Collection `results` is not created.
+
 c. No documents in collection `coll` are written to collection `results`. 
+
 d. All documents in collection `coll` are written to collection `results`.
 
 
