@@ -310,7 +310,7 @@ Answer: B
 
 
 
-10. A collection coll in database mdb has the following documents :
+10. A collection coll in database mdb has the following documents :  [這題有問題]
 
 ```json
 {_id: 1, type: "A", value: 60}
@@ -754,7 +754,7 @@ Answer:  A
 
 
 
-25. A typical products collection is in an e-commerce database.
+25. A typical products collection is in an e-commerce database. [這題有問題]
 What schema is the most effective?(Choose 1)
 
 a. Orders for products should be embedded as an array in each product document.
