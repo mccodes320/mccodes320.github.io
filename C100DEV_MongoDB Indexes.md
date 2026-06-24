@@ -2,10 +2,10 @@
 
 https://learn.mongodb.com/learn/course/mongodb-indexes
 
-Lesson 1: Using MongoDB Indexes in Collections
-Lesson 2: Creating a Single Field Index in MongoDB
-Lesson 3: Creating a Multikey Index in
-Lesson 4: Working with Compound Indexes in MongoDB
+Lesson 1: Using MongoDB Indexes in Collections  
+Lesson 2: Creating a Single Field Index in MongoDB  
+Lesson 3: Creating a Multikey Index in  
+Lesson 4: Working with Compound Indexes in MongoDB  
 Lesson 5: Deleting MongoDB Indexes
 
 
@@ -35,10 +35,8 @@ Lesson 5: Deleting MongoDB Indexes
    **3.2 With indexes**  
    * MongoDB only fetches the documents indentified by the index based on the query. 可以依照索引更快的回傳結果
   
-   There is one default index per collection, which includes only the _id field  
-   預設來說, 每個collection只建立一個索引  
-   Every query should use an index  
-   每個查詢都應該使用索引  
+   * There is one default index per collection, which includes only the _id field  
+   *  Every query should use an index  
 
    注意: 索引具有寫入效能的成本, 在插入新的文件或更新時, 也需要針對索引去更動. 此外, 如果collection有太多索引, 反而會造成寫入效能降低.  
    
@@ -51,72 +49,42 @@ Lesson 5: Deleting MongoDB Indexes
 
 ## Q&A
 
-**1. Which of the following statements about indexes are correct? (Select all the that apply.)**
-
-a. Indexes are data structures that improve performance, support efficient equality matches and range-based query operations, and can return sorted results.
+**Which of the following statements about indexes are correct? (Select all the that apply.)**  
   
-b. Indexes are automatically created based on usage patterns.  
-       
-c. Indexes are used to make querying faster for users. One of the easiest ways to improve the performance of a slow query is create indexes on the data that is used most often.
-    
-d. When using an index, MongoDB reads every document in a collection to check if it matches the query that's being run.  
+A. Indexes are data structures that improve performance, support efficient equality matches and range-based query operations, and can return sorted results.  
+B. Indexes are automatically created based on usage patterns.    
+C. Indexes are used to make querying faster for users. One of the easiest ways to improve the performance of a slow query is create indexes on the data that is used most often.  
+D. When using an index, MongoDB reads every document in a collection to check if it matches the query that's being run.    
 
 
-```
-Answer:
-A,C
-
-A. 說明：索引是提升效能的資料結構。它支持高效的等值匹配（Equality matches）與範圍查詢（Range-based queries），並能直接回傳排序後的結果。透過索引，MongoDB 僅需處理必要的數據，而不必掃描整個集合。
-
-B. 說明：[錯誤]。MongoDB 不會根據使用習慣自動建立索引。開發者必須手動建立索引來優化慢查詢。不過，MongoDB Atlas 提供建議工具，可提示用戶哪些索引應該建立或移除。
+答案：A,C
   
-C. 說明：[正確]。索引能讓查詢更快，因為 MongoDB 只需掃描索引即可找到所需數據。在頻繁使用的欄位上建立索引，是優化慢查詢最簡單且有效的方法之一。
+解釋開始：  
+A. 說明：索引是提升效能的資料結構。它支持高效的等值匹配（Equality matches）與範圍查詢（Range-based queries），並能直接回傳排序後的結果。透過索引，MongoDB 僅需處理必要的數據，而不必掃描整個集合。  
+B. 說明：[錯誤]。MongoDB 不會根據使用習慣自動建立索引。開發者必須手動建立索引來優化慢查詢。不過，MongoDB Atlas 提供建議工具，可提示用戶哪些索引應該建立或移除  
+C. 說明：[正確]。索引能讓查詢更快，因為 MongoDB 只需掃描索引即可找到所需數據。在頻繁使用的欄位上建立索引，是優化慢查詢最簡單且有效的方法之一。  
+D. 說明：[錯誤]。這描述的是「全表掃描（Collection Scan）」。當有索引可用時，MongoDB 不需要讀取集合中的每個文件，而是掃描索引以精確定位目標數據。  
+解釋結束
+
+
+
+**Which of the following statements about indexes are true? (Select one.)**  
   
-D. 說明：[錯誤]。這描述的是「全表掃描（Collection Scan）」。當有索引可用時，MongoDB 不需要讀取集合中的每個文件，而是掃描索引以精確定位目標數據。
-```
+A. Indexes improve query performance and have no impact on write performance.  
+B. Indexes improve query performance at the cost of write performance.  
+C. Indexes have no impact on query performance but improve write performance.  
+D. Indexes have a negative impact on query performance but improve write performance.  
 
-**2. Which of the following statements about indexes are true? (Select one.)**
-   
-A. Indexes improve query performance and have no impact on write performance.
-
-b. Indexes improve query performance at the cost of write performance.
-
-c. Indexes have no impact on query performance but improve write performance.
-
-d. Indexes have a negative impact on query performance but improve write performance.
-
-
-
-```
-Answer:
-B
-
-[a] Indexes improve query performance and have no impact on write performance.
-
-翻譯：索引能提升查詢效能，且對寫入效能沒有影響。
-
-說明：[錯誤]。雖然索引能提升查詢速度，但它們是有代價的。每當執行寫入操作時，相關的索引都必須同步更新，這會消耗額外的時間。
-
-[b] Indexes improve query performance at the cost of write performance.
-
-翻譯：索引以犧牲寫入效能為代價，換取查詢效能的提升。
-
-說明：[正確]。這是數據庫設計中經典的權衡（Trade-off）。對於大多數應用場景，這種交換是值得的。索引應該建立在頻繁被查詢的欄位，或是那些雖然查詢頻率低但運算成本極高的查詢上。
-
-[c] Indexes have no impact on query performance but improve write performance.
-
-翻譯：索引對查詢效能沒有影響，但能提升寫入效能。
-
-說明：[錯誤]。事實正好相反。索引的主要目的是加速查詢流程，而寫入效能反而會因為需要更新索引結構而下降。
-
-[d] Indexes have a negative impact on query performance but improve write performance.
-
-翻譯：索引對查詢效能有負面影響，但能提升寫入效能。
-
-說明：[錯誤]。索引對查詢有積極（正面）的影響，對寫入則會造成額外的負擔。
+答案：B
+  
+解釋開始：  
+A. 說明：雖然索引能提升查詢速度，但它們是有代價的。每當執行寫入操作時，相關的索引都必須同步更新，這會消耗額外的時間。  
+B. 說明：這是數據庫設計中經典的權衡（Trade-off）。對於大多數應用場景，這種交換是值得的。索引應該建立在頻繁被查詢的欄位，或是那些雖然查詢頻率低但運算成本極高的查詢上。  
+C. 說明：事實正好相反。索引的主要目的是加速查詢流程，而寫入效能反而會因為需要更新索引結構而下降。  
+D. 說明：索引對查詢有積極（正面）的影響，對寫入則會造成額外的負擔。  
+解釋結束
 
 
-```
 
 
 **Single field index**
@@ -138,11 +106,10 @@ Multikey index: A multikey index is an index on an array field. Each element in 
 | **Compound Index**<br>（複合索引）       | 對**多個欄位**建立一組索引結構，可提升多欄位查詢效率。<br>建立時會指定欄位與排序方向。 | 查詢時需注意欄位的順序與排序，遵循「前綴原則」。<br>若其中有陣列欄位，也會變成 Multikey。 |
 | **Multikey Index**<br>（多鍵索引）       | 專門用於索引陣列欄位，陣列中的每個值都會被索引。                        | 可應用於單一欄位或複合索引中，讓陣列查詢效率提升。<br>**不能同時索引多個陣列欄位**。      |
 
-MongoDB 在 _id 欄位會自動建立單一欄位索引。
-
-Multikey 索引是自動推斷的，不需特別指定，只要索引欄位是陣列就會自動變為 multikey。
-
-複合索引查詢時建議遵守前綴欄位排序，如：{a: 1, b: 1} 能支援查詢 {a} 或 {a, b}，但不能只查 {b}。
+    
+* MongoDB 在 _id 欄位會自動建立單一欄位索引。  
+* Multikey 索引是自動推斷的，不需特別指定，只要索引欄位是陣列就會自動變為 multikey。  
+* 複合索引查詢時建議遵守前綴欄位排序，如：{a: 1, b: 1} 能支援查詢 {a} 或 {a, b}，但不能只查 {b}。  
 
 
 
