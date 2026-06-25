@@ -5,7 +5,7 @@
 * [1.4 例外處理](#14-例外處理)
 
 # CRUD_find
-* [1.1 find](#11-find)
+* [find_](#find_)
 * [1.2 find_$in](#12-find_in)
 * [1.3 find_$eq](#13-find_eq)
 * [1.4 find_$or](#14-find_or)
