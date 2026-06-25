@@ -26,7 +26,7 @@
 * [1. update](#1-update)   
 
 # CRUD_Distinct 
-* [## 計算查詢筆數 Distinct](#計算查詢筆數-distinct)   
+* [計算查詢筆數 Distinct](#計算查詢筆數-distinct)   
 
 
 
