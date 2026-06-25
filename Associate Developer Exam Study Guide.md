@@ -24,6 +24,13 @@ https://github.com/yixin0829/mongodb-dev-cert-prep
 
 
 
+
+https://www.youtube.com/watch?v=9vraN5NqpaA
+
+https://www.youtube.com/watch?v=iHG6l6LhtZM
+
+https://www.validexamdumps.com/mongodb/c100dba-exam-questions
+
 ## 考試預約
 https://go.proctoru.com/students/reservations/44603321/edit?bluebird=true
 
