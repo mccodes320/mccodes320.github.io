@@ -25,6 +25,9 @@
 # CRUD_update
 * [1. update](#1-update)   
 
+# CRUD_Distinct 
+* [## 計算查詢筆數 Distinct](#計算查詢筆數-distinct)   
+
 
 
 
@@ -1040,9 +1043,9 @@ db.books3.find()
 
 
 
-3-2-8 計算查詢筆數
+## 計算查詢筆數 Distinct
 
-3-2-9 Distinct
+
 
 ```
 Atlas atlas-f9gk44-shard-0 [primary] test> db.test.distinct('_id')
