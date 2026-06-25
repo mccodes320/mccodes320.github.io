@@ -19,7 +19,8 @@
 * [1.12 $elemMatch](#112-elemmatch)
 * [1.13 轉為陣列輸出](#113-轉為陣列輸出)
 * [1.14 查詢子類別](#114-查詢子類別)
-* [1.15 find_$and_$or](#115-find_and_or)
+* [1.15 find_$and_$or](#find_and_or)
+
 
 
 
