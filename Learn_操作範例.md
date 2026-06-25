@@ -22,9 +22,8 @@
 * [1.15 find_$and_$or](#find_and_or)
 
 
-
-
-
+# CRUD_update
+* [1. update](#1-update)   
 
 
 
@@ -868,7 +867,7 @@ db.routes.find({
 
 
 
-## CRUD_update
+# CRUD_update
 
 
 ```sql
@@ -895,7 +894,7 @@ db.books.insertMany(
 
 ```
 
-### 1. update
+## 1. update
 
 欄位不存在則不會新增
 
