@@ -1,6 +1,7 @@
 C100DEV-MongoDB CRUD Operations: Insert and Find Documents
 ---
 
+
 * [Lesson 1 : Inserting Documents in a MongoDB Collection](#lesson-1--inserting-documents-in-a-mongodb-collection)
 * [Lesson 2 : Finding Documents in a MongoDB Collection](#lesson-2--finding-documents-in-a-mongodb-collection)
 * [Lesson 3 : Finding Documents by Using Comparison Operators](#lesson-3--finding-documents-by-using-comparison-operators)
@@ -10,6 +11,21 @@ C100DEV-MongoDB CRUD Operations: Insert and Find Documents
 
 
 https://learn.mongodb.com/learn/course/mongodb-crud-operations-insert-and-find-documents/lesson-1-inserting-documents-in-a-mongodb-collection/learn
+
+# 考試註記
+
+1. 任何find的物件順序皆由系統控制, sort()、skip() 與 limit() 確保分頁與排序邏輯的正確性 [測試1-12]
+   ```sql
+   db.orders.find({ status: 'active' }).skip(10).limit(5).sort({ createdAt: -1 })
+   ```
+
+
+
+
+
+
+
+
 
 # Lesson 1 : Inserting Documents in a MongoDB Collection
 
