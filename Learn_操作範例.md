@@ -1587,6 +1587,17 @@ Output:
 排序規則：-1 代表降冪（從大到小）。
 
 
+### 顯示陣列內的元素
+
+兩者相等:   
+```sql
+db.sales.find({},{"items.name":1})
+```  
+  
+```sql
+db.sales.find({},{items:{name:1}})
+```  
+
 
 ### $set 搭配邏輯條件（$cond 三元運算子）
 
