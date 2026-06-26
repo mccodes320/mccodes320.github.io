@@ -10,9 +10,19 @@ https://learn.mongodb.com/learn/course/mongodb-indexes
 
 
 
+# 考試註記
+1. create { status: 1, orderDate: -1, customerId: 1 }
+   查詢時 db.orders.find({ status: 'shipped', orderDate: { $gte: ISODate('2024-01-01') }, customerId: 'C123' })
+   會因為範圍性查詢導致index失效
+
+
+
+
+
+
 
 # Lesson 1: Using MongoDB Indexes in Collections
---
+
 1. **What indexes are**  
    * Special data structures, 易於偏歷和高校搜索的緒格式儲存一小部分的集合數據
    * Store small portion of the data
