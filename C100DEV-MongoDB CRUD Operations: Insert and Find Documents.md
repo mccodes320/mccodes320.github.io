@@ -1,3 +1,6 @@
+C100DEV-MongoDB CRUD Operations: Insert and Find Documents
+---
+
 * [Lesson 1 : Inserting Documents in a MongoDB Collection](#lesson-1--inserting-documents-in-a-mongodb-collection)
 * [Lesson 2 : Finding Documents in a MongoDB Collection](#lesson-2--finding-documents-in-a-mongodb-collection)
 * [Lesson 3 : Finding Documents by Using Comparison Operators](#lesson-3--finding-documents-by-using-comparison-operators)
@@ -14,13 +17,12 @@ In this unit, you will be introduced to CRUD operations in MongoDB by inserting 
 
 * iesertOne(): 插入單個文檔  
 * insertMany(): 插入多個文檔
+  * 不存在, 就會自動創建
 
 ```sql
-db.<collection>.iesertOne() 如果<collection>不存在, 就會自動創建
+db.<collection>.iesertOne() 如果<collection>
 db.<collection>.iesertMany([<doc1>,<doc2>])
 ```
-
-QA
 
 ## Insert a Single Document  
   
@@ -37,15 +39,7 @@ db.grades.insertOne({
     {
       type: "homework",
       score: 59,
-    },
-    {
-      type: "quiz",
-      score: 75,
-    },
-    {
-      type: "homework",
-      score: 88,
-    },
+    }
   ],
   class_id: 550,
 })
@@ -67,15 +61,7 @@ db.grades.insertMany([
       {
         type: "homework",
         score: 70,
-      },
-      {
-        type: "quiz",
-        score: 66,
-      },
-      {
-        type: "exam",
-        score: 70,
-      },
+      }
     ],
     class_id: 551,
   },
@@ -89,15 +75,7 @@ db.grades.insertMany([
       {
         type: "quiz",
         score: 59,
-      },
-      {
-        type: "quiz",
-        score: 72,
-      },
-      {
-        type: "quiz",
-        score: 67,
-      },
+      }
     ],
     class_id: 550,
   },
@@ -111,53 +89,50 @@ db.grades.insertMany([
       {
         type: "homework",
         score: 39,
-      },
-      {
-        type: "quiz",
-        score: 40,
-      },
-      {
-        type: "homework",
-        score: 88,
-      },
+      }
     ],
     class_id: 551,
   },
 ])
 ```
 
-### Q&A
-
-What methods are available in MongoDB for inserting a single document? (Select one.)
-
-a. .insertOne() 
-
-b. .inserting() 
-
-c. .InsertDocument()
-
-d. .insertMany() 
-
-
-==> A 
-
-### Q&A
-
-Select an answer choice and then click "See Results" to submit.
-
-* What methods are available in MongoDB for inserting multiple documents? (Select one.) *
-
-a.
-.InsertDocument()  
-b.
-.inserting()  
-c.
-.insertOne()  
-d.
-.insertMany()  
+[題目]   
+  
+What methods are available in MongoDB for inserting a single document? (Select one.)  
+  
+[選項]  
+A. .insertOne()   
+B. .inserting()   
+C. .InsertDocument()   
+D. .insertMany()  
+  
+[正確答案]：  
+A  
 
 
-==>  D
+
+[題目]   
+  
+What methods are available in MongoDB for inserting multiple documents? (Select one.) 
+  
+[選項]  
+A. .InsertDocument()  
+B. .inserting()  
+C. .insertOne()  
+D. .insertMany()  
+  
+[正確答案]：  
+D
+
+
+
+
+
+
+
+
+
+
 
 ---
 
