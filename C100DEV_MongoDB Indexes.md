@@ -2,15 +2,16 @@
 
 https://learn.mongodb.com/learn/course/mongodb-indexes
 
-Lesson 1: Using MongoDB Indexes in Collections  
-Lesson 2: Creating a Single Field Index in MongoDB  
-Lesson 3: Creating a Multikey Index in  
-Lesson 4: Working with Compound Indexes in MongoDB  
-Lesson 5: Deleting MongoDB Indexes
+* [Lesson 1: Using MongoDB Indexes in Collections](#lesson-1-using-mongodb-indexes-in-collections)
+* [Lesson 2: Creating a Single Field Index in MongoDB](#lesson-2-creating-a-single-field-index-in-mongodb)
+* [Lesson 3: Creating a Multikey Index in MongoDB](#lesson-3-creating-a-multikey-index-in-mongodb)
+* [Lesson 4: Video: Working with Compound Indexes in MongoDB](#lesson-4-video-working-with-compound-indexes-in-mongodb)
+* [Lesson 5: Deleting MongoDB Indexes](#lesson-5-deleting-mongodb-indexes)
 
 
 
-**Lesson 1: Using MongoDB Indexes in Collections**  
+
+# Lesson 1: Using MongoDB Indexes in Collections
 --
 1. **What indexes are**  
    * Special data structures, 易於偏歷和高校搜索的緒格式儲存一小部分的集合數據
@@ -117,7 +118,7 @@ D. 說明：索引對查詢有積極（正面）的影響，對寫入則會造�
 
 
 
-**Lesson 2: Creating a Single Field Index in MongoDB**
+# Lesson 2: Creating a Single Field Index in MongoDB
 -- 
 1. **What is Single Field**  
    * Create a Single Field Index by using createIndex()  
@@ -254,7 +255,7 @@ D. 說明：Unique indexes ensure that indexed fields do not store duplicate val
 
 解釋結束
 
-## Lesson 3: Creating a Multikey Index in MongoDB
+# Lesson 3: Creating a Multikey Index in MongoDB
 
 How MongoDB works with array fields in an index 如何在索引中使用陣列欄位  
 
@@ -371,7 +372,7 @@ d. Incorrect. The maximum number of array fields per multikey index is not unlim
 
 
 
-## Lesson 4. Video: Working with Compound Indexes in MongoDB
+# Lesson 4: Video: Working with Compound Indexes in MongoDB
 
 
 **Compound indexes 複合索引**
@@ -609,7 +610,7 @@ d.
 The order of indexed fields is not important.
 Incorrect. There is a recommended order of indexed fields in a compound index. The order of indexed fields is important because query optimization depends on the order of the fields to determine which indexes to use when executing a query.
 
-## Lesson 5: Deleting MongoDB Indexes
+# Lesson 5: Deleting MongoDB Indexes
 --
 1. **What Deleting are**  
     * Deleting an index can affect the query performance. 刪除索引可能會影響查詢效能。  
