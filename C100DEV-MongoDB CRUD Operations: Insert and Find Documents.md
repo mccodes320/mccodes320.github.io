@@ -1,17 +1,15 @@
-* Lesson 1 : Inserting Documents in a MongoDB Collection
-* Lesson 2 : Finding Documents in a MongoDB Collection
-* Lesson 3 : Finding Documents by Using Comparison Operators
-* Lesson 4 : Querying on Array Elements in MongoDB
-* Lesson 5 : Finding Documents by Using Logical Operators
-
-
 * [Lesson 1 : Inserting Documents in a MongoDB Collection](#lesson-1--inserting-documents-in-a-mongodb-collection)
 * [Lesson 2 : Finding Documents in a MongoDB Collection](#lesson-2--finding-documents-in-a-mongodb-collection)
 * [Lesson 3 : Finding Documents by Using Comparison Operators](#lesson-3--finding-documents-by-using-comparison-operators)
 * [Lesson 4 : Querying on Array Elements in MongoDB](#lesson-4--querying-on-array-elements-in-mongodb)
 * [Lesson 5 : Finding Documents by Using Logical Operators](#lesson-5--finding-documents-by-using-logical-operators)
 
-
+* [Lesson 1 : Inserting Documents in a MongoDB Collection](#lesson-1--inserting-documents-in-a-mongodb-collection)
+* [Lesson 2 : Finding Documents in a MongoDB Collection](#lesson-2--finding-documents-in-a-mongodb-collection)
+* [Lesson 3 : Finding Documents by Using Comparison Operators](#lesson-3--finding-documents-by-using-comparison-operators)
+* [Lesson 4 : Querying on Array Elements in MongoDB](#lesson-4--querying-on-array-elements-in-mongodb)
+* [Lesson 5 : Updating Documents in a MongoDB Collection](#lesson-5--updating-documents-in-a-mongodb-collection)
+* [Lesson 6 : Deleting Documents from a MongoDB Collection](#lesson-6--deleting-documents-from-a-mongodb-collection)
 
 
 https://learn.mongodb.com/learn/course/mongodb-crud-operations-insert-and-find-documents/lesson-1-inserting-documents-in-a-mongodb-collection/learn
