@@ -94,21 +94,7 @@ db.grades.insertMany([
       }
     ],
     class_id: 550,
-  },
-  {
-    student_id: 223344,
-    products: [
-      {
-        type: "exam",
-        score: 45,
-      },
-      {
-        type: "homework",
-        score: 39,
-      }
-    ],
-    class_id: 551,
-  },
+  }
 ])
 ```
 
@@ -141,10 +127,18 @@ D. .insertMany()
 D
 
 
+## ordered
+   
+使用 insertMany 時, 帶入參數 ordered, is skipped due to a duplicate key error, and the operation reports a partial success.   
 
-
-
-
+```sql   
+db.orders.insertMany([
+  { _id: 1, item: "pen" },
+  { _id: 2, item: "notebook" },
+  { _id: 2, item: "ruler" },    // duplicate — will fail
+  { _id: 3, item: "eraser" }
+], { ordered: false })
+```
 
 
 
