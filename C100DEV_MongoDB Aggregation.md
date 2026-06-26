@@ -4,7 +4,13 @@ Lesson 3: Using $sort and $limit Stages in a MongoDB Aggregation Pipeline
 Lesson 4: Using $project, $count, and $set Stages in a MongoDB Aggregation Pipeline  
 Lesson 5: Using the $out Stage in a MongoDB Aggregation Pipeline  
 
-## Introduction to MongoDB Aggregation
+# 考試註記
+1. $match、$group、$sort 三者的順序 ESR, 即便pipleline順序不同系統還是會依照ESR執行
+
+
+
+
+# Introduction to MongoDB Aggregation
 
 * Aggregation
 An analysis and summary of data
