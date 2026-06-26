@@ -6,7 +6,6 @@
 
 
 * [Lesson 1 : Inserting Documents in a MongoDB Collection](#lesson-1--inserting-documents-in-a-mongodb-collection)
-* [Lesson 1 : Inserting Documents in a MongoDB Collection](#lesson-1--inserting-documents-in-a-mongodb-collection)
 * [Lesson 2 : Finding Documents in a MongoDB Collection](#lesson-2--finding-documents-in-a-mongodb-collection)
 * [Lesson 3 : Finding Documents by Using Comparison Operators](#lesson-3--finding-documents-by-using-comparison-operators)
 * [Lesson 4 : Querying on Array Elements in MongoDB](#lesson-4--querying-on-array-elements-in-mongodb)
@@ -345,7 +344,7 @@ d.
 
 ---
 
-# Lesson 4: Querying on Array Elements in MongoDB **
+# Lesson 4 : Querying on Array Elements in MongoDB **
 
 * Querying on Array Elements in MongoDB *
 
@@ -412,7 +411,7 @@ C: Incorrect. This query will not filter out all documents that contain the stri
 
 ---
 
-# Lesson 5: Finding Documents by Using Logical Operators *
+# Lesson 5 : Finding Documents by Using Logical Operators *
 
 
 
