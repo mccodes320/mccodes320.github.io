@@ -1589,13 +1589,15 @@ Output:
 
 ### 顯示陣列內的元素
 
+巢狀欄位投影（Nested Projection）  
+
 兩者相等:   
 ```sql
 db.sales.find({},{"items.name":1})
 ```  
   
 ```sql
-db.sales.find({},{items:{name:1}})
+    db.sales.find({},{items:{name:1}})
 ```  
 
 
