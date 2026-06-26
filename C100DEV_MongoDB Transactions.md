@@ -4,6 +4,15 @@ Lesson 2: ACID Transactions in MongoDB
 
 
 
+# 考試註記
+1. Read Concern
+  1.  local 讀取當前節點上的最新數據，不論該數據是否已被複製到其他節點。
+  2.  available 行為與 local 類似，但針對分片叢集（Sharded Cluster）優化，直接返回節點當前最快拿到的數據。
+  3.  majority 僅讀取已被多數（Majority）節點確認且寫入日誌（Journal）的持久化數據。
+  4.  linearizable 僅讀取已被多數節點確認的數據，且 Primary 在回應前必須即時向多數 Secondary 發送確認，確保自己此時此刻仍是唯一的 Primary。
+  * 安全性排序：linearizable > majority > local = available
+  * 效能（速度）排序：available $\ge$ local > majority > linearizable
+  * 金鑰考點：題目中只要出現 「財務應用 (financial)」、「絕對不會被回滾 (will not be rolled back)」、「多數成員確認 (majority of the replica set members)」，在沒有特殊強調防範雙主過時讀取的前提下，標準答案必然是 majority。
 
 
 
