@@ -170,7 +170,7 @@ d.
 
 ---
 
-# Lesson2 : Finding Documents in a MongoDB Collection
+# Lesson 2 : Finding Documents in a MongoDB Collection
 
 ```sql
 db.<collection>.find()
