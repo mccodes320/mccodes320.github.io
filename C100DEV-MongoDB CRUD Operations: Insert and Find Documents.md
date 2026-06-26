@@ -344,7 +344,7 @@ d.
 
 ---
 
-# Lesson 4 : Querying on Array Elements in MongoDB **
+# Lesson 4 : Querying on Array Elements in MongoDB
 
 * Querying on Array Elements in MongoDB *
 
@@ -411,7 +411,7 @@ C: Incorrect. This query will not filter out all documents that contain the stri
 
 ---
 
-# Lesson 5 : Finding Documents by Using Logical Operators *
+# Lesson 5 : Finding Documents by Using Logical Operators
 
 
 
