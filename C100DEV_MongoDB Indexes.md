@@ -11,10 +11,10 @@ https://learn.mongodb.com/learn/course/mongodb-indexes
 
 
 # 考試註記
-1. create { status: 1, orderDate: -1, customerId: 1 }
-   查詢時 db.orders.find({ status: 'shipped', orderDate: { $gte: ISODate('2024-01-01') }, customerId: 'C123' })
-   會因為範圍性查詢導致index失效
-
+1. create { status: 1, orderDate: -1, customerId: 1 }   
+   查詢時 db.orders.find({ status: 'shipped', orderDate: { $gte: ISODate('2024-01-01') }, customerId: 'C123' })   
+   會因為範圍性查詢導致index失效   
+   
 
 
 
