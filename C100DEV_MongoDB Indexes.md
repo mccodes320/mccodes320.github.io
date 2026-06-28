@@ -269,41 +269,20 @@ D. 說明：Unique indexes ensure that indexed fields do not store duplicate val
 
 How MongoDB works with array fields in an index 如何在索引中使用陣列欄位  
 
-使用客戶集合來說明
-![image](https://github.com/user-attachments/assets/f314acd7-ec55-4962-8fa9-091af5faf89b)
-
-![image](https://github.com/user-attachments/assets/85773ca2-5a58-415e-9c0d-47ef9dc95578)
-
 **Multikey Indexes**
 
 Index on an array filed
 
 Can be signle field or compound index
 
-![image](https://github.com/user-attachments/assets/6897809a-faa2-4566-9e59-865d6454dc16)
 以上範例為創建Multikey Indexes  
 
 如果要做查詢, 希望找到具有特定帳號的客戶, 那就要對帳戶作索引
 
-使用getIndexes() 來查找集合中的索引, 會輸出有三個索引
-
-![image](https://github.com/user-attachments/assets/15d59410-75f4-4eaf-97f0-8bdbe60c83ec)
-
-建立索引後
-
-![image](https://github.com/user-attachments/assets/ac46d545-449d-435c-9dcb-9254fc94991e)
-
-Multikey indexing in MongoDB:
-MongoDB 中的多鍵索引：
-
-Any index where one of the indexed fields contains an array
-任何被索引欄位中包含陣列的索引
-
-The array can hold nested objects or other field types
-陣列可以包含巢狀物件或其他欄位類型
-
-In a compound index, only one field can be an array per index
-在複合索引中，每個索引只能有一個欄位是陣列
+* Multikey indexing in MongoDB MongoDB 中的多鍵索引：   
+* Any index where one of the indexed fields contains an array 任何被索引欄位中包含陣列的索引   
+* The array can hold nested objects or other field types 陣列可以包含巢狀物件或其他欄位類型   
+* In a compound index, only one field can be an array per index 在複合索引中，每個索引只能有一個欄位是陣列
 
 
 **Understanding Multikey Indexes**  
@@ -317,13 +296,6 @@ db.customers.createIndex({
   accounts: 1
 })
 ```
-**View the Indexes used in a Collection**
-Use getIndexes() to see all the indexes created in a collection.
-
-db.customers.getIndexes()
-
-**Check if an index is being used on a query**
-Use explain() in a collection when running a query to see the Execution plan. This plan provides the details of the execution stages (IXSCAN , COLLSCAN, FETCH, SORT, etc.).
 
 * The IXSCAN stage indicates the query is using an index and what index is being selected.
 * The COLLSCAN stage indicates a collection scan is perform, not using any indexes.
