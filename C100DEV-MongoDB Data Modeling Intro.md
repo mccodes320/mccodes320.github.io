@@ -1,4 +1,4 @@
-<img width="488" height="333" alt="image" src="https://github.com/user-attachments/assets/86b35937-f47f-4346-88ea-c4fa44f1d9c4" />
+
 MongoDB Data Modeling Intro
 
 
@@ -10,9 +10,10 @@ MongoDB Data Modeling Intro
 * Lesson 6: Scaling a Data Model
 * Lesson 7: Using Atlas Tools for Schema Help
 * Introduction to MongoDB Data Modeling
+# The Subset Pattern
 
 
-
+<img width="488" height="333" alt="image" src="https://github.com/user-attachments/assets/86b35937-f47f-4346-88ea-c4fa44f1d9c4" />
 
 
 ref: https://learn.mongodb.com/learn/course/introduction-to-mongodb-data-modeling/lesson-1-introduction-to-data-modeling/learn?page=1
@@ -594,8 +595,41 @@ A Summary of Schema Design Anti-Patterns and How to Spot Them
 
 
 
+# The Subset Pattern
+    
+一種資料建模技術，用於處理文件很大但查詢只需要其中一小部分資料的情況。它不是每次都把整個大文檔加載到內存中，而是將其拆分成一個熱文檔（包含頻繁訪問的字段）和一個冷文檔（包含很少訪問的完整歷史數據）。    
+    
+關鍵在於：MongoDB 會將整個文件載入到工作集（記憶體）中。如果一個文件有 500KB，但你只需要其中的 2KB，那麼你就浪費了記憶體——這會降低大規模應用時的效能。    
+    
+
+無subset Pattern    
+```json
+{
+  _id ："user_001" ， 
+  姓名：‘愛麗絲’ 
+  頭像：“https://cdn.example.com/alice.jpg ” 
+  貼文：[ /* 3,000 個完整的貼文物件 */ ]   
+}
+```
 
 
+```json
+// 主要（熱門）文件 — 使用者集合
+{
+  _id ："user_001" ， 
+  姓名：‘愛麗絲’ 
+  頭像：“https://cdn.example.com/alice.jpg ” 
+  recent_posts : [ /* 僅顯示最新的 5 篇文章 */ ]   
+}
+ 
+// 擴充（冷）文件 — users_extended 集合
+{
+  user_id : "user_001" , 
+  all_posts : [ /* 所有 3,000 篇文章 */ ],   
+  追蹤者：[ /* 完整列表 */ ]，   
+  以下：[ /* 完整列表 */ ]   
+}
+```
 
 
 
