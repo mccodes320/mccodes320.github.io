@@ -921,8 +921,12 @@ db.products.createIndex({ description: "text" })
 ```
 
 
+# $natural 
+   
+直接執行反向索引   
+   
+```sql
+db.appLogs.find().sort({ $natural: -1 });
 
-
-
-
+```
 
