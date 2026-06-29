@@ -74,8 +74,9 @@ JSON
 ```json
 { "hello" : "world" }
 ```
-BSON (Binary JSON)
-用於 MongoDB 內部儲存與網路傳輸的二進位格式。
+
+* BSON (Binary JSON)
+* 用於 MongoDB 內部儲存與網路傳輸的二進位格式。
 
 提供更高的解析效能與更多延伸資料型態（如 ObjectId, Date）。
 ```json
@@ -135,6 +136,10 @@ db.orders.insertOne({
 })
 ```
 
+如果今天有數值1000000，
+* JSON 將 1000000 儲存為 7 個位元組的 UTF-8 編碼字串
+* BSON 將其儲存為 4 個位元組的 32 位元整數節​​省空間
+
 
 ---
 
@@ -160,47 +165,62 @@ Document 的 Key-Value pairs 支援多種資料類型：
 ---
 
 
-### Question 1
-**What is considered a best practice when naming fields in MongoDB documents? (Select one.)**
+[題目]   
+What is considered a best practice when naming fields in MongoDB documents? (Select one.)      
+      
+[選項]   
+A. Using short, abbreviated names to conserve space on disk.   
+B. Re-using field names within a document to optimize indexes.   
+C. Using descriptive, unique names.   
+D. Using generic names.   
 
-* (a) Using short, abbreviated names to conserve space on disk.
-* (b) Re-using field names within a document to optimize indexes.
-* (c) Using descriptive, unique names.
-* (d) Using generic names.
+[正確答案]：   
+C   
+   
+[核心考點]：   
+   
+[詳細解析]：   
+本題考查 MongoDB 文件欄位命名的最佳實踐。MongoDB 的文件結構即為其資料型態（Schema），清晰的欄位命名能大幅提高程式碼的可讀性與可維護性。雖然 BSON 會儲存欄位名稱，但在現代硬體與壓縮技術下，清晰度遠比節省微小的空間重要。   
 
-**Answer:** C
+A. 錯誤原因：過度縮寫（如用 a 代表 address）會嚴重降低代碼可讀性，增加維護成本，在現代開發中不建議為省微小空間而犧牲可讀性。   
 
-**Explanation:**
-* **A:** Short, abbreviated names can make data less clear and more difficult to manage. When it comes to naming document fields, space considerations are generally secondary to readability and maintainability.  
-*(中文說明：使用簡短或縮寫的名稱會降低資料的可讀性，增加管理難度。在命名欄位時，資料的可讀性與可維護性通常遠比節省磁碟空間更重要。)*
-* **B:** Re-using field names within a document does not optimize indexes and is not allowed because field names must be unique within a document.  
-*(中文說明：在同一個文件中重複使用相同的欄位名稱並不能優化索引，而且這是不允許的，因為單一文件內的欄位名稱必須具備唯一性。)*
-* **C:** Descriptive, unique field names in MongoDB documents help make the data more understandable and maintainable.  
-*(中文說明：在 MongoDB 文件中使用具備描述性且唯一的欄位名稱，能讓資料更容易被理解與維護。)*
-* **D:** Generic names are often unclear because they usually do not convey specific information about the data stored in the field.  
-*(中文說明：通用或含糊的名稱通常不夠清晰，因為它們無法傳達該欄位所儲存資料的具體含意。)*
+B. 錯誤原因：在同一個文件物件中，欄位的 Key 必須是唯一的，不允許重複定義相同的欄位名稱，且這樣做完全無法優化索引。   
+
+C. 正確原因：使用具描述性且唯一的欄位名稱，能讓開發人員快速理解資料結構，是確保專案長期好維護的標準最佳實踐（Best Practice）。   
+
+D. 錯誤原因：使用通用、含糊的名稱（如 data1、value）無法明確傳達該欄位儲存的具體業務含意，容易導致混淆。   
+
+
+
+
+
 
 ---
 
-### Question 2
-**What is a key characteristic of MongoDB's document model that allows for handling polymorphic data, or data of different shapes and types? (Select one.)**
+[題目]
+What is a key characteristic of MongoDB's document model that allows for handling polymorphic data, or data of different shapes and types? (Select one.)
 
-* (a) Maximum document size of 16 MB
-* (b) Similarity to JSON objects
-* (c) Flexible schema
-* (d) Single data type storage
+[選項]
+A. Maximum document size of 16 MB
+B. Similarity to JSON objects
+C. Flexible schema
+D. Single data type storage
 
-**Answer:** C
+[正確答案]：
+C
 
-**Explanation:**
-* **A:** MongoDB documents do have a maximum document size of 16 MB, but this limit does not have an impact on its ability to handle polymorphic data.  
-*(中文說明：MongoDB 文件的確有 16 MB 的最大容量限制，但這個限制與能否處理多態數據（Polymorphic data）無關。)*
-* **B:** MongoDB documents are similar to JSON objects, which allows for efficient data storage and traversal. However, this trait is not directly related to its ability to handle polymorphic data.  
-*(中文說明：MongoDB 文件類似於 JSON 物件，這有利於高效儲存與走訪資料。然而，這項特點並非處理多態數據的直接原因。)*
-* **C:** A key characteristic of MongoDB's document model that allows for handling polymorphic data is its flexible schema, which allows documents within a collection to have different structures.  
-*(中文說明：MongoDB 文件模型能處理多態數據的核心特性在於其彈性綱要（Flexible schema），這允許同一個 Collection 中的文件擁有完全不同的資料結構。)*
-* **D:** MongoDB allows for storing diverse data types within a single document.  
-*(中文說明：MongoDB 允許在單一文件中儲存多種不同的資料型別（但這屬於型別支援，而非解釋動態結構多態性的主因）。)*
+[核心考點]：
+
+[詳細解析]：
+本題考查 MongoDB 處理多態數據（Polymorphic Data）的核心優勢。MongoDB 具備彈性綱要（Flexible Schema）的特性，不強制同個集合內的所有文件必須擁有相同的結構。這允許開發者在同一個集合中，自由儲存結構相異、欄位不同的文件，完美應對多變的業務需求。
+
+A. 錯誤原因：16 MB 是單一 BSON 文件的實體容量限制（用以防止濫用並優化記憶體使用），但該限制本身並非提供結構多態性的核心機制。
+
+B. 錯誤原因：雖然 MongoDB 採用類似 JSON 的 BSON 格式來直觀地儲存與查詢資料，但「類似 JSON」這項特質本身並不是動態多態結構的直接定義詞。
+
+C. 正確原因：彈性綱要（無綱要限制 / Schema-less）是 NoSQL 文件資料庫最顯著的特徵，也是實現不同資料形狀與多態設計的基石。
+
+D. 錯誤原因：MongoDB 支援豐富的資料型別（多元儲存），選項敘述的單一型別儲存（Single data type storage）與其支援多種類型（如字串、數字、陣列、物件）的事實完全相反。
 
 ---
 
@@ -543,62 +563,59 @@ Referencing
 
 減少多對多, 以避免複雜性
 
-QA
+[題目]   
+What is the typical approach for modeling a one-to-one relationship in MongoDB, where one entity is related to exactly one other entity? (Select one.)   
+   
+[選項]   
+A. Embedding   
+B. Referencing   
+C. Flattening   
+D. Normalizing   
 
-What is the typical approach for modeling a one-to-one relationship in MongoDB, where one entity is related to exactly one other entity? (Select one.)
+[正確答案]：   
+A   
+   
+[核心考點]：   
 
-a.
-Embedding
-b.
-Referencing
-c.
-Flattening
-d.
-Normalizing
+[詳細解析]：   
+本題考查 MongoDB 中一對一（One-to-One）關係的標準建模方式。MongoDB 的核心設計哲學是「經常一起被存取的資料，應該儲存在在一起」。因此，對於一對一的關係，最典型且首選的作法是內嵌（Embedding），將相關聯的實體作為子文件直接嵌入主文件中，以達成單次 I/O 讀取。   
+   
+A. 正確原因：內嵌能將資料保持在同一個文件內，簡化查詢邏輯，並確保在單次資料庫讀取中就能完整獲取兩個關聯實體的資訊，是處理一對一關係的標準作法。   
 
+B. 錯誤原因：引用（Referencing）會將資料拆分到不同的集合中，這在查詢時會需要額外的聯查（如 $lookup）或多次請求，增加了架構複雜度與效能開銷。   
 
-
-Answer: A
-
-**Explanation:**
-
-A:To model a one-to-one relationship in MongoDB, the typical approach is to embed the data. Embedding keeps related data together within the parent document, simplifying queries and allowing all related information to be stored and retrieved in a single document.
-
-B:Referencing is not the preferred approach for modeling a one-to-one relationship, as it involves storing related data in separate documents, which can increase complexity.
-
-C: Flattening refers to reducing nested data structures and is not specifically related to modeling a one-to-one relationship in MongoDB.
-
-D: While normalizing data is the standard practice for relational databases, the core principle of data modeling for MongoDB is "Data that is accessed together should be stored together." Normalization goes against this principle.
+C. 錯誤原因：扁平化（Flattening）是指將巢狀結構展開為單層欄位的程序，與探討如何建立兩個獨立實體間的一對一關係模型無關。
+   
+D. 錯誤原因：正規化（Normalizing）是關聯式資料庫（RDBMS）為了減少資料冗餘的傳統作法，但這與 MongoDB「為了讀取效能而適度去正規化」的設計原則相違背。   
 
 
 
-You are designing a MongoDB schema for a movie database. There are approximately 40 movie genres represented in the database. A movie will typically belong to a few genres, and each genre could include thousands of movies.
+[題目]
+You are designing a MongoDB schema for a movie database. There are approximately 40 movie genres represented in the database. A movie will typically belong to a few genres, and each genre could include thousands of movies.   
+   
+If you want to include the genre information for each movie, while also being able to query for all movies within a genre, how should you model the relationship between movies and genres?   
+   
+[選項]   
+A. Embed the genres directly within the movie document.   
+B. Reference the genres in the movie document using an array of genre IDs.   
+C. Embed the movie documents within each genre document.   
+D. Reference the movies in each genre document using an array of movie IDs.   
+   
+[正確答案]：   
+A   
 
-If you want to include the genre information for each movie, while also being able to query for all movies within a genre, how should you model the relationship between movies and genres? 
+[核心考點]：
 
-a.
-Embed the genres directly within the movie document.
-b.
-Reference the genres in the movie document using an array of genre IDs.
-c.
-Embed the movie documents within each genre document.
-d.
-Reference the movies in each genre document using an array of movie IDs.
+[詳細解析]：
+本題考查多對多關係（Many-to-Many）在 MongoDB 中的文件建模決策。評估標準在於基數（Cardinality）與文件大小限制（16MB）。一電影片僅有少數類型（如 ['Action', 'Sci-Fi']），將類型內嵌於電影文件中體積極小，且能透過建立多鍵索引（Multikey Index）高效查詢特定類型下的所有電影。
 
-Answer: A
+A. 正確原因：每部電影對應的類型數量極少（低基數），直接內嵌字串或小物件完全不會導致文件膨脹，且能實現單次 I/O 讀取完整電影資訊，是最符合 MongoDB 效益的作法。
 
-**Explanation:**
+B. 錯誤原因：雖然使用 ID 陣列引用可行，但在類型總數極少（僅 40 種）且每部片只佔幾個的場景下，使用引用會被迫進行額外的關聯查詢，多此一舉且降低讀取效能。
 
-A:Embedding genres within the movie document is suitable for this many-to-many relationship. Since each movie will likely not have more than a few genres, the genres can be directly embedded without fear of bloating the documents.
+C. 錯誤原因：一個類型可能包含數萬部電影（高基數）。若將大量電影內嵌在類型文件中，陣列會急遽膨脹，極易觸犯 16MB 的文件上限並嚴重衝擊記憶體與寫入效能。
 
-
-B:Referencing the genres in the movie document using an array of genre IDs is suitable for some many-to-many relationships, but does not provide any benefit in this scenario. You would need to run a second query for just a few results, leading to slower application performance. Embedding would provide the same results in a single query.
-
-
-C:Embedding movies within each genre document is not suitable for this many-to-many relationship. Potentially thousands of movies belong to a given genre, and an array of thousands of movies can quickly consume too much space, leading to bloated documents.
-
-
-D: Referencing movies in each genre document using an array of movie IDs does not meet the requirement to include genre information within each movie documents and is not recommended. With potentially thousands of movies per genre, these arrays could grow very large, leading to document bloat and performance issues during updates.
+D. 錯誤原因：在類型文件中存放成千上萬個電影 ID 陣列（稱為反向引用），同樣會面臨陣列過大、更新頻繁時容易導致文件搬移與效能低落的「大陣列反模式（Large Array Anti-pattern）」。
 
 
 
