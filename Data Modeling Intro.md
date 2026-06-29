@@ -9,7 +9,7 @@ MongoDB Data Modeling Intro
 * Lesson 5: Referencing Data in Documents
 * Lesson 6: Scaling a Data Model
 * Lesson 7: Using Atlas Tools for Schema Help
-* Introduction to MongoDB Data Modeling
+* Introduction to MongoDB Data Modeling    
 # The Subset Pattern
 
 
@@ -602,16 +602,21 @@ A Summary of Schema Design Anti-Patterns and How to Spot Them
 關鍵在於：MongoDB 會將整個文件載入到工作集（記憶體）中。如果一個文件有 500KB，但你只需要其中的 2KB，那麼你就浪費了記憶體——這會降低大規模應用時的效能。    
     
 
-無subset Pattern    
-```json
-{
-  _id ："user_001" ， 
-  姓名：‘愛麗絲’ 
-  頭像：“https://cdn.example.com/alice.jpg ” 
-  貼文：[ /* 3,000 個完整的貼文物件 */ ]   
-}
-```
+* 無subset Pattern    
+    ```json
+    {
+      _id ："user_001" ， 
+      姓名：‘愛麗絲’ 
+      頭像：“https://cdn.example.com/alice.jpg ” 
+      貼文：[ /* 3,000 個完整的貼文物件 */ ]   
+    }
+    ```
 
+# Modeling Patterns
+
+## subset Pattern
+
+子集模式是 MongoDB 針對單一文件中數組無限增長問題的標準解決方案。當一對多關係（例如產品到評論）可能導致數組無限增長時，嵌入所有項目可能會超出 16MB 的 BSON 文檔大小限制，並且由於 MongoDB 會將整個文檔加載到內存中，從而降低效能。子集模式透過僅保留一個經過篩選的子集（通常是最新或最相關的項目）來解決這個問題，該子集直接嵌入到父文檔中，以便快速、頻繁地存取。完整的資料集儲存在單獨的集合中，並在需要時進行查詢。 MongoDB 的官方資料建模模式文件中明確提到了這種模式。桶模式是處理順序或時間序列資料的有效替代方案，但對於評論等用例來說，它會增加複雜性。計算模式和擴展引用模式分別解決了不同的問題（重複聚合和跨集合資料重複），並且無法阻止無限增長。
 
 ```json
 // 主要（熱門）文件 — 使用者集合
@@ -631,7 +636,17 @@ A Summary of Schema Design Anti-Patterns and How to Spot Them
 }
 ```
 
+## Computed Pattern
 
+計算模式可以減少重複計算，但無法解決數組無限增長的問題——它儲存的是聚合結果，而不是單一評論。這將導致無法檢索單一評論內容。
 
+## Bucket Pattern
 
+## Extended Reference Pattern 
+
+## Outlier Pattern
+
+異常值模式是 MongoDB 的一種模式設計策略，用於處理集合中大多數文件的資料結構和大小相似，但少數文件（即異常值）包含的資料量卻顯著超出預期的情況。異常值模式並非圍繞這些異常值設計整個模式，而是保持典型文檔的緊湊性，並將多餘的資料重定向到單獨的溢出文檔中，並使用一個標誌字段來指示這種拆分。    
+    
+異常值模式會將異常文檔的資料有意拆分到一個主文檔和一個或多個溢出文檔中，而正常文檔則保持獨立。布林標誌（例如「has_extra_followers」）會向應用層發出訊號，表示需要取得並合併額外的文件才能產生完整的結果。如果沒有此檢查，應用程式會默默地將嵌入的陣列視為完整資料集，這對於大多數文件來說是準確的，但對於異常值來說是錯誤的。這種默默的不完整性尤其危險，因為它不會產生任何錯誤——查詢成功，但結果是錯誤的。此模式的全部價值取決於應用程式是否能根據該標誌正確地分支其邏輯：對於正常文檔，直接使用嵌入的資料；對於異常值，執行額外的查找和合併操作。這種設計權衡取捨需要略微增加應用程式程式碼的複雜性，以換取文件大小可控，並避免大多數用例中出現 BSON 文件大小限制問題。    
 
