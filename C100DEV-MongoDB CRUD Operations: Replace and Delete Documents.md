@@ -1,9 +1,9 @@
-Lesson 1: Replacing a Document in MongoDB
-Lesson 2: Updating MongoDB Documents by Using updateOne()
-Lesson 3: Updating MongoDB Documents by Using findAndModify()
-Lesson 4: Updating MongoDB Documents by Using updateMany()
-Lesson 5: Deleting Documents in MongoDB
-
+Lesson 1: Replacing a Document in MongoDB  
+Lesson 2: Updating MongoDB Documents by Using updateOne()  
+Lesson 3: Updating MongoDB Documents by Using findAndModify()  
+Lesson 4: Updating MongoDB Documents by Using updateMany()  
+Lesson 5: Deleting Documents in MongoDB  
+  
 https://learn.mongodb.com/learn/course/mongodb-crud-operations-replace-and-delete-documents/lesson-5-deleting-documents-in-mongodb/learn?page=1
 
 
