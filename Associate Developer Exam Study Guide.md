@@ -1,6 +1,14 @@
 
 # Associate Developer Exam Study Guide
 
+MongoDB Certified Associate Developer（開發人員認證）  
+對象：​具備至少一種程式語言（如 Node.js、Python、Java、PHP、C#）的開發人員，熟悉 MongoDB 驅動程式。  
+考試重點：​CRUD 操作、資料模型設計、索引、聚合框架、MongoDB 架構與設計理念。  
+考試時間：​75 分鐘  
+費用：​$150 美元  
+建議準備：​MongoDB University 的免費課程與練習測驗。   
+
+
 ### Exam Study Guide
 
 [Exam Study Guide](https://learn.mongodb.com/learn/course/mongodb-associate-developer-exam-study-guide/main/associate-dba-exam-study-guide)
