@@ -26,80 +26,74 @@ An ACID transcation is a group of database operations that must happen together 
 
 使用場景在將記錄傳喚到另一則記錄中, 如金融交易與商品賣賣
 
-Atomicity 原子性, 全部的操作只有同時成功或同時失敗
+* Atomicity 原子性, 全部的操作只有同時成功或同時失敗
 
-Guarantees that every transaction is "all or nothing" when committing data to a database. For example, we don't want money to be taken from an account but not successfully added to another.
+  Guarantees that every transaction is "all or nothing" when committing data to a database. For example, we don't want money to be taken from an account but not successfully added to another.
 
-Consistency 一致性
+* Consistency 一致性
 
-Guarantees that the data written to the database is consistent with database constraints. For example, if an account balance cannot be less than 0, a transaction would fail before violating this constraint.
+  Guarantees that the data written to the database is consistent with database constraints. For example, if an account balance cannot be less than 0, a transaction would fail before violating this constraint.
 
-Isolation 隔離
+* Isolation 隔離
 
-Guarantees that each transaction that is run concurrently leaves the database in the same state as if the transactions were run sequentially. In other words, multiple transactions can happen at the same time without affecting the outcome of the other transactions.
+  Guarantees that each transaction that is run concurrently leaves the database in the same state as if the transactions were run sequentially. In other words, multiple transactions can happen at the same time without affecting the outcome of the other transactions.
 
-Durability 耐久性
+* Durability 耐久性
 
-Durability: Guarantees that data is never lost. Data is saved to non-volatile memory, so any modifications made to data by a successful transaction will persist, even in the event of a power or hardware failure.
-
-
-QA
+  Durability: Guarantees that data is never lost. Data is saved to non-volatile memory, so any modifications made to data by a successful transaction will persist, even in the event of a power or hardware failure.
 
 
+[題目]
 Which of the following is the best definition of an ACID transaction? (Select one.)
 
-a.
-A group of database operations that cannot fail.
-b.
-Database operations that involve transferring money between two parties.
-c.
-A group of database operations that must happen all together or not at all.
-d.
-Database operations that are durable and will persist even if the server is down.
+[選項]
+A. A group of database operations that cannot fail.
+B. Database operations that involve transferring money between two parties.
+C. A group of database operations that must happen all together or not at all.
+D. Database operations that are durable and will persist even if the server is down.
+
+[正確答案]：
+C
+
+[核心考點]：
+
+[詳細解析]：
+本題考查資料庫中 ACID 事務（Transaction）的核心定義。ACID 是原子性（Atomicity）、一致性（Consistency）、隔離性（Isolation）與持久性（Durability）的縮寫。其中，事務最核心、最基礎的定義即為「原子性（Atomicity）」，意即一組操作是一個不可分割的整體，要麼全部成功，要麼全部失敗回滾（All or nothing）。
+
+A. 錯誤原因：事務內部的操作「可以」失敗。ACID 的機制是確保一旦其中某個操作失敗時，整個事務都會跟著失敗並回滾，而非保證操作絕對不會出錯。
+
+B. 錯誤原因：雖然轉帳（金流交易）是 ACID 事務最經典的應用場景，但事務的定義與適用範圍絕不侷限於轉帳，任何需要確保資料完整性的複合操作皆適用。
+
+C. 正確原因：精確描述了 ACID 事務最關鍵的「原子性（All or nothing）」本質，這也是定義一組操作是否構成事務的最核心標準。
+
+D. 錯誤原因：此敘述僅單純描述了「持久性（Durability）」這一項特性，並不足以代表整個完整 ACID 事務的全面性定義。
 
 
-==> C
 
-
-a:A database operation involved in an ACID transaction can fail. But if an operation does fail, the rest will fail as well.
-
-B:ACID transactions can be used to transfer funds or goods between parties, but they are not limited to this use case.
-
-C: An ACID transaction involves a group of database operations that must happen together successfully or not at all.
-
-D:  Durability is only one of the ACID properties that transactions have.
-
-
-
-
-
+[題目]
 Which of the following scenarios require the use of an ACID transaction? (Select all that apply.)
 
-a.
-Updating a bank database to reflect the transfer of money from Customer A's bank account into Customer B's bank account.
-b.
-Updating inventory and shopping cart records when a customer adds an item to their online shopping cart in an ecommerce app.
-c.
-Updating records in a user database to bulk add user profile pictures.
-d.
-Adding multiple documents that contain information about movies to a database.
+[選項]
+A. Updating a bank database to reflect the transfer of money from Customer A's bank account into Customer B's bank account.
+B. Updating inventory and shopping cart records when a customer adds an item to their online shopping cart in an ecommerce app.
+C. Updating records in a user database to bulk add user profile pictures.
+D. Adding multiple documents that contain information about movies to a database.  
 
+[正確答案]：
+AB
 
-==> AB
+[核心考點]：
 
+[詳細解析]：
+本題考查在實際業務場景中評估是否需要引入 ACID 事務（Transaction）。事務的核心價值在於確保「跨多個操作或多個文件的修改必須具備原子性（Atomicity）」，即要麼全部成功，要麼全部失敗。這通常發生在涉及價值轉移、庫存扣減、所有權變更等不允許出現中間狀態（如錢扣了對方沒收到、庫存扣了購物車沒加成功）的商務邏輯中。
 
+A. 正確原因：銀行轉帳是經典的事務場景。A 帳戶扣款與 B 帳戶存款兩個操作必須同時成功或同時失敗，絕不允許扣款成功但存款失敗的中間狀態存在。
 
+B. 正確原因：電商購物涉及庫存扣減與購物車新增。這兩個操作必須保持原子性，否則會導致庫存數據與購物車實際數量不一致，進而引發超賣或帳實不符，因此需要事務支持。
 
-A:In the case of a bank account transfer, the database operations MUST happen atomically. This scenario requires the use of ACID properties to guarantee that all operations happen successfully and securely, or that they don't happen at all.
+C. 錯誤原因：批量上傳使用者大頭貼通常是彼此獨立的寫入操作。即使其中某幾張圖片上傳失敗，也不需要讓其他已經成功上傳的圖片跟著回滾，使用一般的批量寫入即可，無需事務。
 
-
-B:In most scenarios involving the transfer of value, inventory, or ownership of goods, database operations MUST happen atomically. This scenario requires the use of ACID properties to guarantee that both the inventory and shopping cart records are updated together or not at all.
-
-
-C:In this scenario, adding user profile pictures to a database probably does not need to be an ACID compliant transaction. ACID transactions are needed when database operations MUST happen atomically, such as most scenarios involving the transfer of value, inventory, or ownership of goods.
-
-
-D: In this scenario, adding new documents that contain information about movies probably does not need to be an ACID-compliant transaction. ACID transactions are needed when database operations MUST happen atomically, such as most scenarios involving the transfer of value, inventory, or ownership of goods.
+D. 錯誤原因：向資料庫寫入多部電影的資訊，每部電影文件都是獨立的個體，彼此間沒有必須「同生共死」的強烈商務關聯性，使用標準的 insertMany() 即可高效完成，不需要開銷較大的事務。
 
 
 
