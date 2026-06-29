@@ -74,11 +74,11 @@ JSON
 ```json
 { "hello" : "world" }
 ```
-
-* BSON (Binary JSON)
-* 用於 MongoDB 內部儲存與網路傳輸的二進位格式。
-
-提供更高的解析效能與更多延伸資料型態（如 ObjectId, Date）。
+   
+* BSON (Binary JSON)   
+* 用於 MongoDB 內部儲存與網路傳輸的二進位格式。   
+   
+提供更高的解析效能與更多延伸資料型態（如 ObjectId, Date）。   
 ```json
 \x16\x00\x00\x00
 \x02hello\x00
@@ -88,6 +88,9 @@ JSON
 
 
 ### 一、 JSON 型態表列與規範
+
+* JSON 是純文字格式，沒有二進制數值類型的概念。
+
 
 | 型態名稱 | JSON 空間與格式規範 | BSON |
 | :--- | :--- | :--- |
@@ -136,11 +139,11 @@ db.orders.insertOne({
 })
 ```
 
-如果今天有數值1000000，
-* JSON 將 1000000 儲存為 7 個位元組的 UTF-8 編碼字串
-* BSON 將其儲存為 4 個位元組的 32 位元整數節​​省空間
-
-
+如果今天有數值1000000，   
+* JSON 將 1000000 儲存為 7 個位元組的 UTF-8 編碼字串   
+* BSON 將其儲存為 4 個位元組的 32 位元整數節​​省空間   
+   
+   
 ---
 
 ## 四、 Polymorphic data(多態數據)
@@ -158,10 +161,10 @@ Document 的 Key-Value pairs 支援多種資料類型：
 
 為確保資料擷取效率並優化記憶體與頻寬的管理，MongoDB 在維護靈活性的同時設有以下硬性限制：
 
-* **Maximum Document Size:** 單一文檔最大限制為 **16 MB**。
-    * **目的：** 優化記憶體使用與網路頻寬（bandwidth），防止大物件占用過多資源導致效能瓶頸。若有大檔案需求應使用 GridFS。
-* **Maximum Nesting Levels:** 巢狀結構最大深度限制為 **100 層**。
-
+* **Maximum Document Size:** 單一文檔最大限制為 **16 MB**。   
+    * **目的：** 優化記憶體使用與網路頻寬（bandwidth），防止大物件占用過多資源導致效能瓶頸。若有大檔案需求應使用 GridFS。   
+* **Maximum Nesting Levels:** 巢狀結構最大深度限制為 **100 層**。   
+   
 ---
 
 
