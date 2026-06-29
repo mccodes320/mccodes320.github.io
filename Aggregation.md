@@ -3,6 +3,7 @@ Lesson 2: Using $match and $group Stages in a MongoDB Aggregation Pipeline
 Lesson 3: Using $sort and $limit Stages in a MongoDB Aggregation Pipeline  
 Lesson 4: Using $project, $count, and $set Stages in a MongoDB Aggregation Pipeline  
 Lesson 5: Using the $out Stage in a MongoDB Aggregation Pipeline  
+# $facet
 
 # 考試註記
 1. $match、$group、$sort 三者的順序 ESR, 即便pipleline順序不同系統還是會依照ESR執行
@@ -849,8 +850,47 @@ db.getSiblingDB("mdb").coll.aggregate([
 
 
 
+# $facet
 
 
+MongoDB 聚合框架中的 `$facet` 階段專門用於在一次資料遍歷中實現多維度分析。當文件進入 `$facet` 階段時，每個已定義的子管道都會獨立接收同一組完整的輸入文件－子管道之間不存在共用、過濾或排序。每個子管道都會在其自身的輸入副本上運行一系列聚合階段（例如 `$group`、`$sort`、`$count` 等）。 `$facet` 階段的最終輸出始終是一個單獨的文檔，其中每個鍵都與子管道的名稱相匹配，其值是一個包含該子管道結果的數組。這種設計對於電子商務分面搜尋等場景特別有用，在這些場景中，您可能需要同時計算按類別、價格範圍和可用性狀態劃分的計數，而無需多次掃描集合。需要記住的一個重要限制是，$facet 子管道本身不能包含某些階段，這些階段會以影響記憶體限制的方式改變文件的數量，例如 $facet 嵌套在 $facet 中，或者像 $out 和 $merge 這樣的階段。  
+
+```json
+
+{ 
+  $facet : { 
+    "按類別" : [ 
+      { $group : { _id : "$category" , count : { $sum : 1 } } }       
+    ],
+    “cityStatus” ：[ 
+      { $group : { _id : "$status" , total : { $sum : "$amount" } } },       
+      { $sort : { total : - 1 } }    
+    ],
+    「概述」：[ 
+      { $count : "totalDocuments" }  
+    ]
+  }
+}
+
+```
+
+最終產生一個類似這樣的文件：
+
+```json
+{
+  "按類別" : [ 
+    { "_id" : "電子產品" , "count" : 42 },     
+    { "_id" : "服裝" , "count" : 17 }     
+  ],
+  “cityStatus” ：[ 
+    { "_id" : "active" , "total" : 9500 },     
+    { "_id" : "inactive" , "total" : 2100 }     
+  ],
+  「概述」：[ 
+    { "totalDocuments" : 59 }   
+  ]
+}
+```
 
 
 
