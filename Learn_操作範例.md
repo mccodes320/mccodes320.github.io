@@ -871,9 +871,39 @@ db.routes.find({
 
 # $lookup
 
+* as 欄位永遠是陣列（Array）
+
 ```sql
+// 新增員工資料
+db.employees.insertOne({ _id: 1, name: "Alice", departmentId: 10 })
+
+// 新增部門資料（集合名稱修正為 departments）
+db.departments.insertOne({ _id: 1, name: "Engineering_1" })
+db.departments.insertOne({ _id: 10, name: "Engineering" })
 
 
+db.employees.aggregate([
+  {
+    $lookup: {
+      from: "departments",          // 1. 要關聯的目的地集合名稱
+      localField: "departmentId",   // 2. 本地集合 (employees) 用來關聯的欄位
+      foreignField: "_id",          // 3. 目的集合 (departments) 對應的欄位
+      as: "department_info"         // 4. 輸出結果要存放的新陣列欄位名稱
+    }
+  }
+])
+
+{
+  _id: 1,
+  name: 'Alice',
+  departmentId: 10,
+  department_info: [
+    {
+      _id: 10,
+      name: 'Engineering'
+    }
+  ]
+}
 ```
 
 
