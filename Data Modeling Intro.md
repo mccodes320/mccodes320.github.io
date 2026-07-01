@@ -642,6 +642,8 @@ A Summary of Schema Design Anti-Patterns and How to Spot Them
 
 ## Bucket Pattern
 
+多個時間序列資料點分組到一個文件（「桶」）中，而不是將每個測量值儲存為單獨的文件。這顯著減少了文件數量，提高了壓縮率，並實現了高效的範圍查詢。預先計算的總和欄位（最小值、最大值、總和、計數）嵌入到每個桶中，以避免讀取時進行代價高昂的陣列解包
+
 ## Extended Reference Pattern 
 
 ## Outlier Pattern
