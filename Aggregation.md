@@ -694,32 +694,51 @@ d:
 
 7. A collection has documents like the following:
 
+
+[題目]
+7. A collection has documents like the following:
+
+```JSON
  { _id: 1, name: 'Oatmeal Fruit Cake with Gummy Bears ', price: 11)},
  { _id: 2, name: 'Cheesecake Trifle with Chocolate Sprinkles ', price: 14)},
  { _id: 3, name: 'Pistachio Brownie with Walnuts ', price: 5},
  { _id: 4, name: 'Strawberry Ice Cream Cake with Butterscotch Syrup ', price: 3)}
-How should the 'autocomplete' index be defined to look for matches at the beginning of a word on the name field?
+```
 
-(Choose 1)
+How should the 'autocomplete' index be defined to look for matches at the beginning of a word on the name field?(Choose 1)    
 
-Incorrect - 0 out of 1 correct answer chosen
+[選項]
+A. {  "mappings": { "dynamic": false, "fields": { "name": [   {  "type": "autocomplete", "tokenization": "regexCaptureGroup"} ]      } }}    
 
-a.
-{  "mappings": { "dynamic": false, "fields": { "name": [   {  "type": "autocomplete", "tokenization": "regexCaptureGroup"} ]     } }}
+B. {  "mappings": { "dynamic": false, "fields": { "name": [   {  "type": "autocomplete", "tokenization": "edgeGram"} ]    } }}    
 
-b.
-{  "mappings": { "dynamic": false, "fields": { "name": [   {  "type": "autocomplete", "tokenization": "edgeGram"} ]    } }}
+C. {  "mappings": { "dynamic": false, "fields": { "name": [   {  "type": "autocomplete", "tokenization": "nGram"} ]    } }}    
 
-c.
-{  "mappings": { "dynamic": false, "fields": { "name": [   {  "type": "autocomplete", "tokenization": "nGram"} ]    } }}
+D. {  "mappings": { "dynamic": false, "fields": { "name": [   {  "type": "autocomplete", "tokenization": "matchNGram"}} ]      } }}    
 
-d.
-{  "mappings": { "dynamic": false, "fields": { "name": [   {  "type": "autocomplete", "tokenization": "matchNGram"}} ]     } }}
+[正確答案]：  
+B
+
+[核心考點]：  
+  
+[詳細解析]：  
+本題考查 MongoDB Atlas Search 的自動完成（Autocomplete）索引定義。題目要求必須從「單字的開頭（beginning of a word）」進行匹配。在 Atlas Search 中，autocomplete 型態的 tokenization 策略主要有 edgeGram 與 nGram，而 edgeGram 正是專門從單字邊緣（預設為開頭）開始建立字根切片（Token）的技術。
+
+A. 錯誤原因：regexCaptureGroup 並非 MongoDB Atlas Search 的 autocomplete 欄位型態所支援的合法 tokenization 選項設定。
+
+B. 正確原因：edgeGram 會從每個單字的開頭開始切分字元（例如 "Cake" 會被切為 "C", "Ca", "Cak", "Cake"），完美符合題目要求從單字開頭（beginning of a word）進行自動完成匹配的場景。
+
+C. 錯誤原因：nGram 會在單字的「任意位置」滑動切分字元（例如 "Cake" 會切出 "Ca", "ak", "ke" 等），這會導致輸入單字中間的字母也能匹配成功，不符合題目限定「單字開頭」的要求。
+
+D. 錯誤原因：matchNGram 語法錯誤。Atlas Search 的自動完成分詞器選項中並不存在名為 matchNGram 的權杖化（tokenization）參數設定。
+
+
+
 
 
 ## $search 進行自動補全查詢
 
-```
+```sql
 db.user.createSearchIndex(
   "default", // 索引名稱
   {
