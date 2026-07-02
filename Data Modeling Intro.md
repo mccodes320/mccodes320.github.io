@@ -98,26 +98,30 @@ We refer to documents in another collection in our document
 
 
 
-QA
+[題目]    
+Which of the following are common types of relationships that are found in every database? (Select all that apply.)    
+    
+[選項]    
+A. One-to-one relationship    
+B. One-to-many relationship    
+C. Many-to-many relationship    
+D. One-to-zillions relationship    
+    
+[正確答案]：    
+ABC    
+    
+[核心考點]：    
+    
+[詳細解析]：    
+本題考查資料庫資料建模（Data Modeling）中最基本的三種實體關係（Entity Relationships）。無論是在關聯式資料庫（RDBMS）還是非關聯式資料庫（NoSQL）中，資料之間的關聯本質上都可以歸納為三種核心類型：一對一、一對多與多對多。    
 
 
-Which of the following are common types of relationships that are found in every database? (Select all that apply.)
-
-a.
-One-to-one relationship
-b.
-One-to-many relationship
-c.
-Many-to-many relationship
-d.
-One-to-zillions relationship
 
 
-=> abc
-
-
-What is the type of relationship shown in the following document?
-```json
+[題目]    
+What is the type of relationship shown in the following document?    
+    
+```JSON
 {
     "_id": ObjectId("00000001"),
     "name": "Marnie Dupree",
@@ -125,17 +129,25 @@ What is the type of relationship shown in the following document?
     "studentId": 123456,
     "email": "mdupree@college.edu"
 }
-```
-a.
-One-to-one relationship
-b.
-One-to-many relationship
-c.
-Many-to-many relationship
+```    
+[選項]    
+A. One-to-one relationship    
+B. One-to-many relationship    
+C. Many-to-many relationship    
 
+[正確答案]：    
+A    
 
-=> a
+[核心考點]：
 
+[詳細解析]：
+本題考查 MongoDB 內嵌文件結構所表達的一對一（One-to-One）關係。在該 student 文件中，除了標準的 name 外，還包含 studentId（學生證號）與 email（電子郵件）。因為在現實業務邏輯中，一位學生通常只會擁有一個唯一的學生證號與一個主要學校信箱，這三個實體呈現一對一的緊密綁定關係。
+
+A. 正確原因：此文件將學生基本資料、學生證號和電子郵件合而為一，這種將一對一關係的屬性直接「扁平化內嵌（Flattened Embedding）」在單一文件中的設計，是 MongoDB 處理一對一關係的最標準作法。
+
+B. 錯誤原因：一對多（One-to-many）關係在 MongoDB 中通常會表現為「物件陣列（Array of Objects）」或「值陣列」，用以儲存多筆子資料。然而該文件中所有欄位皆為單一數值，並無陣列結構。
+
+C. 錯誤原因：多對多（Many-to-many）關係在文件模型中，通常需要雙向的 ID 陣列引用或是獨立的關聯陣列來表達，此處單純的單一文件結構完全無法對應多對多場景。
 
 
 
@@ -144,13 +156,13 @@ Many-to-many relationship
 
 * Lession 3: Modeling Data Relationships
 
-QA
+[題目]
+A legacy bank database has been ported to MongoDB, resulting in a set of collections that were mapped to their original tables.  
 
-A legacy bank database has been ported to MongoDB, resulting in a set of collections that were mapped to their original tables.
-
-You're tasked with redesigning the accounts collection of the banking database to make the information clearer. The bank would like you to keep the customers' contact information and account information separate.
+You're tasked with redesigning the accounts collection of the banking database to make the information clearer. The bank would like you to keep the customers' contact information and account information separate.  
 
 The following is a sample document in the accounts collection:
+
 ```json
 {
   "account_id": "MDB653115886",
@@ -412,103 +424,109 @@ user_id
 
 ----
 
-* Lesson 6: Scaling a Data Model
+# Lesson 6: Scaling a Data Model
 
 
+* 資料模型擴充的四個終極優化指標（Optimum Efficiency）:    
+    1. Query result times ：縮短資料檢索與回應延遲。    
+    2. 記憶體使用（Memory Usage：減少快取（WiredTiger Cache）與記憶體緩衝區的壓力。    
+    3. CPU Usage：降低複雜聚合運算或無索引掃描帶來的運算負擔。    
+    4. Storage：優化磁碟佔用率，提高壓縮效率    
 
-Optimum efficiency of:
-1. Query result times
-
-2. Memory usage
-
-3. CPU usage
-
-4. Storage
-
-Unbounded documents are documents that grow infinitely.
-無邊界文件（Unbounded documents）是指會無限增長的文件。
-
-
-Problems as the array grows larger:
-It will take up more space in memory  
-
-May impact write performance  
-
-Difficult to perform pagination of comments  
-
-Maximum document size of 16 MB will lead to storage problems
+* Unbounded documents are documents that grow infinitely
+  無邊界文件（Unbounded documents）是指會無限增長的文件。
+  會引發的四大效能災難：
+  1. It will take up more space in memory ：    
+     陣列過大時，讀取整份文件會佔用極大的記憶體與快取空間，降低緩存效率。    
+  3. May impact write performance ：    
+     在 MongoDB 中，當陣列增長導致文件體積超過原本分配的磁碟空間時，資料庫必須在磁碟上重新移動整份文件並重建索引，引發嚴重的寫入延遲。    
+  4. Difficult to perform pagination of comments 分頁查詢困難：    
+     極難對內嵌陣列中的資料（如特定幾條留言）進行高效的效能分頁（Pagination）。    
+  5. 觸犯 16MB 鐵律：MongoDB 單一文件限制最大為 16MB。陣列無限增長最終會導致寫入失敗，引發系統中斷。    
 
 
 
 
-QA
-
-
+[題目]
 What are the effects of creating unbounded documents when embedding data? (Select all that apply.)
 
-a.
-Unbounded documents impact write performance.
-b.
-Unbounded documents improve pagination performance.
-c.
-Unbounded documents cause storage problems.
+[選項]
+A. Unbounded documents impact write performance.
+B. Unbounded documents improve pagination performance.
+C. Unbounded documents cause storage problems.
 
-==> AC
+[正確答案]：
+AC
 
-A:Embedding data will make the document larger and impact write performance. As more data is added to each document, the entire document is rewritten into MongoDB data storage.
+[核心考點]：
 
+[詳細解析]：
+本題考查 MongoDB 中「無限制增長文件（Unbounded Documents）」反模式的負面影響。在內嵌（Embedding）一對多關係時，若子文件數量無上限（如無限的日誌或評論），文件體積會持續膨脹。這不僅會因為觸及 16MB 限制而引發儲存錯誤，還會因為每次更新都需將整個大文件重新寫入磁碟，嚴重拖慢寫入效能。
 
-B:
-C:Unbounded documents caused by embedding will eventually run into storage problems by exceeding the maximum document size of 16 MB.
+A. 正確原因：隨著文件體積因內嵌資料而無限制增長，每次有新資料加入時，資料庫都必須在磁碟中重新尋找空間並重寫整份大文件，這會帶來極大的 I/O 開銷並嚴重打擊寫入效能。
 
+B. 錯誤原因：無限制增長的文件非但不能提升分頁效能，反而會破壞分頁表現。因為每次查詢都要載入包含無數子元素的超大文件到記憶體中，這會極大地消耗記憶體與網絡傳輸頻寬。
 
-D:
-
-
-
+C. 正確原因：MongoDB 的單一 BSON 文件有 16MB 的實體容量上限。如果任由數據無限制地嵌入，文件最終必然會超過此限制，進而導致寫入失敗與嚴重的儲存管理問題。
 
 
 
 
 
 
+
+
+[題目]
 What is the recommended way to avoid the unbounded document sizes that may result from embedding?
 
-a.
-Break data into multiple collections and use references.
-b.
-Break data into multiple databases.
-c.
-Separate documents to store on different servers.
+[選項]
+A. Break data into multiple collections and use references.
+B. Break data into multiple databases.
+C. Separate documents to store on different servers.
 
-==>  A
+[正確答案]：
+A
+
+[核心考點]：
+
+[詳細解析]：
+本題考查如何有效避免 MongoDB 中因內嵌（Embedding）所導致的無限制增長文件（Unbounded Documents）反模式。當一對多的關係中，子文件的數量會無上限地增加時，官方與業界最推薦的標準解決方案即是將內嵌陣列「打破並獨立」出來，改以分開的集合（Collections）儲存，並透過 ObjectId 進行引用（References）關聯。
+
+A. 正確原因：這是解決文件無限膨脹的最標準且推薦的做法。透過將子資料轉移至獨立集合並以引用關聯，能將無限長度的一對多轉化為獨立文件的水平擴展，完美杜絕觸及 16MB 上限與寫入效能下降的問題。
+
+B. 錯誤原因：將資料分散到多個不同的「資料庫（Databases）」並無法解決單一文件體積過大的實體限制與設計缺陷，反而會大幅增加多庫管理的架構複雜度。
+
+C. 錯誤原因：將文件存放在不同的服務器上屬於分片（Sharding）或分布式部署的範疇，雖然它能解決叢集的整體儲存量容量問題，但依然無法改變「單一主文件因過度內嵌而超過 16MB」的單點極限限制。
 
 
-A:To prevent unbounded document sizes that may result from embedding, you can break up your data into multiple collecitons and use references to keep frequently accessed data together.
 
 
-
-
-
+[題目]
 What is MongoDB's principle for how you should design your data model?
 
-a.
-Data that is accessed together should be stored together.
-b.
-Data that is collected in the same day should be stored together.
-c.
-Data that is not in a one-to-one relationship should be stored together.
+[選項]
+A. Data that is accessed together should be stored together.
+B. Data that is collected in the same day should be stored together.
+C. Data that is not in a one-to-one relationship should be stored together.
 
-==> A
+[正確答案]：
+A
 
-A:Data that is accessed together should be stored together. How you model your data depends entirely on your particular application's data access patterns. You want to structure your data to match the ways that your application queries and updates it.
+[核心考點]：
+
+[詳細解析]：
+本題考查 MongoDB 資料建模的最核心指導原則（Data Modeling Philosophy）。在非關聯式文件資料庫中，建模的精髓在於「圍繞應用程式的存取模式（Access Patterns）」來設計，而不是像傳統 RDBMS 一樣進行嚴格的正規化拆表。因此，最著名黃金法則即是「經常一起被存取的資料，就應該儲存在一起（Data that is accessed together should be stored together）」。
+
+A. 正確原因：完美闡述了 MongoDB 的核心設計哲學。透過內嵌（Embedding）將經常需要同時讀寫的關聯資料放在同一個文件中，可以最大化減少關聯查詢（Join）的開銷，從而提供極高的讀寫效能。
+
+B. 錯誤原因：資料庫的設計是基於業務邏輯和查詢特徵，而非單純根據「收集日期」來決定資料的實體嵌套結構。依日期歸類屬於資料封存或分區策略，非建模的核心哲學。
+
+C. 錯誤原因：關係的類型（一對一、一對多、多對多）只是評估的維度之一，並非只要「不是一對一關係」就盲目全部儲存在一起。如果一對多關係中的子文件是無限制增長的，儲存在一起反而會引發反模式。
 
 
 
----
 
-
-Lesson 7: Using Atlas Tools for Schema Help
+# Lesson 7: Using Atlas Tools for Schema Help
 
 
 
@@ -614,7 +632,7 @@ A Summary of Schema Design Anti-Patterns and How to Spot Them
 
 # Modeling Patterns
 
-## subset Pattern
+## **1. subset Pattern**
 
 子集模式是 MongoDB 針對單一文件中數組無限增長問題的標準解決方案。當一對多關係（例如產品到評論）可能導致數組無限增長時，嵌入所有項目可能會超出 16MB 的 BSON 文檔大小限制，並且由於 MongoDB 會將整個文檔加載到內存中，從而降低效能。子集模式透過僅保留一個經過篩選的子集（通常是最新或最相關的項目）來解決這個問題，該子集直接嵌入到父文檔中，以便快速、頻繁地存取。完整的資料集儲存在單獨的集合中，並在需要時進行查詢。 MongoDB 的官方資料建模模式文件中明確提到了這種模式。桶模式是處理順序或時間序列資料的有效替代方案，但對於評論等用例來說，它會增加複雜性。計算模式和擴展引用模式分別解決了不同的問題（重複聚合和跨集合資料重複），並且無法阻止無限增長。
 
@@ -636,17 +654,17 @@ A Summary of Schema Design Anti-Patterns and How to Spot Them
 }
 ```
 
-## Computed Pattern
+## **2. Computed Pattern**
 
 計算模式可以減少重複計算，但無法解決數組無限增長的問題——它儲存的是聚合結果，而不是單一評論。這將導致無法檢索單一評論內容。
 
-## Bucket Pattern
+## **3. Bucket Pattern**
 
 多個時間序列資料點分組到一個文件（「桶」）中，而不是將每個測量值儲存為單獨的文件。這顯著減少了文件數量，提高了壓縮率，並實現了高效的範圍查詢。預先計算的總和欄位（最小值、最大值、總和、計數）嵌入到每個桶中，以避免讀取時進行代價高昂的陣列解包
 
-## Extended Reference Pattern 
+## **4. Extended Reference Pattern**
 
-## Outlier Pattern
+## **5. Outlier Pattern**
 
 異常值模式是 MongoDB 的一種模式設計策略，用於處理集合中大多數文件的資料結構和大小相似，但少數文件（即異常值）包含的資料量卻顯著超出預期的情況。異常值模式並非圍繞這些異常值設計整個模式，而是保持典型文檔的緊湊性，並將多餘的資料重定向到單獨的溢出文檔中，並使用一個標誌字段來指示這種拆分。    
     
