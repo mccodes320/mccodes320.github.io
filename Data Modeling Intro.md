@@ -670,3 +670,47 @@ A Summary of Schema Design Anti-Patterns and How to Spot Them
     
 異常值模式會將異常文檔的資料有意拆分到一個主文檔和一個或多個溢出文檔中，而正常文檔則保持獨立。布林標誌（例如「has_extra_followers」）會向應用層發出訊號，表示需要取得並合併額外的文件才能產生完整的結果。如果沒有此檢查，應用程式會默默地將嵌入的陣列視為完整資料集，這對於大多數文件來說是準確的，但對於異常值來說是錯誤的。這種默默的不完整性尤其危險，因為它不會產生任何錯誤——查詢成功，但結果是錯誤的。此模式的全部價值取決於應用程式是否能根據該標誌正確地分支其邏輯：對於正常文檔，直接使用嵌入的資料；對於異常值，執行額外的查找和合併操作。這種設計權衡取捨需要略微增加應用程式程式碼的複雜性，以換取文件大小可控，並避免大多數用例中出現 BSON 文件大小限制問題。    
 
+
+
+
+
+[題目]
+In MongoDB one-to-many relationship modeling, a blogging platform stores authors and their blog posts. Each author can have hundreds of posts, and the application frequently needs to display an author's profile page showing their 5 most recent posts along with full author details on every post page. A developer is deciding between three approaches: 
+(A) embed all posts inside the author document, 
+(B) store posts in a separate collection with an author reference, and also store a 'recentPosts' array of the 5 latest post summaries inside the author document, or 
+(C) store posts in a separate collection with only an author reference. 
+
+Which approach best balances read performance and data consistency for this use case? (difficulty: hard)
+
+[選項]
+A. Store posts in a separate collection with only an author reference, and rely solely on $lookup aggregation to join data at query time
+B. Store posts in a separate collection and embed the full author document inside every post document, so each post is fully self-contained
+C. Embed all posts inside the author document, because embedding always provides the best read performance by avoiding joins
+D. Store posts in a separate collection with an author reference, and store a 'recentPosts' summary array inside the author document (Extended Reference / Subset pattern)
+
+[正確答案]：
+D
+
+[核心考點]：
+
+[詳細解析]：
+本題考查 MongoDB 進階設計模式中的「子集模式（Subset Pattern）」與「擴充引用模式（Extended Reference Pattern）」。當面對一對多（且多方數量龐大）的場景，若前端有極為頻繁且固定的查詢特徵（例如永遠只看最新 5 篇、或者看文章時必看作者簡介），將全量資料分開儲存以防文件膨脹，同時在主文件中複製一份「高頻存取的小子集」或「靜態擴充資訊」，是平衡讀取效能與維護成本的最優解。
+
+A. 錯誤原因：雖然這種做法能確保強一致性，但在高併發、讀多寫少的部落格場景中，每次讀取首頁都必須實時進行 $lookup（記憶體 Join）運算，會帶來不必要的系統開銷與效能瓶頸。
+
+B. 錯誤原因：在每篇章中都內嵌「完整」的作者文件會造成嚴重的資料冗餘與寫入放大（Write Amplification）。一旦作者修改了個人簡介或頭像，系統必須同步更新成百上千篇的文章文件，極易引發資料不一致。
+
+C. 錯誤原因：當作者擁有數百篇以上文章時，直接內嵌所有文章會導致文件體積無限制增長（Unbounded），極易觸及 16MB 限制；且每次只想看作者簡介時，都會被迫從磁碟載入所有文章，非常浪費 I/O。
+
+D. 正確原因：此為官方推薦的子集/擴充引用模式。將完整文章獨立存放以防膨脹，並在作者文件中僅冗餘最新 5 篇的「摘要陣列」供首頁直接一秒讀取。雖在寫入新文章時需要同步維護該陣列，但完美換取了極高的讀取效能，平衡度最高。
+
+
+
+
+
+
+
+
+
+
+
