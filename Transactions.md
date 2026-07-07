@@ -383,3 +383,42 @@ Use the following resources to learn more about ACID transactions in MongoDB:
 
 What are ACID transactions?
 How do ACID transactions work in MongoDB?
+
+
+
+
+
+[題目]  
+In MongoDB CRUD Transactions, you are running a multi-document transaction across a replica set. Inside the transaction, you perform an insertOne() followed by an updateOne() on a different collection. The updateOne() throws a transient transaction error (error code 112 - WriteConflict). Which of the following describes the correct behavior and recommended approach in this situation? (difficulty: hard)  
+  
+[選項]  
+A. MongoDB automatically retries only the failed updateOne() operation within the same transaction, preserving the insertOne() result, and the transaction continues normally after the retry succeeds.  
+B. The entire transaction is aborted automatically by MongoDB, and the driver retries only the commit operation using a retry loop, without re-executing the transaction body.  
+C. The entire transaction is aborted and the application must catch the transient error and retry the full transaction logic from the beginning, including both the insertOne() and the updateOne().  
+D. The transaction is paused until the write conflict is resolved by the other conflicting operation completing, after which MongoDB resumes the transaction automatically from the point of failure.  
+  
+[正確答案]：  
+C  
+  
+[核心考點]：  
+  
+[詳細解析]：  
+本題考查 MongoDB 多文件交易中暫時性錯誤（TransientTransactionError）的處理機制。當交易主體內的操作（如 updateOne）因寫入衝突而失敗時，整個交易會被自動中止。此時應用程式必須捕獲該錯誤，並從頭重新執行整個交易邏輯（包含之前的 insertOne）。  
+  
+A. 錯誤原因：MongoDB 不會在交易內部自動重試單一失敗的語句。寫入衝突會破壞交易的 ACID 隔離狀態，因此無法單獨保留 insertOne 的結果。  
+  
+B. 錯誤原因：只有當交易在最後的「提交階段（Commit）」遇到暫時性網路錯誤時，才只需單獨重試 commit 動作。若在主體執行期間出錯，則必須重試整個交易主體。  
+
+C. 正確原因：完全符合官方最佳實踐。寫入衝突（WriteConflict）屬於典型的暫時性錯誤，驅動程式或應用程式必須捕獲它，並透過重試迴圈從頭完整重新執行交易。  
+
+D. 錯誤原因：MongoDB 不會主動暫停或在衝突解決後自動恢復交易。為了避免資料庫死鎖（Deadlock）並確保並發安全，系統會立即拋出錯誤並中止交易。  
+
+
+
+
+
+
+
+
+
+
