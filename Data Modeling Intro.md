@@ -664,17 +664,22 @@ A Summary of Schema Design Anti-Patterns and How to Spot Them
 
 ## **4. Extended Reference Pattern**
 
+建議僅嵌入被引用文件中與引用文件一起訪問頻率最高的字段，以最大限度地減少查找次數，同時避免不必要的資料膨脹。對於訂單文檔，與操作最相關的客戶欄位是用於識別客戶（客戶 ID、姓名）、與客戶溝通（電子郵件）以及完成訂單（收貨地址）的欄位。像 loyalpoints 這樣的欄位非常不穩定——它們經常更改，嵌入這些欄位會導致許多訂單文件包含過時的數據，從而造成數據一致性問題。像 accountCreatedDate 這樣的欄位在處理訂單時很少用到，嵌入它們沒有任何價值。擴展引用模式的一個關鍵權衡是接受一些資料重複以換取讀取效能，因此開發人員必須仔細選擇穩定且經常讀取的欄位進行嵌入。當嵌入的欄位發生變更時（例如，客戶更新了其收貨地址），應用程式必須決定是更新現有訂單還是僅將新資料應用於未來的訂單，這是應用此模式時的一個重要設計考慮因素。
+
+
+
 ## **5. Outlier Pattern**
 
 異常值模式是 MongoDB 的一種模式設計策略，用於處理集合中大多數文件的資料結構和大小相似，但少數文件（即異常值）包含的資料量卻顯著超出預期的情況。異常值模式並非圍繞這些異常值設計整個模式，而是保持典型文檔的緊湊性，並將多餘的資料重定向到單獨的溢出文檔中，並使用一個標誌字段來指示這種拆分。    
     
 異常值模式會將異常文檔的資料有意拆分到一個主文檔和一個或多個溢出文檔中，而正常文檔則保持獨立。布林標誌（例如「has_extra_followers」）會向應用層發出訊號，表示需要取得並合併額外的文件才能產生完整的結果。如果沒有此檢查，應用程式會默默地將嵌入的陣列視為完整資料集，這對於大多數文件來說是準確的，但對於異常值來說是錯誤的。這種默默的不完整性尤其危險，因為它不會產生任何錯誤——查詢成功，但結果是錯誤的。此模式的全部價值取決於應用程式是否能根據該標誌正確地分支其邏輯：對於正常文檔，直接使用嵌入的資料；對於異常值，執行額外的查找和合併操作。這種設計權衡取捨需要略微增加應用程式程式碼的複雜性，以換取文件大小可控，並避免大多數用例中出現 BSON 文件大小限制問題。    
-
-
-
-
-
-[題目]
+    
+    
+    
+    
+    
+[題目]    
+---
 In MongoDB one-to-many relationship modeling, a blogging platform stores authors and their blog posts. Each author can have hundreds of posts, and the application frequently needs to display an author's profile page showing their 5 most recent posts along with full author details on every post page. A developer is deciding between three approaches: 
 (A) embed all posts inside the author document, 
 (B) store posts in a separate collection with an author reference, and also store a 'recentPosts' array of the 5 latest post summaries inside the author document, or 
@@ -688,27 +693,75 @@ B. Store posts in a separate collection and embed the full author document insid
 C. Embed all posts inside the author document, because embedding always provides the best read performance by avoiding joins
 D. Store posts in a separate collection with an author reference, and store a 'recentPosts' summary array inside the author document (Extended Reference / Subset pattern)
 
+[正確答案]：    
+D
+
+[核心考點]：    
+
+[詳細解析]：    
+本題考查 MongoDB 進階設計模式中的「子集模式（Subset Pattern）」與「擴充引用模式（Extended Reference Pattern）」。當面對一對多（且多方數量龐大）的場景，若前端有極為頻繁且固定的查詢特徵（例如永遠只看最新 5 篇、或者看文章時必看作者簡介），將全量資料分開儲存以防文件膨脹，同時在主文件中複製一份「高頻存取的小子集」或「靜態擴充資訊」，是平衡讀取效能與維護成本的最優解。
+
+A. 錯誤原因：雖然這種做法能確保強一致性，但在高併發、讀多寫少的部落格場景中，每次讀取首頁都必須實時進行 $lookup（記憶體 Join）運算，會帶來不必要的系統開銷與效能瓶頸。    
+
+B. 錯誤原因：在每篇章中都內嵌「完整」的作者文件會造成嚴重的資料冗餘與寫入放大（Write Amplification）。一旦作者修改了個人簡介或頭像，系統必須同步更新成百上千篇的文章文件，極易引發資料不一致。    
+
+C. 錯誤原因：當作者擁有數百篇以上文章時，直接內嵌所有文章會導致文件體積無限制增長（Unbounded），極易觸及 16MB 限制；且每次只想看作者簡介時，都會被迫從磁碟載入所有文章，非常浪費 I/O。    
+
+D. 正確原因：此為官方推薦的子集/擴充引用模式。將完整文章獨立存放以防膨脹，並在作者文件中僅冗餘最新 5 篇的「摘要陣列」供首頁直接一秒讀取。雖在寫入新文章時需要同步維護該陣列，但完美換取了極高的讀取效能，平衡度最高。    
+    
+
+
+[題目]
+---
+In MongoDB schema design, the Extended Reference Pattern is used to reduce the number of joins (lookups) by embedding a subset of fields from a referenced document directly into the referencing document. A developer is designing an e-commerce application where Orders embed a subset of Customer fields. The Customer document contains: customerId, name, email, shippingAddress, loyaltyPoints, and accountCreatedDate. Which subset of Customer fields is the MOST appropriate to embed in the Order document using the Extended Reference Pattern? (difficulty: medium)
+
+[選項]
+A. customerId, name, email, shippingAddress, loyaltyPoints, accountCreatedDate
+B. customerId, loyaltyPoints, accountCreatedDate
+C. customerId only
+D. customerId, name, email, shippingAddress
+
 [正確答案]：
 D
 
 [核心考點]：
 
 [詳細解析]：
-本題考查 MongoDB 進階設計模式中的「子集模式（Subset Pattern）」與「擴充引用模式（Extended Reference Pattern）」。當面對一對多（且多方數量龐大）的場景，若前端有極為頻繁且固定的查詢特徵（例如永遠只看最新 5 篇、或者看文章時必看作者簡介），將全量資料分開儲存以防文件膨脹，同時在主文件中複製一份「高頻存取的小子集」或「靜態擴充資訊」，是平衡讀取效能與維護成本的最優解。
+本題考查擴充引用模式（Extended Reference Pattern）的欄位篩選原則。該模式的核心在於只冗餘「高頻伴隨主文件查詢」且「極少變動（或需要歷史快照）」的欄位。在訂單系統中，最常與訂單一起讀取的正是客戶的聯絡與寄送資訊，且這些資訊在下單後應作為歷史快照固定，不應隨客戶未來修改個人資料而變動。    
 
-A. 錯誤原因：雖然這種做法能確保強一致性，但在高併發、讀多寫少的部落格場景中，每次讀取首頁都必須實時進行 $lookup（記憶體 Join）運算，會帶來不必要的系統開銷與效能瓶頸。
+A. 錯誤原因：包含了 loyaltyPoints（會員點數）。點數是一個高頻率變動的動態數值，若將其內嵌到所有歷史訂單中，每次點數更新都會引發巨大的寫入放大與嚴重的資料不一致。    
 
-B. 錯誤原因：在每篇章中都內嵌「完整」的作者文件會造成嚴重的資料冗餘與寫入放大（Write Amplification）。一旦作者修改了個人簡介或頭像，系統必須同步更新成百上千篇的文章文件，極易引發資料不一致。
+B. 錯誤原因：選取的點數和帳號建立日期對「查看訂單」或「列印發票」的業務情境毫無幫助，無法達到減少 Join 查詢的核心目的，且內嵌了不該內嵌的高頻變動欄位。    
 
-C. 錯誤原因：當作者擁有數百篇以上文章時，直接內嵌所有文章會導致文件體積無限制增長（Unbounded），極易觸及 16MB 限制；且每次只想看作者簡介時，都會被迫從磁碟載入所有文章，非常浪費 I/O。
+C. 錯誤原因：僅包含 customerId 是傳統的「標準引用（Referencing）」，在查看訂單詳情時依然必須透過 $lookup 進行 Join 查詢，並未使用擴充引用模式。    
 
-D. 正確原因：此為官方推薦的子集/擴充引用模式。將完整文章獨立存放以防膨脹，並在作者文件中僅冗餘最新 5 篇的「摘要陣列」供首頁直接一秒讀取。雖在寫入新文章時需要同步維護該陣列，但完美換取了極高的讀取效能，平衡度最高。
+D. 正確原因：完全符合模式。姓名、信箱和收件地址是顯示訂單與發票時最核心的伴隨欄位。同時，將下單當下的收件地址固化在訂單中，完美符合電商「歷史訂單地址不隨客戶後續修改檔案而改變」的實際業務需求。
 
+[題目]
+In MongoDB's Bucket Pattern for time-series data, a sensor writes temperature readings every minute. A developer designs documents that bucket readings into 1-hour intervals, storing up to 60 measurements per document along with a 'count' field and a 'sum' field for pre-aggregated totals. After implementing this pattern, which of the following accurately describes a key trade-off introduced by this design compared to storing each measurement as a separate document? (difficulty: hard)
 
+[選項]
+---
+A. Write operations become more complex because updating a bucket document to append a new measurement requires an atomic update on an existing document rather than a simple insert, and bucket documents must be created when a new interval begins.
+B. The pre-aggregated 'sum' and 'count' fields eliminate the need for any aggregation pipeline stage when computing averages, meaning MongoDB returns the average directly from the storage engine without any computation at query time.
+C. Query performance for retrieving a single measurement by its exact timestamp improves significantly because MongoDB can use the bucket document's index range to locate it faster than scanning individual documents.
+D. Storage usage increases proportionally compared to storing individual documents because each bucket document duplicates sensor metadata fields once per embedded measurement in the array.
 
+[正確答案]：
+A
 
+[核心考點]：
 
+[詳細解析]：
+本題考查 MongoDB 儲存桶模式（Bucket Pattern）的設計權衡。該模式將多個時序資料合併儲存，雖優化了儲存與範圍查詢，但增加了寫入複雜度：從簡單的插入轉為需處理 $push、upsert 與新舊桶切換邏輯的原子更新。
 
+A. 正確原因：精確描述了主要權衡。原本只需無腦執行 insertOne，使用儲存桶後，應用程式必須改用 updateOne 配合 upsert，以原子操作如 $push 與 $inc 往陣列追加資料，且需在新的小時開始時建立新桶。
+
+B. 錯誤原因：即使有了 sum 和 count，計算平均值時仍需要在查詢端（或利用 $project 聚合階段）執行 sum / count 的數學除法運算，儲存引擎本身並不會直接返回平均值欄位。
+
+C. 錯誤原因：若要查找「單一精確時間點」的資料，在儲存桶中反而需要先找出文件、再進到陣列內部過濾，效能不會顯著提升。該模式真正大幅優化的是「某段時間範圍內（如某小時）」的群組讀取效能。
+
+D. 錯誤原因：儲存空間非但不會增加，反而會「大幅減少」。因為它將原本每條記錄都要重複儲存的感測器元數據（如設備 ID、位置），濃縮到每小時只存一次，大大降低了 BSON 欄位名稱和索引的開銷。
 
 
 
