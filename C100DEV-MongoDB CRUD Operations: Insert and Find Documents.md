@@ -9,7 +9,7 @@ C100DEV-MongoDB CRUD Operations: Insert and Find Documents
 * [Lesson 5 : Updating Documents in a MongoDB Collection](#lesson-5--updating-documents-in-a-mongodb-collection)
 * [Lesson 6 : Deleting Documents from a MongoDB Collection](#lesson-6--deleting-documents-from-a-mongodb-collection)
 
-Lesson 1: Replacing a Document in MongoDB  
+[Lesson 2: Updating MongoDB Documents by Using updateOne()](#lesson-1-replacing-a-document-in-mongodb)   
 Lesson 2: Updating MongoDB Documents by Using updateOne()  
 Lesson 3: Updating MongoDB Documents by Using findAndModify()  
 Lesson 4: Updating MongoDB Documents by Using updateMany()  
