@@ -55,3 +55,8 @@ B. 錯誤原因：此參數在 Primary 或 Secondary 節點皆可使用，且生
 C. 錯誤原因：--oplog 會一併備份目標資料庫與備份期間的寫入日誌，而非「僅」備份 local.oplog.rs 集合本身。
 
 D. 錯誤原因：mongodump 無法也不會主動暫停 Primary 節點的寫入（此為 fsyncLock 的功能），其備份時的一致性是透過記錄與重放 oplog 達成。
+
+
+
+
+
