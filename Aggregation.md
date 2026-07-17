@@ -6,7 +6,7 @@ Lesson 5: Using the $out Stage in a MongoDB Aggregation Pipeline
 # $facet
 
 # 考試註記
-1. $match、$group、$sort 三者的順序 ESR, 即便pipleline順序不同系統還是會依照ESR執行
+1. $match、$group、$sort, $project 的順序 ESR, 即便pipleline順序不同系統還是會依照ESR執行
 
 
 
