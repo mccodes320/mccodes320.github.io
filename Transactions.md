@@ -415,6 +415,50 @@ D. 錯誤原因：MongoDB 不會主動暫停或在衝突解決後自動恢復交
 
 
 
+[題目]  
+In MongoDB's Multi-Document ACID Transactions, a developer starts a session and begins a transaction that updates documents across two collections: 'orders' and 'inventory'. The application crashes after writing to 'orders' but before writing to 'inventory', and the transaction was never explicitly committed or aborted. Which of the following accurately describes the state of the data after the crash? (difficulty: medium)
+在 MongoDB 的多文件 ACID 交易（Transactions）中，開發人員啟動了一個會話（session）並開始一個交易，該交易會更新兩個集合中的文件：'orders' 和 'inventory'。應用程式在寫入 'orders' 後、寫入 'inventory' 前崩潰了，且該交易從未被顯式提交（commit）或中止（abort）。下列哪一項準確地描述了崩潰後數據的狀態？（難度：中等）
+
+[選項]  
+A. The write to 'orders' is saved, but a compensating transaction must be manually issued by the developer to reverse it and restore consistency.
+B. The write to 'orders' is permanently saved because it was the first operation to complete within the transaction.
+C. Both collections remain unchanged because an uncommitted transaction's writes are not made durable, and MongoDB will roll back any incomplete transaction during recovery.
+D. MongoDB's journaling mechanism commits the write to 'orders' independently of the transaction, because journaling operates at the operation level rather than the transaction level.
+	
+[正確答案]：
+C	
+	
+[核心考點]： 	
+	
+[詳細解析]：
+本題考查 MongoDB 多文件 ACID 交易的原子性。交易遵循「全有或全無」原則。若在提交前因崩潰中斷，MongoDB 在自動回復時會將所有未提交的修改回滾，使兩集合保持原樣，確保數據一致性。
+
+A. 錯誤原因：交易具有原子性（Atomicity），未提交的寫入不會永久生效，因此不需由開發人員手動執行補償性交易來復原。
+
+B. 錯誤原因：在整個交易被顯式提交（Commit）之前，任何單步寫入都不能持久化，不會因為是第一個操作就被單獨保留。
+
+C. 正確原因：MongoDB 在系統故障回復過程中，會自動將所有未完成且未提交的交易寫入予以回滾，從而保證兩個集合都完全不變。
+
+D. 錯誤原因：日誌（Journaling）雖會記錄交易步驟，但在交易成功提交前，日誌記錄的操作不會被視為已確認，重啟回復後依然會被回滾。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
