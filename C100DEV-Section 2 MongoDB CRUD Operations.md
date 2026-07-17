@@ -1,6 +1,33 @@
 C100DEV-MongoDB CRUD Operations: Insert and Find Documents
 ---
 
+| **Section 2** | **CRUD (51%)** |
+| 2.1 | Given a scenario with a type of structured document that needs to be inserted into a database, identify properly and improperly formed insert commands. |
+| 2.2 | Given an update scenario where an entire updated document (no update operators used) is provided, identify the output and how the database changed state. |
+| 2.3 | Given an update scenario where $set is used, identify the output and how the database changed state. |
+| 2.4 | Given a scenario about updating a document and information about where it should be inserted if it does not exist, identify the upsert command that should be used. |
+| 2.5 | Given a scenario where multiple documents need to be updated, identify the correct update expression. |
+| 2.6 | Given a findAndModify scenario where another operation is run concurrently, identify the output and how the database changed state. |
+| 2.7 | Given a scenario where a document should be deleted from the database, identify the delete expression that should be used. |
+| 2.8 | Given a scenario where a single document should be looked up by a simple equality constraint (eg {x: 3}), identify the expression that should be used. |
+| 2.9 | Identify documents matched by a query with an equality constraint on an array field. |
+| 2.10 | Identify documents matched by an expression with relational operators in it. |
+| 2.11 | Identify documents matched by an expression with $in. |
+| 2.12 | Identify documents matched by an $elemMatch expression. |
+| 2.13 | Identify documents matched by an expression that has several logical operators. |
+| 2.14 | Given a query with a sort and limit, identify the correct output. |
+| 2.15 | Identify the incorrect projection among a set of expressions. |
+| 2.16 | Identify how to get all results from a cursor. |
+| 2.17 | Identify the expressions used to count the number of documents matching a query. |
+| 2.18 | Given an indexing scenario, identify the correct command for defining a search index. |
+| 2.19 | Given a scenario, identify the correct search query. |
+| 2.20 | Given an aggregation expression using $match, $group, identify the correct output. |
+| 2.21 | Given an aggregation expression using $lookup, identify the correct output. |
+| 2.22 | Given an aggregation expression using $out, identify the correct output. |
+
+
+
+
 
 * [Lesson 1 : Inserting Documents in a MongoDB Collection](#lesson-1--inserting-documents-in-a-mongodb-collection)
 * [Lesson 2 : Finding Documents in a MongoDB Collection](#lesson-2--finding-documents-in-a-mongodb-collection)
