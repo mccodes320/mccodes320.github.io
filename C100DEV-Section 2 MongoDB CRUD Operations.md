@@ -1,7 +1,8 @@
 C100DEV-MongoDB CRUD Operations: Insert and Find Documents
 ---
 
-| **Section 2** | **CRUD (51%)** |
+| **Section** | **CRUD (51%)** |
+| :--- | :--- |
 | 2.1 | Given a scenario with a type of structured document that needs to be inserted into a database, identify properly and improperly formed insert commands. |
 | 2.2 | Given an update scenario where an entire updated document (no update operators used) is provided, identify the output and how the database changed state. |
 | 2.3 | Given an update scenario where $set is used, identify the output and how the database changed state. |
@@ -24,11 +25,11 @@ C100DEV-MongoDB CRUD Operations: Insert and Find Documents
 | 2.20 | Given an aggregation expression using $match, $group, identify the correct output. |
 | 2.21 | Given an aggregation expression using $lookup, identify the correct output. |
 | 2.22 | Given an aggregation expression using $out, identify the correct output. |
-
-
-
-
-
+   
+   
+   
+   
+   
 * [Lesson 1 : Inserting Documents in a MongoDB Collection](#lesson-1--inserting-documents-in-a-mongodb-collection)
 * [Lesson 2 : Finding Documents in a MongoDB Collection](#lesson-2--finding-documents-in-a-mongodb-collection)
 * [Lesson 3 : Finding Documents by Using Comparison Operators](#lesson-3--finding-documents-by-using-comparison-operators)
