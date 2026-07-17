@@ -19,9 +19,11 @@ Section 2: CRUD (51%)
 2.17 Identify expressions used to count documents matching a query
 2.18 Given an indexing scenario, identify the correct command for search index definition
 2.19 Given a scenario, identify the correct search query
-2.20 Analyze aggregation expression with $match, $group and identify the output
-2.21 Analyze aggregation expression with $lookup and identify the output
-2.22 Analyze aggregation expression with $out and identify the output
+
+aggregation
+  2.20 Analyze aggregation expression with $match, $group and identify the output
+  2.21 Analyze aggregation expression with $lookup and identify the output
+  2.22 Analyze aggregation expression with $out and identify the output
 
 
 Lesson 1: Introduction to MongoDB Aggregation
@@ -650,5 +652,47 @@ C. db.orders.createIndex([{ status: 1 }, { createdAt: 1 }])
 D. db.orders.createIndex({ status: "asc", createdAt: "asc" })
 正確答案：B
 解釋：createIndex 需以物件方式指定欄位與排序方向，1 表示升冪。
+
+
+# 2.20   
+
+
+[題目]  
+In MongoDB's Aggregation Pipeline, you have a pipeline that includes a $match stage, a $project stage, and a $sort stage - in that order. The $match filters documents by the field 'status', the $project removes several fields but retains 'status', 'createdAt', and 'amount', and the $sort sorts by 'createdAt'. An index exists on { status: 1, createdAt: 1 }. Which of the following statements best describes how MongoDB's query optimizer will handle this pipeline? (difficulty: hard)
+在 MongoDB 的聚合管道（Aggregation Pipeline）中，您有一個依序包含 `$match` 階段、`$project` 階段和 `$sort` 階段的管道。`$match` 根據欄位 `status` 進行文件過濾，`$project` 移除了多個欄位但保留了 `status`、`createdAt` 和 `amount`，而 `$sort` 則根據 `createdAt` 進行排序。目前已在 `{ status: 1, createdAt: 1 }` 上建立了索引。下列哪一個敘述最準確地描述了 MongoDB 的查詢優化器（query optimizer）將如何處理此管道？（難度：困難）
+
+[選項]  
+A. MongoDB will use the index on { status: 1, createdAt: 1 } only for the $match stage, but cannot use it for $sort because $project precedes $sort and may alter the document shape.
+B. MongoDB will ignore the index entirely because the $project stage between $match and $sort breaks index usage for sorting, forcing a full in-memory sort on the filtered result set.
+C. MongoDB will automatically move the $sort stage before the $project stage during optimization, allowing the index on { status: 1, createdAt: 1 } to be used for both the $match and the $sort in a single index scan.
+D. MongoDB will merge the $match and $project stages into a single stage to reduce document reads, using the index only for initial collection scanning.
+	
+[正確答案]：
+C	
+	
+[核心考點]： 	
+	
+[詳細解析]：
+說明：MongoDB 聚合優化器在執行時會自動調整管道順序。若排序欄位未被投影修改，優化器會將 `$sort` 提前至 `$project` 之前，使其能與前方的 `$match` 完美結合並套用複合索引，免除記憶體排序。
+
+A. 錯誤原因：MongoDB 優化器具備階段重新排列的功能，並非在 `$project` 之後就絕對無法對 `$sort` 使用索引。
+
+B. 錯誤原因：優化器不會直接放棄索引，而是透過優化策略（將 `$sort` 提前）來避免代價高昂的記憶體內排序（In-memory sort）。
+
+C. 正確原因：此為 MongoDB 優化器的標準行為。由於排序的 `createdAt` 欄位並非由 `$project` 新增或修改，優化器會安全地將 `$sort` 移到 `$project` 之前，從而能連續利用 `{ status: 1, createdAt: 1 }` 索引完成過濾與排序。
+
+D. 錯誤原因：優化器不會將 `$match` 與 `$project` 合併為單一階段，這也無法解決 `$sort` 與索引利用之間的排序效能問題。
+
+
+
+
+
+
+
+
+
+
+
+
 
 
