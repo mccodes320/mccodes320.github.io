@@ -718,6 +718,38 @@ D. Query behavior is unchanged
 
 
 
+[題目]  
+In MongoDB, when working with Single Field Indexes, you create an index on a field 'score' in a 'students' collection using: db.students.createIndex({ score: -1 }). A query is then executed: db.students.find({ score: { $gt: 70 } }).sort({ score: 1 }). Which statement best describes how MongoDB uses this index to satisfy the query? (difficulty: hard)  
+  
+在 MongoDB 中，當使用單一欄位索引（Single Field Indexes）時，您在 students 集合中的 score 欄位上建立了索引：`db.students.createIndex({ score: -1 })`。接著執行一個查詢：`db.students.find({ score: { $gt: 70 } }).sort({ score: 1 })`。下列哪一個敘述最準確地描述了 MongoDB 如何使用此索引來滿足該查詢？（難度：困難） 
+
+[選項]   
+A. MongoDB cannot use the index because the sort direction (ascending) is opposite to the index direction (descending), so a full collection scan is performed. 
+B. MongoDB uses the index only to satisfy the sort operation and performs a full collection scan to apply the { score: { $gt: 70 } } filter afterward. 
+C. MongoDB uses the index to filter documents where score > 70, but must perform an in-memory sort because the index direction does not match the sort direction. 
+D. MongoDB uses the index to filter documents where score > 70 and then traverses the index in reverse order to return results sorted ascending, avoiding an in-memory sort. 
+	
+[正確答案]： 
+D	 
+	
+[核心考點]： 	 
+	 
+[詳細解析]： 
+本題考查單一欄位索引的雙向走訪特性。MongoDB 可以向前或反向遍歷單一欄位索引，因此 `{ score: -1 }` 降序索引能完美支援 `{ score: 1 }` 升序排序，同時完成範圍過濾並避免內存排序。 
+
+A. 錯誤原因：單一欄位索引支援反向走訪（Reverse traversal）。MongoDB 可以直接反向讀取降序索引來滿足升序排序，不需要執行全表掃描。 
+
+B. 錯誤原因：MongoDB 可以同時利用同一個索引來進行範圍過濾（`score > 70`）與排序，不需要分開執行，更不需要進行全表掃描。 
+
+C. 錯誤原因：因為單一欄位索引具有雙向走訪能力，MongoDB 不需要因為索引方向與排序方向相反就進行代價高昂的記憶體內排序（In-memory sort）。 
+
+D. 正確原因：MongoDB 會利用該降序索引找出所有符合 `score > 70` 的索引鍵，然後反向（從最小到最大）走訪索引，直接回傳升序排序的結果，免去了記憶體排序。 
+
+
+
+
+
+
 
 
 
