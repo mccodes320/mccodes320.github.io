@@ -532,6 +532,38 @@ D. 錯誤原因：除了預設的 _id 欄位索引是由系統自動建立外，
 
 
 
+[題目]  
+In MongoDB one-to-many relationship modeling, a product catalog system stores products, and each product can have thousands of customer reviews. A developer is choosing between embedding reviews inside the product document versus referencing them in a separate collection. Which of the following statements best describes a critical limitation of the embedding approach in this specific scenario? (difficulty: medium)
+在 MongoDB 的一對多關係建模中，一個產品目錄系統存儲產品，且每個產品都可能擁有數千條客戶評價。開發人員正在考慮要將評價內嵌在產品文件內，還是將它們引用存儲在另一個獨立集合中。在這種特定場景下，下列哪一個敘述最準確地描述了內嵌方法的一個關鍵限制？（難度：中等）
+
+[選項]  
+A. Embedded documents cannot store nested arrays, so review data with sub-fields like 'rating' and 'comment' cannot be represented inside a product document.
+B. Embedding reviews inside a product document prevents the use of indexes on review fields, making it impossible to query reviews efficiently.
+C. Embedding thousands of reviews inside a product document risks exceeding MongoDB's 16 MB per-document size limit, degrading performance and preventing new reviews from being added.
+D. Embedding reviews inside a product document requires all reviews to share the same schema, which conflicts with MongoDB's schema-less nature and causes write errors.
+	
+[正確答案]：
+C	
+	
+[核心考點]： 	
+	
+[詳細解析]：
+說明：本題考查一對多關係中的「無限制增長」問題。若將數千條評價內嵌於單一文件中，極易突破 16MB 的硬性限制，且頻繁的陣列追加寫入會導致嚴重的磁碟重新分配與效能衰退，故此場景應採用引用模式。
+
+A. 錯誤原因：MongoDB 完全支援嵌套陣列與嵌套文件（Embedded Documents），評價中的 rating 與 comment 等子欄位可以被完美呈現，此非內嵌的限制。
+
+B. 錯誤原因：MongoDB 支援在內嵌文件的欄位上建立多鍵索引（Multikey Index），例如建立 `reviews.rating` 索引，依然能進行高效查詢，並非無法使用索引。
+
+C. 正確原因：MongoDB 的單一文件大小上限為 16MB。當評價多達數千條時，不僅文件極易超過此限制導致無法寫入，頻繁更新大文件也會造成嚴重的記憶體與磁碟 I/O 開銷。
+
+D. 錯誤原因：MongoDB 是無綱要（Schema-less）的，內嵌文件不需要共享相同的綱要，不同結構的評價並不會導致寫入錯誤。
+
+
+
+
+
+
+
 
 
 
