@@ -21,8 +21,9 @@ https://learn.mongodb.com/learn/course/mongodb-indexes
 * [Lesson 3: A Multikey Index](#lesson-3-creating-a-multikey-index-in-mongodb)
 * [Lesson 4: A Compound Index](#lesson-4-video-working-with-compound-indexes-in-mongodb)
 * [Lesson 5: Deleting MongoDB Indexes](#lesson-5-deleting-mongodb-indexes)
-* explain
+* Lesson 6: getIndexes(), explain
 * a Single Text Index
+* Hashed index
 * MongoDB Atlas Search
 * TTL
      
@@ -584,13 +585,30 @@ db.orders.unhideIndex({userId: 1})
     ```
 
 
-# Check index info- getIndexes(), explain
+
+
+
+
+
+
+# Lesson 6: getIndexes(), explain
 
 
 1. **View the Indexes used in a Collection**  
     Use **getIndexes()** to see all the indexes created in a collection.  
     ```sql
     db.customers.getIndexes()
+
+     [
+       { v: 2, key: { _id: 1 }, name: '_id_' },
+       {
+         v: 2,
+         key: { lastModified: 1 },
+         name: 'lastModified_1',
+         expireAfterSeconds: 10
+       }
+     ]
+    
     ```
 
 2. Check if an index is being used on a query**     
@@ -684,19 +702,46 @@ High system load can increase delay — Under heavy workloads, the TTL monitor m
 
 
 
+#  Hashed index
+
+## 觀念總覽：MongoDB 雜湊索引（Hashed Index）與分片應用
+
+MongoDB 的雜湊索引會透過**確定性雜湊函式（Deterministic Hash Function）**將欄位值轉為雜湊值後儲存。雜湊索引的核心目的在於將高基數（High-Cardinality）資料均勻散佈於分片叢集中，但同時具備「浮點數截斷」與「無法支援範圍查詢」等關鍵限制。
 
 
+## 建立雜湊索引與分片步驟
+當集合（如 `sessions`）擁有數百萬筆資料且 `userId` 屬於高基數欄位時：
+
+```sql
+// Step 1: 對資料庫啟用分片功能
+sh.enableSharding("myDatabase");
+
+// Step 2: 在目標欄位上建立雜湊索引
+db.sessions.createIndex({ userId: "hashed" });
+
+// Step 3: 使用該雜湊索引對集合進行分片
+sh.shardCollection("myDatabase.sessions", { userId: "hashed" });
+
+```
 
 
+```sql
+db.sessions.insertMany([
+  { userId: 2.1, session: "abc" },
+  { userId: 2.5, session: "def" },
+  { userId: 2.9, session: "ghi" }
+]);
+```
+
+1. 計算過程：2.1、2.5、2.9 在雜湊前皆會被截斷為整數 2。
+2. 結果：三者算出相同的雜湊值 hash(2)，最終被分發至同一個分片上。若設定唯一索引（Unique Index）更會直接觸發重複鍵錯誤（Duplicate Key Error）。
 
 
+// ❌ 範圍查詢：無法使用雜湊索引，導致全集合掃描（Collection Scan）
+db.sessions.find({ userId: { $gt: "U500" } });
 
-
-
-
-
-
-
+// ✅ 等值查詢：高效命中雜湊索引（Index Scan）
+db.sessions.find({ userId: "U1234" });
 
 
 
