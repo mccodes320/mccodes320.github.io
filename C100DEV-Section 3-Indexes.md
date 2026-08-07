@@ -97,42 +97,7 @@ https://learn.mongodb.com/learn/course/mongodb-indexes
 7. 進行 insert / update / delete ，資料庫把原始文件寫入磁碟，圖時更新所有受影響的 B-Tree 索引樹.  
    當索引數量過多時，寫入效能就會引發嚴重的「寫入放大（Write Amplification）」現象，導致 insert 變得非常昂貴（耗時且耗資源）。
 
-## Q&A
 
-**Which of the following statements about indexes are correct? (Select all the that apply.)**  
-  
-A. Indexes are data structures that improve performance, support efficient equality matches and range-based query operations, and can return sorted results.  
-B. Indexes are automatically created based on usage patterns.    
-C. Indexes are used to make querying faster for users. One of the easiest ways to improve the performance of a slow query is create indexes on the data that is used most often.  
-D. When using an index, MongoDB reads every document in a collection to check if it matches the query that's being run.    
-
-
-答案：A,C
-  
-解釋開始：  
-A. 說明：索引是提升效能的資料結構。它支持高效的等值匹配（Equality matches）與範圍查詢（Range-based queries），並能直接回傳排序後的結果。透過索引，MongoDB 僅需處理必要的數據，而不必掃描整個集合。  
-B. 說明：[錯誤]。MongoDB 不會根據使用習慣自動建立索引。開發者必須手動建立索引來優化慢查詢。不過，MongoDB Atlas 提供建議工具，可提示用戶哪些索引應該建立或移除  
-C. 說明：[正確]。索引能讓查詢更快，因為 MongoDB 只需掃描索引即可找到所需數據。在頻繁使用的欄位上建立索引，是優化慢查詢最簡單且有效的方法之一。  
-D. 說明：[錯誤]。這描述的是「全表掃描（Collection Scan）」。當有索引可用時，MongoDB 不需要讀取集合中的每個文件，而是掃描索引以精確定位目標數據。  
-解釋結束
-
-
-
-**Which of the following statements about indexes are true? (Select one.)**  
-  
-A. Indexes improve query performance and have no impact on write performance.  
-B. Indexes improve query performance at the cost of write performance.  
-C. Indexes have no impact on query performance but improve write performance.  
-D. Indexes have a negative impact on query performance but improve write performance.  
-
-答案：B
-  
-解釋開始：  
-A. 說明：雖然索引能提升查詢速度，但它們是有代價的。每當執行寫入操作時，相關的索引都必須同步更新，這會消耗額外的時間。  
-B. 說明：這是數據庫設計中經典的權衡（Trade-off）。對於大多數應用場景，這種交換是值得的。索引應該建立在頻繁被查詢的欄位，或是那些雖然查詢頻率低但運算成本極高的查詢上。  
-C. 說明：事實正好相反。索引的主要目的是加速查詢流程，而寫入效能反而會因為需要更新索引結構而下降。  
-D. 說明：索引對查詢有積極（正面）的影響，對寫入則會造成額外的負擔。  
-解釋結束
 
 
 
@@ -189,76 +154,6 @@ D. 說明：索引對查詢有積極（正面）的影響，對寫入則會造�
     ```
     MongoDB only creates the unique index if there is no duplication in the field values for the index field/s.  
 
-
-
-
-  
-**Q&A**
-
-**What is a single field index? (Select one.)**  
-  
-A. An index that supports efficient querying against one field  
-B. An index that supports efficient querying against multiple fields  
-C. An index that only supports efficient querying against fields with scalar values  
-D. An index that supports efficient querying against fields that are already indexed by another user-defined index  
-  
-    
-答案：A
-
-解釋開始：
-A. 說明：A single field index is an index that supports efficient querying against a single field. By default, all collections have a single field index on the _id field, but users can define additional indexes that support important queries. A single field index is also a multikey index if the value of the field is an array.
-B. 說明：An index that supports efficient queries against multiple fields is called a compound index.
-C. 說明：Single field indexes can also support efficient querying against a single array field.
-D. 說明：A single field index doesn't support efficient querying against fields that are already indexed by another user-defined index. When a single field is already indexed—for example, by a compound index—creating an additional single field index can cause over-indexing and performance issues.
-解釋結束
-
-
-**Q&A**
-  
-You have a collection of customer details. The following is a sample document from the collection:  
-  
-```sql
-{
-  "_id": { "$oid": "5ca4bbcea2dd94ee58162a6a" },
-  "username": "hillrachel",
-  "name": "Katherine David",
-  "address": "55711 Janet Plaza Apt. 865\nChristinachester, CT 62716",
-  "birthdate": { "$date": { "$numberLong": "582848134000" } },
-  "email": "timothy78@hotmail.com",
-  "Accounts": [
-    { "$numberInt": "462501" },
-    { "$numberInt": "228290" },
-    { "$numberInt": "968786" },
-    { "$numberInt": "515844" },
-    { "$numberInt": "377292" }
-  ],
-  "tier_and_details": {}
-}
-```
-  
-You create a single field index on the email field, with the unique constraint set to true:
-```
-db.customers.createIndex({email:1}, {unique:true})
-```
-What would happen if you attempt to insert a new document with an email that already exists in the collection? (Select one.)
-
-Correct Answer
-
-A. The new document will be inserted and replace the old document in the collection.  
-B. The new document will be inserted and the old document will remain in the collection.  
-C. MongoDB will return a duplicate key error, and the document will be inserted.  
-D. MongoDB will return a duplicate key error, and the document will not be inserted.  
-  
-  
-答案：D  
-  
-解釋開始：  
-A. 說明：That is not how the unique constraint operates. Unique indexes ensure that indexed fields do not store duplicate values. The new document will not be inserted in this example because the email address already exists in another document in the collection.  
-B. 說明：That is not how the unique constraint operates. Unique indexes ensure that indexed fields do not store duplicate values. The new document will not be inserted in this example. Because the email address already exists in another document in the collection, the unique constraint would prevent the new document from being inserted.  
-C. 說明：That is not how the unique constraint operates. Unique indexes ensure that indexed fields do not store duplicate values. While a duplicate error key would be returned, the new document would not be inserted in this example because the email address already exists in another document in the collection.  
-D. 說明：Unique indexes ensure that indexed fields do not store duplicate values. In this example, MongoDB will return a duplicate key error if you attempt to insert a new document with an email that already exists in the collection, as the unique constraint was set to true.  
-
-解釋結束
 
 # Lesson 3: Creating a Multikey Index in MongoDB
 
@@ -317,62 +212,16 @@ Use getIndexes() to see all the indexes created in a collection.
 
 db.customers.getIndexes()
 
-**Check if an index is being used on a query**
-Use explain() in a collection when running a query to see the Execution plan. This plan provides the details of the execution stages (IXSCAN , COLLSCAN, FETCH, SORT, etc.).
+ **3.6**
 
-* The IXSCAN stage indicates the query is using an index and what index is being selected.
-* The COLLSCAN stage indicates a collection scan is perform, not using any indexes.
-* The FETCH stage indicates documents are being read from the collection.
-* The SORT stage indicates documents are being sorted in memory.
+
 ```
 db.customers.explain().find({
   accounts: 627788
   })
 ```
 
-**Q&A**
 
-**1. What is a multikey index? (Select one.) **
-
-A. An index on one field only where the field is not an array  
-B. An index where one of the indexed fields contains an array  
-C. An index on more than one field where none of the fields are arrays  
-D. An index on more than one field where multiple fields are arrays  
-  
-**Ans: A**  
-
-```
-A. A multikey index is any index where one of the indexed fields contains an array, including both single field and compound indexes. In a compound index, only one of the fields can be an array.
-B. Multikey indexes support efficient queries against array fields by creating an index key for each element in the array. This allows MongoDB to search for the index key of each element in the array rather than scan the entire array, which results in dramatic performance gains in your queries.
-C. A multikey index is any index where one of the indexed fields contains an array, including both single field and compound indexes. In a compound index, only one of the fields can be an array.
-D. A multikey index is any index where one of the indexed fields contains an array, including both single field and compound indexes. In a compound index, only one of the fields can be an array.
-
-```
-
-**Q&A**
-
-**What is the maximum number of array fields per multikey index? (Select one.)**
-
-a. 1  
-
-b. 3  
-
-c. 5  
-
-d. Unlimited  
-
-**Ans: A**  
-
-```
-a. Correct! The maximum number of array fields per multikey index is 1. If an index has multiple fields, only one of them can be an array.
-
-b. Incorrect. The maximum number of array fields per multikey index is not 3. However, there is a limitation on the number of array fields per index.
-
-c. Incorrect. The maximum number of array fields per multikey index is not 5. However, there is a limitation on the number of array fields per index.
-
-d. Incorrect. The maximum number of array fields per multikey index is not unlimited.
-
-```
 
 
 
@@ -481,10 +330,22 @@ db.customers.getIndexes()
 Check if an index is being used on a query
 Use explain() in a collection when running a query to see the Execution plan. This plan provides the details of the execution stages (IXSCAN , COLLSCAN, FETCH, SORT, etc.). Some of these are:
 
-The IXSCAN stage indicates the query is using an index and what index is being selected.
-The COLLSCAN stage indicates a collection scan is perform, not using any indexes.
-The FETCH stage indicates documents are being read from the collection.
-The SORT stage indicates documents are being sorted in memory.
+
+
+| 執行階段 | 全稱 | 定義與運作機制 | 效能影響與優化建議 |
+| :--- | :--- | :--- | :--- |
+| **`IXSCAN`** | Index Scan<br>(索引掃描) | 查詢成功使用了索引。資料庫僅檢索索引樹中的特定鍵值，迅速定位符合條件的文件位置。 | **最佳 (Optimal)**<br>代表查詢已受索引優化，無須掃描整份集合。 |
+| **`COLLSCAN`** | Collection Scan<br>(全集合掃描) | 查詢未命中任何索引。資料庫必須從頭到尾逐筆讀取集合中的每一份文件來比對條件。 | **極差 (Poor)**<br>在大型資料集中會造成嚴重 I/O 負擔與延遲，應針對查詢條件建立索引。 |
+| **`FETCH`** | Fetch Documents<br>(檢索文件) | 資料庫根據先前階段（如 `IXSCAN`）獲取的位置指標，從磁碟或記憶體中讀取完整的文件內容。 | **正常 (Normal)**<br>若查詢需求為覆蓋查詢（Covered Query），可完全跳過此階段以提升極致效能。 |
+| **`SORT`** | In-Memory Sort<br>(記憶體排序) | 資料庫在記憶體中對查詢結果進行排序，通常發生於排序欄位未建立索引時。 | **高風險 (High Risk)**<br>耗費 CPU 與記憶體。若排序資料超過預設上限（100 MB）查詢會中斷，應建立排序索引。 |
+
+
+
+
+
+
+
+
 ```
 db.customers.explain().find({
   birthdate: {
@@ -564,56 +425,6 @@ db.customers.explain().find({
 
 
 
-**Q&A**
-
-What is a compound index? (Select one.)
-
-a.
-An index that supports queries that combine the field name and the value into one string
-Incorrect. 
-
-An index that combines the field name and the value into a single string does not exist MongoDB. Reconsider the fields that compound indexes support queries against.
-
-b.
-An index that supports queries against unknown or arbitrary fields
-Incorrect.
-
-An index that support queries against unknown or arbitrary fields is a wildcard index. Wildcard indexes were introduced in MongoDB 4.2. They allow users to query against fields that are not explicitly defined in the collection. Reconsider the fields that compound indexes support queries against.
-
-c.
-An index that contains references to multiple fields within a document
-Correct!
-
-A compound index is an index that contains references to multiple fields within a document. Compound indexes are created by adding a comma-separated list of fields and their corresponding sort order to the index definition.
-
-d.
-An index that supports queries that are run on two collections at the same time
-Incorrect. 
-
-An index that supports running queries on two collections simultaneously doesn't currently exist in MongoDB. Reconsider the fields that compound indexes support queries against.
-
-**Q&A**
-
-
-What is the recommended order of fields in a compound index? (Select one.)
-
-Correct Answer
-
-a.
-Sort, Range, Equality
-Incorrect. There is a recommended order of indexed fields in a compound index. The order of indexed fields is important because query optimization depends on the order of the fields to determine which indexes to use.
-
-b.
-Range, Sort, Equality
-Incorrect. There is a recommended order of indexed fields in a compound index. The order of indexed fields is important because query optimization depends on the order of the fields to determine which indexes to use.
-
-c.
-Equality, Sort, Range
-Correct! The recommended order of indexed fields in a compound index is Equality, Sort, and Range. Optimized queries use the first field in the index, Equality, to determine which documents match the query. The second field in the index, Sort, is used to determine the order of the documents. The third field, Range, is used to determine which documents to include in the result set.
-
-d.
-The order of indexed fields is not important.
-Incorrect. There is a recommended order of indexed fields in a compound index. The order of indexed fields is important because query optimization depends on the order of the fields to determine which indexes to use when executing a query.
 
 # Lesson 5: Deleting MongoDB Indexes
 --
@@ -772,6 +583,344 @@ db.orders.unhideIndex({userId: 1})
       ])
     ```
 
+
+# Check index info- getIndexes(), explain
+
+
+1. **View the Indexes used in a Collection**  
+    Use **getIndexes()** to see all the indexes created in a collection.  
+    ```sql
+    db.customers.getIndexes()
+    ```
+
+2. Check if an index is being used on a query**     
+    
+    Use **explain()** in a collection when running a query to see the Execution plan. This plan provides the details of the execution stages (IXSCAN , COLLSCAN, FETCH, SORT, etc.).  
+      
+      
+    | 階段名稱       | 說明                                      |
+    | ---------- | --------------------------------------- |
+    | `IXSCAN`   | **Index Scan**：代表正在使用索引進行查詢。這是你期望看到的結果。 |
+    | `COLLSCAN` | **Collection Scan**：全表掃描。代表沒有使用索引，效能差。  |
+    | `FETCH`    | 代表依索引找到位置後，再讀取實際文件內容，通常是搭配 IXSCAN 使用。           |
+    | `SORT`     | 表示在記憶體中進行排序，若沒有用索引排序會耗費更多資源。            |
+    | `PROJECTION_COVERED`     | 當查詢所需的欄位全部包含在索引中，MongoDB 不需 FETCH 文件即可回傳結果。     
+
+
+   { category: 1, price: -1, stock: 1 }
+
+* Best Practices
+   * 完美
+     等值篩選 + 範圍篩選      
+     db.products.find({ category: "electronics", price: { $gte: 100 }, stock: { $gt: 10 } })
+   * 符合ESR，查詢使用了最左側的前綴 category 進行過濾，並且緊接著利用第二個欄位 price 進行排序。因為排序方向（-1）與索引定義完全一致，直接從小至大或從大至小讀取索引，達成記憶體內免排序（In-Memory Sort: False）
+     db.products.find({ category: "electronics" }).sort({ price: -1 })
+   * 使用最左側前綴，即使沒有帶入 price 和 stock，只要帶入了最左邊的 category，該索引依然是一個高效率的單鍵索引。MongoDB 會執行 IXSCAN（索引掃描）迅速限縮範圍。
+     db.products.find({ category: "electronics" })   
+   
+* Mid
+  漏掉了中間的 price，只能使用 category 來做索引邊界掃描。只能在索引樹裡把所有符合 electronics 的條目撈出來後，一筆一筆進行掃描後過濾（Post-scan filtering）。
+   db.products.find({ category: "electronics", stock: { $gt: 0 } })   
+* Bad   
+  索引完全失效, 完全沒有包含最左邊的 category   
+  db.products.find({ category: "electronics", stock: { $gt: 0 } })   
+  排序欄位順序顛倒或方向不符   
+  db.products.find({ category: "electronics" }).sort({ stock: 1 })   
+
+
+
+
+
+  
+
+# a Single Text Index
+   
+* 每個集合只允許一個文字索引——這是絕對的，不能繞過。   
+* 文字索引僅適用於字串欄位。索引定義中的非字串欄位將被忽略。
+* 文字搜尋預設不區分大小寫，但會根據語言設定而區分變音符號
+* 對於包含大量字串欄位的大型集合，文字索引可能會增加寫入延遲和儲存開銷。
+
+```sql
+db.products.createIndex({ description: "text" })
+```
+
+
+# $natural 
+   
+直接執行反向索引   
+   
+```sql
+db.appLogs.find().sort({ $natural: -1 });
+
+```
+
+# TTL
+
+
+```sql
+db.sessions.createIndex (
+  { lastAccessed : 1 },  
+  { expireAfterSeconds : 3600 }  
+）；
+```
+
+* Limitations of TTL Indexes
+
+Cannot be compound indexes — A TTL index must be a single-field index only. Adding expireAfterSeconds to a compound index will cause an error.   
+
+No sub-second precision — The TTL monitor runs approximately every 60 seconds. Documents are NOT deleted the instant they expire; there is always a potential delay.   
+
+Only works on non-capped collections — TTL indexes have no effect on capped collections.   
+
+Field must be BSON Date type — If the field is missing or holds a non-date type (e.g., a string or integer), the document will NOT be expired.   
+
+Only runs on replica set primary — The TTL background thread only operates on the primary node.   
+
+No pause on primary stepdown — TTL expiration does not have a built-in pause-and-sync mechanism tied to replica set elections; it resumes normally after a new primary is elected.   
+
+High system load can increase delay — Under heavy workloads, the TTL monitor may take longer than 60 seconds to process deletions.   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Q&A
+
+**Which of the following statements about indexes are correct? (Select all the that apply.)**  
+  
+A. Indexes are data structures that improve performance, support efficient equality matches and range-based query operations, and can return sorted results.  
+B. Indexes are automatically created based on usage patterns.    
+C. Indexes are used to make querying faster for users. One of the easiest ways to improve the performance of a slow query is create indexes on the data that is used most often.  
+D. When using an index, MongoDB reads every document in a collection to check if it matches the query that's being run.    
+
+
+答案：A,C
+  
+解釋開始：  
+A. 說明：索引是提升效能的資料結構。它支持高效的等值匹配（Equality matches）與範圍查詢（Range-based queries），並能直接回傳排序後的結果。透過索引，MongoDB 僅需處理必要的數據，而不必掃描整個集合。  
+B. 說明：[錯誤]。MongoDB 不會根據使用習慣自動建立索引。開發者必須手動建立索引來優化慢查詢。不過，MongoDB Atlas 提供建議工具，可提示用戶哪些索引應該建立或移除  
+C. 說明：[正確]。索引能讓查詢更快，因為 MongoDB 只需掃描索引即可找到所需數據。在頻繁使用的欄位上建立索引，是優化慢查詢最簡單且有效的方法之一。  
+D. 說明：[錯誤]。這描述的是「全表掃描（Collection Scan）」。當有索引可用時，MongoDB 不需要讀取集合中的每個文件，而是掃描索引以精確定位目標數據。  
+解釋結束
+
+
+
+**Which of the following statements about indexes are true? (Select one.)**  
+  
+A. Indexes improve query performance and have no impact on write performance.  
+B. Indexes improve query performance at the cost of write performance.  
+C. Indexes have no impact on query performance but improve write performance.  
+D. Indexes have a negative impact on query performance but improve write performance.  
+
+答案：B
+  
+解釋開始：  
+A. 說明：雖然索引能提升查詢速度，但它們是有代價的。每當執行寫入操作時，相關的索引都必須同步更新，這會消耗額外的時間。  
+B. 說明：這是數據庫設計中經典的權衡（Trade-off）。對於大多數應用場景，這種交換是值得的。索引應該建立在頻繁被查詢的欄位，或是那些雖然查詢頻率低但運算成本極高的查詢上。  
+C. 說明：事實正好相反。索引的主要目的是加速查詢流程，而寫入效能反而會因為需要更新索引結構而下降。  
+D. 說明：索引對查詢有積極（正面）的影響，對寫入則會造成額外的負擔。  
+解釋結束
+  
+**Q&A**
+
+**What is a single field index? (Select one.)**  
+  
+A. An index that supports efficient querying against one field  
+B. An index that supports efficient querying against multiple fields  
+C. An index that only supports efficient querying against fields with scalar values  
+D. An index that supports efficient querying against fields that are already indexed by another user-defined index  
+  
+    
+答案：A
+
+解釋開始：
+A. 說明：A single field index is an index that supports efficient querying against a single field. By default, all collections have a single field index on the _id field, but users can define additional indexes that support important queries. A single field index is also a multikey index if the value of the field is an array.
+B. 說明：An index that supports efficient queries against multiple fields is called a compound index.
+C. 說明：Single field indexes can also support efficient querying against a single array field.
+D. 說明：A single field index doesn't support efficient querying against fields that are already indexed by another user-defined index. When a single field is already indexed—for example, by a compound index—creating an additional single field index can cause over-indexing and performance issues.
+解釋結束
+
+
+**Q&A**
+  
+You have a collection of customer details. The following is a sample document from the collection:  
+  
+```sql
+{
+  "_id": { "$oid": "5ca4bbcea2dd94ee58162a6a" },
+  "username": "hillrachel",
+  "name": "Katherine David",
+  "address": "55711 Janet Plaza Apt. 865\nChristinachester, CT 62716",
+  "birthdate": { "$date": { "$numberLong": "582848134000" } },
+  "email": "timothy78@hotmail.com",
+  "Accounts": [
+    { "$numberInt": "462501" },
+    { "$numberInt": "228290" },
+    { "$numberInt": "968786" },
+    { "$numberInt": "515844" },
+    { "$numberInt": "377292" }
+  ],
+  "tier_and_details": {}
+}
+```
+  
+You create a single field index on the email field, with the unique constraint set to true:
+```
+db.customers.createIndex({email:1}, {unique:true})
+```
+What would happen if you attempt to insert a new document with an email that already exists in the collection? (Select one.)
+
+Correct Answer
+
+A. The new document will be inserted and replace the old document in the collection.  
+B. The new document will be inserted and the old document will remain in the collection.  
+C. MongoDB will return a duplicate key error, and the document will be inserted.  
+D. MongoDB will return a duplicate key error, and the document will not be inserted.  
+  
+  
+答案：D  
+  
+解釋開始：  
+A. 說明：That is not how the unique constraint operates. Unique indexes ensure that indexed fields do not store duplicate values. The new document will not be inserted in this example because the email address already exists in another document in the collection.  
+B. 說明：That is not how the unique constraint operates. Unique indexes ensure that indexed fields do not store duplicate values. The new document will not be inserted in this example. Because the email address already exists in another document in the collection, the unique constraint would prevent the new document from being inserted.  
+C. 說明：That is not how the unique constraint operates. Unique indexes ensure that indexed fields do not store duplicate values. While a duplicate error key would be returned, the new document would not be inserted in this example because the email address already exists in another document in the collection.  
+D. 說明：Unique indexes ensure that indexed fields do not store duplicate values. In this example, MongoDB will return a duplicate key error if you attempt to insert a new document with an email that already exists in the collection, as the unique constraint was set to true.  
+
+解釋結束
+
+
+
+**Q&A**
+
+**1. What is a multikey index? (Select one.) **
+
+A. An index on one field only where the field is not an array  
+B. An index where one of the indexed fields contains an array  
+C. An index on more than one field where none of the fields are arrays  
+D. An index on more than one field where multiple fields are arrays  
+  
+**Ans: A**  
+
+```
+A. A multikey index is any index where one of the indexed fields contains an array, including both single field and compound indexes. In a compound index, only one of the fields can be an array.
+B. Multikey indexes support efficient queries against array fields by creating an index key for each element in the array. This allows MongoDB to search for the index key of each element in the array rather than scan the entire array, which results in dramatic performance gains in your queries.
+C. A multikey index is any index where one of the indexed fields contains an array, including both single field and compound indexes. In a compound index, only one of the fields can be an array.
+D. A multikey index is any index where one of the indexed fields contains an array, including both single field and compound indexes. In a compound index, only one of the fields can be an array.
+
+```
+
+**Q&A**
+
+**What is the maximum number of array fields per multikey index? (Select one.)**
+
+a. 1  
+
+b. 3  
+
+c. 5  
+
+d. Unlimited  
+
+**Ans: A**  
+
+```
+a. Correct! The maximum number of array fields per multikey index is 1. If an index has multiple fields, only one of them can be an array.
+
+b. Incorrect. The maximum number of array fields per multikey index is not 3. However, there is a limitation on the number of array fields per index.
+
+c. Incorrect. The maximum number of array fields per multikey index is not 5. However, there is a limitation on the number of array fields per index.
+
+d. Incorrect. The maximum number of array fields per multikey index is not unlimited.
+
+```
+
+
+
+**Q&A**
+
+What is a compound index? (Select one.)
+
+a.
+An index that supports queries that combine the field name and the value into one string
+Incorrect. 
+
+An index that combines the field name and the value into a single string does not exist MongoDB. Reconsider the fields that compound indexes support queries against.
+
+b.
+An index that supports queries against unknown or arbitrary fields
+Incorrect.
+
+An index that support queries against unknown or arbitrary fields is a wildcard index. Wildcard indexes were introduced in MongoDB 4.2. They allow users to query against fields that are not explicitly defined in the collection. Reconsider the fields that compound indexes support queries against.
+
+c.
+An index that contains references to multiple fields within a document
+Correct!
+
+A compound index is an index that contains references to multiple fields within a document. Compound indexes are created by adding a comma-separated list of fields and their corresponding sort order to the index definition.
+
+d.
+An index that supports queries that are run on two collections at the same time
+Incorrect. 
+
+An index that supports running queries on two collections simultaneously doesn't currently exist in MongoDB. Reconsider the fields that compound indexes support queries against.
+
+**Q&A**
+
+
+What is the recommended order of fields in a compound index? (Select one.)
+
+Correct Answer
+
+a.
+Sort, Range, Equality
+Incorrect. There is a recommended order of indexed fields in a compound index. The order of indexed fields is important because query optimization depends on the order of the fields to determine which indexes to use.
+
+b.
+Range, Sort, Equality
+Incorrect. There is a recommended order of indexed fields in a compound index. The order of indexed fields is important because query optimization depends on the order of the fields to determine which indexes to use.
+
+c.
+Equality, Sort, Range
+Correct! The recommended order of indexed fields in a compound index is Equality, Sort, and Range. Optimized queries use the first field in the index, Equality, to determine which documents match the query. The second field in the index, Sort, is used to determine the order of the documents. The third field, Range, is used to determine which documents to include in the result set.
+
+d.
+The order of indexed fields is not important.
+Incorrect. There is a recommended order of indexed fields in a compound index. The order of indexed fields is important because query optimization depends on the order of the fields to determine which indexes to use when executing a query.
+
+
 **Q&A**
 
 What are the ramifications of deleting an index that is supporting a query? (Select one.)
@@ -905,109 +1054,6 @@ D. 為了極大化加速寫入（Insert/Update）效能，我們應該在集合�
 
 
 
-# Check index info- getIndexes(), explain
-
-
-1. **View the Indexes used in a Collection**  
-    Use **getIndexes()** to see all the indexes created in a collection.  
-    ```sql
-    db.customers.getIndexes()
-    ```
-
-2. Check if an index is being used on a query**     
-    
-    Use **explain()** in a collection when running a query to see the Execution plan. This plan provides the details of the execution stages (IXSCAN , COLLSCAN, FETCH, SORT, etc.).  
-      
-    * The **IXSCAN** stage indicates the query is using an index and what index is being selected.  
-    * The **COLLSCAN** stage indicates a collection scan is perform, not using any indexes.  
-    * The **FETCH** stage indicates documents are being read from the collection.  
-    * The **SORT** stage indicates documents are being sorted in memory.  
-      
-    | 階段名稱       | 說明                                      |
-    | ---------- | --------------------------------------- |
-    | `IXSCAN`   | **Index Scan**：代表正在使用索引進行查詢。這是你期望看到的結果。 |
-    | `COLLSCAN` | **Collection Scan**：全表掃描。代表沒有使用索引，效能差。  |
-    | `FETCH`    | 代表依索引找到位置後，再讀取實際文件內容，通常是搭配 IXSCAN 使用。           |
-    | `SORT`     | 表示在記憶體中進行排序，若沒有用索引排序會耗費更多資源。            |
-    | `PROJECTION_COVERED`     | 當查詢所需的欄位全部包含在索引中，MongoDB 不需 FETCH 文件即可回傳結果。     
-
-
-   { category: 1, price: -1, stock: 1 }
-
-* Best Practices
-   * 完美
-     等值篩選 + 範圍篩選      
-     db.products.find({ category: "electronics", price: { $gte: 100 }, stock: { $gt: 10 } })
-   * 符合ESR，查詢使用了最左側的前綴 category 進行過濾，並且緊接著利用第二個欄位 price 進行排序。因為排序方向（-1）與索引定義完全一致，直接從小至大或從大至小讀取索引，達成記憶體內免排序（In-Memory Sort: False）
-     db.products.find({ category: "electronics" }).sort({ price: -1 })
-   * 使用最左側前綴，即使沒有帶入 price 和 stock，只要帶入了最左邊的 category，該索引依然是一個高效率的單鍵索引。MongoDB 會執行 IXSCAN（索引掃描）迅速限縮範圍。
-     db.products.find({ category: "electronics" })   
-   
-* Mid
-  漏掉了中間的 price，只能使用 category 來做索引邊界掃描。只能在索引樹裡把所有符合 electronics 的條目撈出來後，一筆一筆進行掃描後過濾（Post-scan filtering）。
-   db.products.find({ category: "electronics", stock: { $gt: 0 } })   
-* Bad   
-  索引完全失效, 完全沒有包含最左邊的 category   
-  db.products.find({ category: "electronics", stock: { $gt: 0 } })   
-  排序欄位順序顛倒或方向不符   
-  db.products.find({ category: "electronics" }).sort({ stock: 1 })   
-
-
-
-
-
-  
-
-# a Single Text Index
-   
-* 每個集合只允許一個文字索引——這是絕對的，不能繞過。   
-* 文字索引僅適用於字串欄位。索引定義中的非字串欄位將被忽略。
-* 文字搜尋預設不區分大小寫，但會根據語言設定而區分變音符號
-* 對於包含大量字串欄位的大型集合，文字索引可能會增加寫入延遲和儲存開銷。
-
-```sql
-db.products.createIndex({ description: "text" })
-```
-
-
-# $natural 
-   
-直接執行反向索引   
-   
-```sql
-db.appLogs.find().sort({ $natural: -1 });
-
-```
-
-# TTL
-
-
-```sql
-db.sessions.createIndex (
-  { lastAccessed : 1 },  
-  { expireAfterSeconds : 3600 }  
-）；
-```
-
-* Limitations of TTL Indexes
-
-Cannot be compound indexes — A TTL index must be a single-field index only. Adding expireAfterSeconds to a compound index will cause an error.   
-
-No sub-second precision — The TTL monitor runs approximately every 60 seconds. Documents are NOT deleted the instant they expire; there is always a potential delay.   
-
-Only works on non-capped collections — TTL indexes have no effect on capped collections.   
-
-Field must be BSON Date type — If the field is missing or holds a non-date type (e.g., a string or integer), the document will NOT be expired.   
-
-Only runs on replica set primary — The TTL background thread only operates on the primary node.   
-
-No pause on primary stepdown — TTL expiration does not have a built-in pause-and-sync mechanism tied to replica set elections; it resumes normally after a new primary is elected.   
-
-High system load can increase delay — Under heavy workloads, the TTL monitor may take longer than 60 seconds to process deletions.   
-
-
-
-# 考題二
 
 
 
