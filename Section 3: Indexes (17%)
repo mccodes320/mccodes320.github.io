@@ -1,3 +1,41 @@
+[題目]  
+In MongoDB, hashed indexes are used to support even data distribution in sharded clusters by storing hashed values of a field. A developer has a collection 'sessions' with millions of documents and wants to shard it using a hashed index on the 'userId' field. Before sharding, they run: db.sessions.createIndex({ userId: 'hashed' }). Which of the following statements correctly describes a key limitation of hashed indexes in this sharding context? (difficulty: hard)
+在 MongoDB 中，雜湊索引（hashed indexes）透過儲存欄位值的雜湊值，用於支援分片叢集中的資料均勻分佈。開發者擁有一個包含數百萬份文件的 'sessions' 集合，並希望使用 'userId' 欄位上的雜湊索引進行分片。在分片之前，他們執行了：db.sessions.createIndex({ userId: 'hashed' })。下列哪一項敘述正確描述了在此分片情境下雜湊索引的核心限制？（難度：高）
+
+[選項]  
+A. Floating-point values stored in 'userId' will be hashed after being truncated to 64-bit integers, meaning values like 2.1 and 2.9 will produce the same hash.
+B. A hashed index on 'userId' guarantees that documents with the same 'userId' value will always be stored on different shards to maximize distribution.
+C. Hashed indexes on 'userId' will support range queries such as { userId: { $gt: 'U500' } } efficiently because the hash function preserves the natural sort order of values.
+D. MongoDB will automatically create a hashed index on '_id' in addition to 'userId' when sharding is enabled, replacing the developer's index.
+
+[正確答案]：
+A
+
+[核心考點]： 3.1 給定一個正在執行全表掃描（collection scan）的查詢，辨識哪種索引可以提升該查詢的效能。
+
+[詳細解析]：
+MongoDB 的雜湊函式在計算浮點數時會先將其截斷為 64 位元整數（例如 2.1 與 2.9 皆被截斷為 2），因此會產生相同的雜湊值，這是雜湊索引在處理浮點數時的一大限制。
+
+A. 正確，MongoDB 雜湊索引會先將浮點數截斷為 64 位元整數再計算雜湊，導致如 2.1 與 2.9 產生相同雜湊值。
+B. 錯誤，相同的 `userId` 經雜湊運算後產生的 Hash 值完全相同，因此必然會被分發至「同一」分片上。
+C. 錯誤，雜湊函式會破壞資料的原生排序順序，因此雜湊索引無法有效支援範圍查詢（Range Queries）。
+D. 錯誤，MongoDB 在啟用分片時，會直接採用開發者指定的分片金鑰索引，不會自動另外建立 `_id` 的雜湊索引來覆蓋它。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 Section 3: Indexes (17%)
 
 3.1 Identify which index would improve performance for a query doing collection scan
