@@ -716,6 +716,61 @@ D. 正確原因：此查詢語法完全正確。使用 `$size: 3` 精確匹配�
 
 
 
+[題目]  
+In MongoDB's find() method, you are querying a 'sales' collection where each document contains a 'region' string field and a 'transactions' array of embedded documents, each with a 'amount' number and a 'status' string. You want to find all documents where the 'region' is 'North' and at least one transaction has a status of 'pending' - but you only want to return the 'region' field and the FIRST matching 'pending' transaction element from the array. Which query and projection combination correctly achieves this? (difficulty: hard)
+在 MongoDB 的 find() 方法中，你正在查詢一個 'sales' 集合，其中每個文件包含一個 'region' 字串欄位以及一個由內嵌文件組成的 'transactions' 陣列，每個內嵌文件都有 'amount' 數字與 'status' 字串欄位。你想要找出所有 'region' 為 'North' 且至少有一個交易狀態為 'pending' 的文件——但你只想回傳 'region' 欄位以及陣列中第一個符合 'pending' 的交易元素。哪一個查詢與投影（projection）組合能正確實現此需求？（難度：高）
+
+[選項]  
+A. db.sales.find({ region: 'North' }, { region: 1, 'transactions.$': 1 })
+B. db.sales.find({ region: 'North', 'transactions.status': 'pending' }, { region: 1, 'transactions.$': 1 })
+C. db.sales.find({ region: 'North', 'transactions.status': 'pending' }, { region: 1, 'transactions.status': 1 })
+D. db.sales.find({ region: 'North' }, { region: 1, transactions: { $elemMatch: { status: 'pending' } } })
+
+[正確答案]：
+B
+
+[核心考點]： 
+
+[詳細解析]：
+位置投影運算子 `$` 必須搭配查詢條件中對該陣列欄位的過濾條件（如 `'transactions.status': 'pending'`），才能確定要抓取的第一個匹配元素位置。
+
+A. 錯誤，查詢條件缺少陣列過濾，投影中的 `$` 運算子無法得知要匹配哪個陣列元素而會報錯。
+B. 正確，查詢條件包含陣列過濾，且搭配 `'transactions.$': 1` 能精準回傳第一個符合條件的元素。
+C. 錯誤，此投影寫法會回傳整組陣列中所有元素的 `status` 欄位，而非僅回傳第一個匹配元素。
+D. 錯誤，查詢條件未限制 `status: 'pending'`，若該區域無 pending 交易也會被查出（且回傳空陣列）。
+
+---
+
+[題目]  
+In MongoDB's find() method, you are querying a 'sales' collection where each document contains a 'region' string field and a 'transactions' array of embedded documents, each with a 'amount' number and a 'status' string. You want to find all documents where the 'region' is 'North' and at least one transaction has a status of 'pending' - but you only want to return the 'region' field and the FIRST matching 'pending' transaction element from the array. Which query and projection combination correctly achieves this? (difficulty: hard)
+在 MongoDB 的 find() 方法中，你正在查詢一個 'sales' 集合，其中每個文件包含一個 'region' 字串欄位以及一個由內嵌文件組成的 'transactions' 陣列，每個內嵌文件都有 'amount' 數字與 'status' 字串欄位。你想要找出所有 'region' 為 'North' 且至少有一個交易狀態為 'pending' 的文件——但你只想回傳 'region' 欄位以及陣列中第一個符合 'pending' 的交易元素。哪一個查詢與投影（projection）組合能正確實現此需求？（難度：高）
+
+[選項]  
+A. db.sales.find({ region: 'North' }, { region: 1, 'transactions.$': 1 })
+B. db.sales.find({ region: 'North', 'transactions.status': 'pending' }, { region: 1, 'transactions.$': 1 })
+C. db.sales.find({ region: 'North', 'transactions.status': 'pending' }, { region: 1, 'transactions.status': 1 })
+D. db.sales.find({ region: 'North' }, { region: 1, transactions: { $elemMatch: { status: 'pending' } } })
+
+[正確答案]：
+B
+
+[核心考點]： 
+
+[詳細解析]：
+位置投影運算子 `$` 必須搭配查詢條件中對該陣列欄位的過濾條件（如 `'transactions.status': 'pending'`），才能確定要抓取的第一個匹配元素位置。
+
+A. 錯誤，查詢條件缺少陣列過濾，投影中的 `$` 運算子無法得知要匹配哪個陣列元素而會報錯。
+B. 正確，查詢條件包含陣列過濾，且搭配 `'transactions.$': 1` 能精準回傳第一個符合條件的元素。
+C. 錯誤，此投影寫法會回傳整組陣列中所有元素的 `status` 欄位，而非僅回傳第一個匹配元素。
+D. 錯誤，查詢條件未限制 `status: 'pending'`，若該區域無 pending 交易也會被查出（且回傳空陣列）。
+
+
+
+
+
+
+
+
 
 
 
