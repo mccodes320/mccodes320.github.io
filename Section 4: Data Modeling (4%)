@@ -91,3 +91,210 @@ A. 正確，無條件查詢時一律依據自然順序回傳。
 B. 錯誤，預設不會自動對 _id 進行字母排序。
 C. 錯誤，非預設行為，需搭配時間欄位排序。
 D. 錯誤，MongoDB 不會根據定義的第一個欄位排序。
+
+---
+
+[題目]  
+In MongoDB one-to-many relationship modeling, a blogging platform stores authors and their blog posts. Each author can have hundreds of posts, and the application frequently needs to display an author's profile page showing their 5 most recent posts along with full author details on every post page. A developer is deciding between three approaches: (A) embed all posts inside the author document, (B) store posts in a separate collection with an author reference, and also store a 'recentPosts' array of the 5 latest post summaries inside the author document, or (C) store posts in a separate collection with only an author reference. Which approach best balances read performance and data consistency for this use case? (difficulty: hard)
+在 MongoDB 的一對多關係建模中，一個部落格平台儲存作者及其發表的文章。每位作者可能擁有數百篇文章，且應用程式頻繁需要顯示作者個人頁面（展示最新的 5 篇文章）以及在每篇文章頁面顯示完整作者資訊。開發者正在考慮三種做法：(A) 將所有文章內嵌於作者文件中、(B) 將文章獨立儲存於另一個集合並引用作者，同時在作者文件中維護包含最新 5 篇文章摘要的 'recentPosts' 陣列、(C) 將文章獨立儲存於另一個集合且僅做作者引用。針對此情境，哪種做法能最佳平衡讀取效能與資料一致性？（難度：高）
+
+[選項]  
+A. Store posts in a separate collection with an author reference, and store a 'recentPosts' summary array inside the author document (Extended Reference / Subset pattern)
+B. Embed all posts inside the author document, because embedding always provides the best read performance by avoiding joins
+C. Store posts in a separate collection with only an author reference, and rely solely on $lookup aggregation to join data at query time
+D. Store posts in a separate collection and embed the full author document inside every post document, so each post is fully self-contained
+
+[正確答案]：
+A
+
+[核心考點]： 
+
+[詳細解析]：
+本題考查 Subset Pattern 與 Extended Reference Pattern。每位作者可有數百篇文章，若全內嵌會導致文件過大；若僅用引用則讀取需頻繁 Join。採用混合模式（快取最新 5 篇）能最佳兼顧讀取速度與維護性。
+
+A. 正確，運用 Subset/Extended Reference 模式，既避免大文件過膨，又兼顧高效讀取。
+B. 錯誤，數百篇文章全內嵌易觸發 16MB 限制且會造成 Unbounded Array 反模式。
+C. 錯誤，每次載入個人頁面都必須使用 $lookup，會增加系統昂貴的聚合計算成本。
+D. 錯誤，將完整作者內嵌至每篇文章，若作者資料更新需修改大量文章，一致性成本極高。
+
+---
+
+[題目]  
+In MongoDB document modeling, one-to-one relationships can be represented using embedding or referencing. A developer is building a healthcare application where each 'patient' document has a corresponding 'medicalRecord' document. The medical record contains highly sensitive data subject to strict access control, is accessed by a separate internal audit system independently from the patient document, and is never shared across multiple patients. Each patient has exactly one medical record. The combined document size if embedded would be approximately 4KB, well within MongoDB's 16MB limit, and the data is accessed together in roughly 60% of all queries. Which factor MOST strongly justifies using a reference rather than embedding the medical record directly inside the patient document? (difficulty: hard)
+在 MongoDB 文件建模中，一對一關係可透過內嵌或引用來表示。開發者正在建置醫療應用程式，每位「病患 (patient)」文件有對應的「病歷 (medicalRecord)」文件。病歷包含嚴格存取控制的高敏感資料、被獨立稽核系統單獨存取，且不跨病患共享。合併後大小約 4KB（遠小於 16MB 限制），且約 60% 查詢會同時讀取兩者。哪項因素最強烈支持採用引用而非直接內嵌？（難度：高）
+
+[選項]  
+A. The combined document size of 4KB approaches MongoDB's document size limits, making referencing a safer choice to avoid hitting the 16MB cap.
+B. MongoDB does not support embedding documents that contain sensitive data, so referencing must be used when privacy constraints are present.
+C. The medical record is accessed independently by a separate system and requires its own access control boundaries, making it more appropriate as a standalone document.
+D. Since only 60% of queries access both documents together, the read pattern does not favor embedding and referencing would reduce unnecessary data retrieval.
+
+[正確答案]：
+C
+
+[核心考點]： 
+
+[詳細解析]：
+獨立的存取控制需求與被外部系統單獨讀取的模式，是決定獨立成集合的核心原因。分開儲存能確保權限邊界明確，避免敏感資料暴露。
+
+A. 錯誤，4KB 遠小於 16MB 上限，完全無爆表疑慮。
+B. 錯誤，MongoDB 功能上支援內嵌敏感資料，非資料庫底層限制。
+C. 正確，獨立存取需求與存取控制邊界（Access Control）是最強烈的理由。
+D. 錯誤，60% 一起讀取依然偏高，非選擇引用的最主要關鍵。
+
+---
+
+[題目]  
+In MongoDB document modeling, one-to-one relationships can be represented using embedding or referencing. A developer is designing a system where each 'user' document has a corresponding 'passport' document. The passport data is accessed every time the user logs in (alongside user data), is never shared across multiple users, and each user has exactly one passport. However, the passport subdocument contains a large number of fields that frequently change independently (visa stamps, expiry updates, renewal status). Which consideration most strongly argues AGAINST embedding the passport subdocument directly inside the user document? (difficulty: hard)
+在 MongoDB 文件建模中，一對一關係可以透過內嵌或引用來表示。開發者正在設計一個系統，每個「使用者 (user)」文件都有一個對應的「護照 (passport)」文件。護照資料每次使用者登入時都會（與使用者資料一起）被讀取，絕不跨使用者共享，且每個使用者恰好擁有一本護照。然而，護照子文件包含大量頻繁獨立變更的欄位（簽證蓋章、過期更新、換發狀態）。哪項考量最強烈地「反對」將護照子文件直接內嵌於使用者文件中？（難度：高）
+
+[選項]  
+A. MongoDB does not support subdocument updates, so embedding would make passport field updates impossible.
+B. Frequent independent updates to the embedded subdocument cause the entire parent document to be rewritten on each change, increasing write amplification and potential document fragmentation.
+C. Referencing is always preferred over embedding in one-to-one relationships because it avoids data duplication between collections.
+D. Embedding a subdocument with many fields will always exceed MongoDB's 16MB document size limit, making referencing mandatory.
+
+[正確答案]：
+B
+
+[核心考點]： 
+
+[詳細解析]：
+當內嵌子文件經常獨立更新且大小改變時，會導致父文件在硬碟上頻繁重新分配空間與寫入，造成寫入放大（Write Amplification）與碎片化問題。
+
+A. 錯誤，MongoDB 完全支援對子文件欄位進行更新（如點號表示法 `$set: { "passport.expiry": ... }`）。
+B. 正確，頻繁變動子文件會引發文件尺寸改變，進而導致磁碟重新分配空間與寫入放大。
+C. 錯誤，一對一關係通常優先推薦「內嵌」而非引用，選項敘述不正確。
+D. 錯誤，護照資料通常僅幾 KB，絕不可能單純因欄位較多就超過 16MB 限制。
+
+---
+
+[題目]  
+In MongoDB one-to-many relationship modeling, a social media platform stores user accounts and their comments. Each user can post tens of thousands of comments over time, and comments are always displayed in the context of a post - never on a user's profile page. A developer is choosing between: (A) embedding all comments as an array inside the user document, (B) using the subset pattern - embedding only the 10 most recent comments inside the user document while storing all comments in a separate collection, or (C) storing all comments in a separate collection with a user reference field, without any embedding. Which approach is most appropriate given these access patterns and data volume? (difficulty: hard)
+在 MongoDB 一對多關係建模中，社群媒體平台儲存使用者帳號及其留言。每位使用者隨時間推移可能會發表數萬條留言，且留言永遠在「文章（post）」情境下展示，絕不會在「使用者個人頁面」顯示。開發者正在考慮：(A) 將所有留言作為陣列內嵌在使用者文件中、(B) 使用 Subset Pattern——在使用者文件中僅內嵌最近 10 條留言，同時將所有留言存於獨立集合、或 (C) 將所有留言存於獨立集合並帶有使用者引用欄位，不進行任何內嵌。考量此存取模式與資料量，哪種方法最合適？（難度：高）
+
+[選項]  
+A. Approach A - embed all comments as an array inside the user document, because embedding guarantees the fastest read performance by avoiding joins.
+B. Approach B - use the subset pattern by embedding the 10 most recent comments inside the user document alongside a separate comments collection, because it balances read performance with bounded document size.
+C. Approach A - embed all comments as an array inside the user document, but apply document sharding to handle the 16 MB document size limit.
+D. Approach C - store all comments in a separate collection with a user reference field, because comments are never accessed from the user context and the volume is unbounded.
+
+[正確答案]：
+D
+
+[核心考點]： 
+
+[詳細解析]：
+留言數高達數萬筆（資料無界限），且存取模式「絕不在使用者頁面展示留言」，因此在使用者文件中快取或內嵌留言皆無實益，應採用獨立集合儲存。
+
+A. 錯誤，數萬條留言會導致單一文件爆表（超過 16MB 限制）。
+B. 錯誤，留言從不在使用者頁面讀取，快取最近 10 條留言屬無效設計。
+C. 錯誤，Sharding 是以集合為單位分片，無法解決「單一文件超過 16MB」限制。
+D. 正確，符合資料量無限增長且讀取情境不需從使用者端存取的特性。
+
+---
+
+[題目]  
+In MongoDB's document model fundamentals, a developer is modeling an e-commerce application. Each order document needs to store the customer's shipping address. The shipping address is always queried together with the order and is specific to that order - it never needs to be queried or updated independently. A senior developer suggests two approaches: (A) embed the shipping address as a sub-document directly inside the order document, or (B) store shipping addresses in a separate 'addresses' collection and reference them by _id. Which of the following best describes the primary advantage of approach (A) over approach (B) in this specific scenario? (difficulty: medium)
+在 MongoDB 的文件模型基礎中，開發者正在建置電子商務應用程式。每個訂單文件需要儲存顧客的送貨地址。送貨地址總是與訂單一起被查詢，且為該訂單專屬——絕不需要獨立被查詢或更新。資深開發者提出兩種做法：(A) 將送貨地址作為子文件直接內嵌在訂單文件內部，或 (B) 將送貨地址存於獨立的 'addresses' 集合並透過 _id 引用。在此特定情境下，下列哪一項最準確地說明了做法 (A) 相較於做法 (B) 的主要優勢？（難度：中等）
+
+[選項]  
+A. Approach (A) allows the shipping address fields to have a strictly enforced schema, preventing any document in the collection from storing addresses with missing or extra fields.
+B. Approach (A) reduces the total storage space used by the database because embedded sub-documents are compressed more efficiently than documents stored in separate collections.
+C. Approach (A) makes it easier to update a customer's shipping address across all orders simultaneously, since the address data is centralized within each order document.
+D. Approach (A) eliminates the need for a separate read operation (join-like lookup) to retrieve the shipping address when fetching an order, improving read performance for this access pattern.
+
+[正確答案]：
+D
+
+[核心考點]： 
+
+[詳細解析]：
+當資料總是與父文件一起讀取時，將其內嵌（Embedding）能在單次 I/O 取得所有資料，避免二次查詢（Join/Lookup），極大地提升讀取效能。
+
+A. 錯誤，MongoDB 嚴格 Schema 驗證（Schema Validation）是針對 Collection，與內嵌無直接關係。
+B. 錯誤，壓縮率主要取決於底層儲存引擎（WiredTiger），非內嵌子文件的特性。
+C. 錯誤，內嵌反而使跨訂單更新同一地址變得困難，非其優勢。
+D. 正確，符合內嵌核心優勢：消除額外讀取操作（Lookup），極大提升讀取效能。
+
+---
+
+[題目]  
+In MongoDB, when deciding between embedding vs referencing documents, a developer is modeling a multi-tenant SaaS application. Each tenant (company) has a configuration document that stores their active feature flags - typically 10 to 20 boolean fields updated together during a configuration change. The application loads the full configuration on every user login and never needs to query individual feature flags across tenants. However, the same configuration must also be audited, meaning every change is recorded with a timestamp and the previous state. The audit log can grow to thousands of entries per tenant over time. Which approach best fits this scenario? (difficulty: hard)
+在 MongoDB 中決定內嵌（embedding）與引用（referencing）文件時，開發者正在建立一個多租戶 SaaS 應用程式。每個租戶（公司）都有一個設定文件來儲存其啟用的功能標記（feature flags）——通常在設定變更時會一起更新 10 到 20 個布林值欄位。應用程式在每次使用者登入時都會載入完整的設定，且絕不需要跨租戶查詢單一功能標記。然而，該設定同時必須進行稽核，這意味著每次變更都會記錄時間戳記與先前的狀態。隨著時間推移，每個租戶的稽核日誌可能成長到數千條。哪種做法最適合此情境？（難度：高）
+
+[選項]  
+A. Embed the configuration inside the tenant document, and reference the audit log entries as separate documents in an audits collection.
+B. Reference both the configuration and the audit log as separate documents, storing only IDs in the tenant document.
+C. Embed both the configuration and the full audit log inside the tenant document.
+D. Embed the configuration inside the tenant document, and also embed the audit log but cap it at the 100 most recent entries using application logic.
+
+[正確答案]：
+A
+
+[核心考點]： 
+
+[詳細解析]：
+設定檔資料量小且每次登入皆需載入，適合內嵌以利單次 I/O 讀取；稽核日誌會無限制增長至數千筆，若內嵌會引發文件爆表，故應獨立儲存並採用引用。
+
+A. 正確，兼顧設定檔高效讀取，同時避免無界限的稽核日誌造成文件膨脹。
+B. 錯誤，設定檔資料量極小且頻繁讀取，分離儲存會增加不必要的二次查詢成本。
+C. 錯誤，稽核日誌會成長至數千筆，內嵌會觸發 16MB 文件大小限制。
+D. 錯誤，稽核紀錄需完整保留，截斷至最近 100 筆會遺失歷史稽核資料，不符業務需求。
+
+---
+
+[題目]  
+In MongoDB document modeling, one-to-one relationships can be represented either by embedding a subdocument or by using a reference (storing an ObjectId pointing to a separate collection). A developer is building a system where each 'employee' document has a corresponding 'employeeProfile' containing detailed biographical data (large text fields, rarely accessed). The employee collection is queried frequently for basic info (name, department, role), while the profile data is fetched only occasionally. The profile data is never shared across multiple employee documents, and each employee always has exactly one profile. Which modeling approach best fits this scenario and why? (difficulty: medium)
+在 MongoDB 文件建模中，一對一關係可以透過內嵌子文件或使用引用（儲存指向獨立集合的 ObjectId）來表示。開發者正在建置一個系統，其中每個「員工 (employee)」文件都有一個對應的「員工個人檔案 (employeeProfile)」，包含詳細的生平資料（大型文字欄位、極少被存取）。員工集合經常被查詢基本資訊（姓名、部門、角色），而個人檔案資料僅偶爾被擷取。個人檔案資料絕不跨多個員工文件共享，且每個員工恰好有一個個人檔案。哪種建模方法最適合此情境且原因為何？（難度：中等）
+
+[選項]  
+A. Embed the employeeProfile subdocument inside the employee document, because one-to-one relationships in MongoDB must always be modeled with embedding to avoid application-level joins.
+B. Store the employee data inside the employeeProfile document as a nested subdocument, reversing the ownership, because MongoDB performance is always better when the larger document owns the smaller one.
+C. Use a reference - store an ObjectId in the employee document pointing to a separate employeeProfile collection, because the profile data is large and infrequently accessed, keeping the employee documents lean for common queries.
+D. Embed the employeeProfile subdocument inside the employee document, because embedding always provides the best read performance regardless of access patterns.
+
+[正確答案]：
+C
+
+[核心考點]： 
+
+[詳細解析]：
+將大體積且罕用資料拆至獨立集合（引用模式），能精簡頻繁查詢的主文件大小，減少記憶體（RAM）與 I/O 消耗。
+
+A. 錯誤，一對一關係非強制內嵌，需視存取模式（Access Patterns）彈性選擇。
+B. 錯誤，反轉所有權與效能無關，且無法解決主文件查詢體積過大的問題。
+C. 正確，採引用分離大體積罕用資料，可使高頻查詢的主文件保持精簡高效。
+D. 錯誤，忽視存取模式直接內嵌，會導致高頻查詢無謂載入不必要的大量欄位。
+
+---
+
+[題目]  
+In MongoDB schema design, the Extended Reference Pattern is used to embed a subset of frequently accessed fields from a referenced document directly into the referencing document, avoiding costly $lookup operations at read time. A developer is building a video streaming platform where each Video document stores an extended reference to its Creator (a User document). The Creator document contains: userId, displayName, channelDescription, subscriberCount, totalVideosUploaded, and profilePictureUrl. The platform displays video cards showing the video title, thumbnail, and the creator's displayName and profilePictureUrl. The subscriberCount field is updated hundreds of times per day as users subscribe and unsubscribe. Which of the following is the MOST accurate statement about how the Extended Reference Pattern affects the design decision for this scenario? (difficulty: hard)
+在 MongoDB 的 Schema 設計中，擴充引用模式（Extended Reference Pattern）用於將被引用文件中一部分高頻存取的欄位直接內嵌至引用文件中，以避免讀取時執行昂貴的 $lookup 操作。開發者正在建置影音串流平台，每個影片（Video）文件都儲存對其創作者（Creator，即 User 文件）的擴充引用。創作者文件包含：userId、displayName、channelDescription、subscriberCount、totalVideosUploaded 及 profilePictureUrl。平台顯示的影片卡片會展示影片標題、縮圖以及創作者的 displayName 與 profilePictureUrl。而 subscriberCount 欄位因使用者訂閱與取消訂閱，每天會更新數百次。下列哪一項最準確地說明了擴充引用模式如何影響此情境的設計決策？（難度：高）
+
+[選項]  
+A. The developer should embed subscriberCount in the Video document because it is a frequently changing field, and the Extended Reference Pattern is specifically designed to keep high-volatility fields synchronized across documents.
+B. The developer should embed displayName and profilePictureUrl in Video documents, and accept that subscriberCount should NOT be embedded because its high update frequency would cause excessive write amplification across all Video documents.
+C. The Extended Reference Pattern requires embedding all Creator fields into the Video document to ensure that no $lookup operations are ever needed when rendering video cards.
+D. Because the Extended Reference Pattern embeds data at write time, the developer should embed all fields including subscriberCount, channelDescription, and totalVideosUploaded to future-proof the schema against new UI requirements.
+
+[正確答案]：
+B
+
+[核心考點]： 
+
+[詳細解析]：
+擴充引用模式只應複製「高頻讀取且低頻變動」的資料。`subscriberCount` 變動極頻繁，若內嵌會導致更新創作者時需要同步更新旗下所有影片文件，引發嚴重的寫入放大。
+
+A. 錯誤，擴充引用模式不適合用於高揮發性（高頻更新）的欄位。
+B. 正確，僅內嵌低頻變更的展示欄位，排除高頻更新欄位以避免寫入放大。
+C. 錯誤，該模式主張僅內嵌「部分/子集」欄位而非全部內嵌。
+D. 錯誤，盲目內嵌非必需且高頻變動的欄位會破壞 Schema 效能與維護性。
+
+
+
+
+
+
+
