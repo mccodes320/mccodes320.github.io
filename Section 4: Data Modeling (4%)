@@ -1,3 +1,93 @@
+[題目]  
+A product collection in an e-commerce database stores product details and thousands of customer reviews. A developer is choosing between embedding reviews inside the product document versus referencing them in a separate collection. Which of the following statements best describes a critical limitation of the embedding approach in this scenario?
+電子商務資料庫中的產品集合儲存了產品詳細資料以及數千條顧客評價。開發者正在決定要將評價內嵌在產品文件內部，還是將其存於獨立集合並透過引用連結。下列哪一項敘述最準確地描述了在此情境下採用內嵌做法的核心限制？
+
+[選項]  
+A. Embedding thousands of reviews inside a product document risks exceeding MongoDB's 16 MB per-document size limit, degrading performance and preventing new reviews from being added.
+B. Embedding reviews inside a product document prevents the use of indexes on review fields, making it impossible to query reviews efficiently.
+C. Embedded documents cannot store nested arrays, so review data with sub-fields like 'rating' and 'comment' cannot be represented inside a product document.
+D. Embedding reviews inside a product document requires all reviews to share the same schema, which conflicts with MongoDB's schema-less nature and causes write errors.
+
+[正確答案]：
+A
+
+[核心考點]： 4.2 辨識被視為反模式（anti-pattern）的資料建模範例。
+
+[詳細解析]：
+在 MongoDB 中，若將數量無限增長（如數千條評價）的陣列內嵌在單一文件中，屬於「無限制增長陣列 (Unbounded Arrays)」反模式，極易突破 16MB 的單一文件上限。
+
+A. 正確，數千條評價內嵌會觸發 16MB 單一文件上限，並嚴重影響寫入與讀取效能。
+B. 錯誤，MongoDB 支援建立多鍵索引（Multikey Index）來為內嵌陣列的欄位建立索引。
+C. 錯誤，MongoDB 支援內嵌物件與陣列的嵌套結構。
+D. 錯誤，MongoDB 屬 Schema-flexible，內嵌文件不強制要求每個元素具備完全相同的欄位結構。
+
+
+
+[題目]  
+In MongoDB document modeling, when representing a one-to-one relationship between a 'user' and their 'address', a developer must choose between embedding the address subdocument inside the user document versus referencing it via a separate collection. Given that the address data is always queried together with the user, is never shared with other documents, and the combined document size stays well below MongoDB's 16MB limit - but the address subdocument itself is very rarely updated independently - which modeling approach is most appropriate and why? (difficulty: medium)
+在 MongoDB 文件建模中，當表示「使用者 (user)」與「地址 (address)」之間的一對一關係時，開發者必須在將地址子文件「內嵌」於使用者文件內部與透過獨立集合「引用」之間進行選擇。已知地址資料總是與使用者一起被查詢、絕不與其他文件共享、合併後的文件大小遠低於 MongoDB 的 16MB 限制，且地址子文件本身極少獨立變更——哪種建模做法最合適且原因為何？（難度：中等）
+
+[選項]  
+A. Embed the address only if the address fields are frequently updated independently, because frequent independent updates are the primary reason to choose embedding in MongoDB.
+B. Use a reference (store the address in a separate 'addresses' collection and keep an address_id field in the user document), because referencing always provides better write performance regardless of access patterns.
+C. Embed the address subdocument directly inside the user document, because the data is always accessed together, is not shared across documents, and fits within size constraints - making embedding the optimal choice for this access pattern.
+D. Use a reference, because one-to-one relationships in MongoDB must always be modeled as separate collections to maintain data normalization similar to relational databases.
+
+[正確答案]：
+C
+
+[核心考點]： 3.1 給定一個包含三個集合（一個父集合與兩個子集合）以及使用者的情境，辨識哪些是內嵌關係（embedded relationships），哪些應該採用引用連結（linked）。
+
+[詳細解析]：
+資料總是一起讀取、不跨文件共享、體積遠小於 16MB 且極少獨立更新，這些完全符合 MongoDB 採用內嵌（Embedding）的黃金準則，可達到單次 I/O 讀取的最優效能。
+
+A. 錯誤，頻繁獨立更新子文件反而會引發寫入放大，非選擇內嵌的主要原因。
+B. 錯誤，引用會需要二次查詢（$lookup 或多次 Round-trip），無視存取模式逕自採用引用會損害讀取效能。
+C. 正確，符合內嵌的核心決策條件（一起讀取、不共享、未逾 16MB 限制），為最優建模選擇。
+D. 錯誤，MongoDB 屬文件型資料庫，非關聯式資料庫，不需要盲目追求正規化而強行分表。
+
+[題目]  
+In MongoDB, when modeling a many-to-many relationship between 'Students' and 'Courses' (where a student can enroll in many courses and a course can have many students), which schema design pattern is most appropriate when the number of related documents on both sides is large (thousands of students per course, dozens of courses per student) and you frequently need to display a student's enrolled course names alongside their profile? (difficulty: hard)
+在 MongoDB 中，當建立「學生 (Students)」與「課程 (Courses)」之間的多對多關係時（學生可選修多門課程，課程可有許多學生），當兩邊關聯文件數量龐大（每門課程有數千名學生，每個學生選修數十門課程），且你頻繁需要於學生個人檔案中一併展示其選修的課程名稱時，哪種 Schema 設計模式最合適？（難度：高）
+
+[選項]  
+A. Create a separate 'Enrollments' collection with documents containing a student_id and a course_id field, with no arrays stored in either the Student or Course documents.
+B. Store an array of course _id references inside each student document, and store an array of student _id references inside each course document, with no additional denormalization.
+C. Embed the full course documents as an array inside each student document, and embed the full student documents as an array inside each course document.
+D. Store an array of course _id references inside each student document along with a small subset of frequently accessed course fields (e.g., course name), and store only student _id references inside each course document.
+
+[正確答案]：
+D
+
+[核心考點]： 3.1 給定一個包含三個集合（一個父集合與兩個子集合）以及使用者的情境，辨識哪些是內嵌關係（embedded relationships），哪些應該採用引用連結（linked）。
+
+[詳細解析]：
+採用「擴充引用模式 (Extended Reference Pattern)」，在學生文件中儲存課程引用及少量頻繁讀取欄位（課程名稱），可避免查詢時 Join，並防止雙向完全內嵌導致的文件膨脹與資料冗餘問題。
+
+A. 錯誤，採用傳統關聯式設計的聯結表（Join Table），會導致高頻讀取時必須進行昂貴的 Join 查詢。
+B. 錯誤，雙向僅儲存引用時，每次顯示學生個人檔案與課程名稱仍必須執行 $lookup 或二次查詢。
+C. 錯誤，雙向完全內嵌所有文件會造成嚴重資料重複、高昂的同步更新成本，且課程學生數達數千人易引發 16MB 爆表。
+D. 正確，符合擴充引用模式，既能滿足個人頁面單次讀取課程名稱需求，又避免將龐大學生名單內嵌於課程造成的容量問題。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 [題目]
 4.1 Given parent-child collections, identify which relationships should be embedded and which should be linked 在考慮一對多（One-to-Many）關係時，下列哪種情況最適合使用 內嵌（Embedding） 而非引用（Linking）？
 
