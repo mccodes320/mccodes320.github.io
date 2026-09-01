@@ -32,8 +32,10 @@ aggregation
 ### Quiz 
 
 [題目]  
-In MongoDB's Projection in Query Results, a developer wants to retrieve documents from an 'employees' collection but needs to exclude only the 'salary' and 'ssn' fields while returning all other fields. The collection documents contain: _id, name, department, salary, ssn, and a nested object 'contact' with 'email' and 'phone'. Which of the following queries correctly achieves this? (difficulty: medium)
-在 MongoDB 的查詢結果投影（Projection）中，開發者想要從 'employees' 集合獲取文件，但需要僅排除 'salary' 和 'ssn' 欄位，並回傳所有其他欄位。該集合的文件包含：_id、name、department、salary、ssn，以及一個嵌套物件 'contact'（包含 'email' 與 'phone'）。下列哪一個查詢能正確實現此需求？（難度：中等）
+In MongoDB's Projection in Query Results, a developer wants to retrieve documents from an 'employees' collection but needs to exclude only the 'salary' and 'ssn' fields while returning all other fields. 
+The collection documents contain: _id, name, department, salary, ssn, and a nested object 'contact' with 'email' and 'phone'. Which of the following queries correctly achieves this? (difficulty: medium)
+在 MongoDB 的查詢結果投影（Projection）中，開發者想要從 'employees' 集合獲取文件，但需要僅排除 'salary' 和 'ssn' 欄位，並回傳所有其他欄位。
+該集合的文件包含：_id、name、department、salary、ssn，以及一個嵌套物件 'contact'（包含 'email' 與 'phone'）。下列哪一個查詢能正確實現此需求？（難度：中等）
 
 [選項]  
 A. db.employees.find({}, { salary: 0, ssn: 0, _id: 1 })
@@ -128,8 +130,9 @@ D. 正確，Key 加上雙引號且語法正確，`$lte: 2` 能正確涵蓋評分
 ---
 
 [題目]  
-Your company wants to offer a special discount for customers who are 65 or older. Your task is to find the records for these customers. Which of the following queries would return documents for all customers 65 or older? (Select all that apply.)
-貴公司希望為 65 歲或以上的顧客提供特別折扣。你的任務是找出這些顧客的紀錄。下列哪些查詢能回傳所有 65 歲或以上顧客的文件？（複選）
+Your company wants to offer a special discount for customers who are 65 or older. Your task is to find the records for these customers. 	
+Which of the following queries would return documents for all customers 65 or older? (Select all that apply.)	
+貴公司希望為 65 歲或以上的顧客提供特別折扣。你的任務是找出這些顧客的紀錄。下列哪些查詢能回傳所有 65 歲或以上顧客的文件？（複選）	
 
 [選項]  
 A. { customer.age : { $gte : 65 }}
@@ -190,36 +193,23 @@ C. 錯誤，此查詢是進行肯定匹配（包含），而非排除（不包�
 
 
 ### Quti
-You want to know which mobile food trucks in your neighborhood, Astoria, are the best spots to eat. Using the inspections collection, you’re making a map of all mobile food trucks nearby that have passed inspection. 
+You want to know which mobile food trucks in your neighborhood, Astoria, are the best spots to eat. 	
+Using the inspections(檢查) collection, you’re making a map of all mobile food trucks nearby that have passed inspection. 	
 
 What should you include in your query document to ensure that you find all the mobile food vendors in Astoria that passed inspection? (Select one.)
-
-a.
-{ "sector": "Mobile Food Vendor - 881" } ,{ "address.city": "ASTORIA"} , {"result": "Pass"}
-
-b.
-$and: {“Mobile Food Vendor - 881”, “ASTORIA”, “Pass}
-
-c.
-{ "sector": "Mobile Food Vendor - 881" , "address.city": "ASTORIA" , "result": "Pass"}
-
-d.
-&and: {“Mobile Food Vendor - 881”, “ASTORIA”, “Pass}
-
-
-==> C
+	
+a. { "sector": "Mobile Food Vendor - 881" } ,{ "address.city": "ASTORIA"} , {"result": "Pass"}	
+b. $and: {“Mobile Food Vendor - 881”, “ASTORIA”, “Pass}	
+c. { "sector": "Mobile Food Vendor - 881" , "address.city": "ASTORIA" , "result": "Pass"}	
+d. &and: {“Mobile Food Vendor - 881”, “ASTORIA”, “Pass}	
+	
+	
+==> C	
 
 A:Incorrect. This answer option contains three separate query documents and is invalid. In order to use implicit AND specify the values within one query document.
-
-
 B:Incorrect. This syntax is invalid. When using the $and operator, you must include each expression within an array.
-
-
 C:Correct! This query document uses implicit AND, so it will return all mobile food vendors in Astoria that have passed inspection.
-
-
 D: Incorrect. This syntax is invalid. When using the $and operator, you must include each expression within an array.
-
 
 
 What will the following query return? (Select one.)
@@ -231,18 +221,14 @@ db.routes.find({
   ]
 })
 ```
-a.
-All flights departing from or landing at the Istanbul airport (IST) that are nonstop or operated by Turkish Airlines.
-b.
-All flights that are either departing from the Istanbul airport (IST) or Turkish Airlines flights that are nonstop.
-c.
-All flights that are either landing at the Istanbul airport (IST) or operated by Turkish Airlines.
-d.
-All Turkish Airlines flights that are nonstop.
-
-
-=> A
-
+a. All flights departing from or landing at the Istanbul airport (IST) that are nonstop or operated by Turkish Airlines.
+b. All flights that are either departing from the Istanbul airport (IST) or Turkish Airlines flights that are nonstop.
+c. All flights that are either landing at the Istanbul airport (IST) or operated by Turkish Airlines.
+d. All Turkish Airlines flights that are nonstop.
+	
+	
+=> A	
+	
 A: Correct! This query will return all flights that either depart from or land at the Istanbul airport that are nonstop or operated by Turkish Airlines.
 
 
