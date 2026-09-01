@@ -180,16 +180,16 @@ Answer: B
  { _id: 4, name: 'Strawberry Ice Cream Cake with Butterscotch Syrup ', price: 3)}  
   
 How should the 'autocomplete' index be defined to look for matches at the beginning of a word on the name field?(Choose 1)  
-
+  
 a. { "mappings": { "dynamic": false, "fields": { "name": [ { "type": "autocomplete", "tokenization": "regexCaptureGroup"} ] } }}  
 b. { "mappings": { "dynamic": false, "fields": { "name": [ { "type": "autocomplete", "tokenization": "edgeGram"} ] } }}  
 c. { "mappings": { "dynamic": false, "fields": { "name": [ { "type": "autocomplete", "tokenization": "nGram"} ] } }}  
 d. { "mappings": { "dynamic": false, "fields": { "name": [ { "type": "autocomplete", "tokenization": "matchNGram"}} ] } }}  
-
-
-
-
-
+  
+  
+  
+  
+  
 
 
 Answer: B
@@ -443,14 +443,14 @@ What is the result?(Choose 1)
 
 a. {_id:1, a: "ten", b: "five"} {_id:2, a: "ten", b: "five"} {_id:3, a: "ten", b: "five"}
 b. {_id:1, a: "ten", b: "five"} {_id:2, a: "two", b: "four"} {_id:3, a: "three", b: "four", c: "three"}  
-c. {_id:1, a: "ten", b: "five"} {_id:2, a: "ten", b: "five"} {_id:3, a: "ten", b: "five", c: "three"}
-d. {_id:1, a: "one", b: "four"} {_id:2, a: "two", b: "four"} {_id:3, a: "three", b: "four", c: "three"}
+c. {_id:1, a: "ten", b: "five"} {_id:2, a: "ten", b: "five"} {_id:3, a: "ten", b: "five", c: "three"}  
+d. {_id:1, a: "one", b: "four"} {_id:2, a: "two", b: "four"} {_id:3, a: "three", b: "four", c: "three"}  
+  
 
-
-
-
-
-Answer:  B
+  
+  
+  
+Answer:  B  
 
 
 
@@ -680,10 +680,21 @@ db.collection.createIndex({"objs.a": 1})
 db.coll.find({}).sort({"product": 1, "price": 1})
 Which two indexes will improve the performance of this query?
 
-a. {"product": 1, "price": 1}  **correct**
-b. {"product": 1, "price": -1}
-c. {"product": -1, "price": 1}
-d. {"product": -1, "price": -1}  **correct**
+a. {"product": 1, "price": 1}  
+b. {"product": 1, "price": -1}  
+c. {"product": -1, "price": 1}  
+d. {"product": -1, "price": -1}  
+  
+  
+  
+  
+  
+  
+  
+
+  
+      
+Answer:  AD  
 
 
 
@@ -693,26 +704,16 @@ d. {"product": -1, "price": -1}  **correct**
 
 
 
+23. Given the following query(Choose 2):  
 
-Answer:  AD
-
-
-
-
-
-
-
-
-
-23. Given the following query(Choose 2):
-
-db.coll.find({}).sort({"product": 1, "price": 1})
-Which two indexes improve the performance of this query the most?
-
-a. { v: 2, key: { price: 1, product: 1 }, name: 'price_1_product_1' }
-b. { v: 2, key: { product: 1, price: 1 }, name: 'product_1_price_1' }  
-c. { v: 2, key: { price: -1, product: -1 }, name: 'price_-1_product_-1' }
-d. { v: 2, key: { product: -1, price: -1 }, name: 'product_-1_price_-1' }  
+db.coll.find({}).sort({"product": 1, "price": 1})  
+Which two indexes improve the performance of this query the most?  
+  
+a. { v: 2, key: { price: 1, product: 1 }, name: 'price_1_product_1' }  
+b. { v: 2, key: { product: 1, price: 1 }, name: 'product_1_price_1' }    
+c. { v: 2, key: { price: -1, product: -1 }, name: 'price_-1_product_-1' }  
+d. { v: 2, key: { product: -1, price: -1 }, name: 'product_-1_price_-1' }      
+  
 
 
 
@@ -722,8 +723,7 @@ d. { v: 2, key: { product: -1, price: -1 }, name: 'product_-1_price_-1' }
 
 
 
-
-Answer:  BD
+Answer:  BD  
 
 
 
@@ -732,23 +732,23 @@ Answer:  BD
 24. What mongosh command shows how many indexes are associated with an inventory collection?(Choose 1)
 
 a. db.inventory.getIndexes()   
-b. db.inventory.showIndexes()
-c. db.inventory.displayIndexes()
-d. db.inventory.indexes()
+b. db.inventory.showIndexes()  
+c. db.inventory.displayIndexes()  
+d. db.inventory.indexes()  
+
+  
+
+  
+
+  
 
 
 
 
 
 
-
-
-
-
-
-
-Answer:  A
-
+Answer:  A  
+  
 
 
 
