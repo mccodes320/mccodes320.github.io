@@ -117,46 +117,36 @@ Index: active, account
 
 # Lesson 2: Creating a Single Field Index in MongoDB
 -- 
-1. **What is Single Field**  
-   * Create a Single Field Index by using createIndex()  
-   * Enforce uniqueness  
+* Support queries and sort on a single field 支持單字段上的查詢和排序
+* 
+1. **Single Field**  
+   * Create a Single Field Index by using createIndex()
+        Ascending order:1  
+        Descending order:-1    
      ```sql
-      db.coll.createIndex({fieldname:1})
-      ```
+     > db.coll.createIndex({fieldname:1})
+     < fieldname_1
+     ```
+   * Enforce uniqueness
+     Add **{unique:true}** as a second, optional, parameter in **createIndex()** to force uniqueness in the index field values.
+     Once the unique index is created, any inserts or updates including duplicated values in the collection for the index field/s will fail.
+          
+     ```sql
+     > db.coll.createIndex({fieldname:1}, {unique: true})
+     < fieldname_1
+     ```
+   * Name
+     ```sql
+     > db.coll.createIndex({fieldname:1}, {unique: true, name: 'haaaa'})
+     < haaaa
+     ``` 
 
-2. **Single Field Indexes**
-   * Single Field Indexes 單字段索引
-     ```sql
-     db.products.find({ price: 3500 })
-     ```
-   * Index on single field 單字段上的索引
-     ```sql
-     db.products.find().sort({ price: 1 })
-     ```
-   * Support queries and sort on a single field 支持單字段上的查詢和排序
+
+   
     
-3. **Create a Single Field Index**
-   Ascending order:1  
-   Descending order:-1    
-   Use **createIndex()** to create a new index in a collection. Within the parentheses of **createIndex()**, include an object that contains the field and sort order.  
-    ```
-    db.customers.createIndex({
-      birthdate: 1
-    })
-    ```
 
-5. **Create a Unique Single Field Index**  
-   Add **{unique:true}** as a second, optional, parameter in **createIndex()** to force uniqueness in the index field values. Once the unique index is created, any inserts or updates including duplicated values in the collection for the index field/s will fail.  
 
-    ```sql
-    db.customers.createIndex({
-      email: 1
-    },
-    {
-      unique:true
-    })
-    ```
-    MongoDB only creates the unique index if there is no duplication in the field values for the index field/s.  
+
 
 
 # Lesson 3: Creating a Multikey Index in MongoDB
@@ -604,17 +594,14 @@ db.orders.unhideIndex({userId: 1})
 
      [
        { v: 2, key: { _id: 1 }, name: '_id_' },
-       {
-         v: 2,
-         key: { lastModified: 1 },
-         name: 'lastModified_1',
-         expireAfterSeconds: 10
-       }
+       { v: 2, key: { lastModified: 1 }, name: 'lastModified_1', expireAfterSeconds: 10 }
      ]
     
     ```
 
 2. Check if an index is being used on a query**     
+    * 只有find()可以使用explain(), findOne()不能.
+      TypeError: db.listingsAnd ... 1")}}).explain is not a function
     
     Use **explain()** in a collection when running a query to see the Execution plan. This plan provides the details of the execution stages (IXSCAN , COLLSCAN, FETCH, SORT, etc.).  
       
