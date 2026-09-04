@@ -626,7 +626,7 @@ db.orders.unhideIndex({userId: 1})
 | :--- | :--- |
 | `IXSCAN` | **Index Scan**：代表正在使用索引進行查詢。這是你期望看到的結果。 |
 | `COLLSCAN` | **Collection Scan**：全表掃描。代表沒有使用索引，效能差。 |
-| `FETCH` | 代表依索引找到位置後，再讀取實際文件內容，通常是搭配 IXSCAN 使用。 |
+| `FETCH` | 代表依索引找到位置後，再讀取實際文件內容，通常是搭配 IXSCAN 使用。(讀取進硬碟) |
 | `SORT` | 表示在記憶體中進行排序，若沒有用索引排序會耗費更多資源。 |
 | `PROJECTION_SIMPLE` | 一般投射。代表資料已取得（透過 COLLSCAN 或 FETCH），最後僅需過濾或剪裁出指定的欄位回傳。 |
 | `PROJECTION_COVERED` | 當查詢所需的欄位全部包含在索引中，MongoDB 不需 FETCH 文件即可回傳結果。 |
@@ -782,10 +782,35 @@ rejectedPlans: [
 
 # ESR 
 
+Equality + Sort + Range  
 
+```JavaScript
+// 寫法 A (先寫 Range 再寫 Equality)
+db.listingsAndReviews.find({
+  price: { $gte: 100 },    // Range
+  status: "ACTIVE"         // Equality
+}).sort({ createdAt: -1 })  // Sort
 
+// 寫法 B (先寫 Equality 再寫 Range)
+db.listingsAndReviews.find({
+  status: "ACTIVE",        // Equality
+  price: { $gte: 100 }     // Range
+}).sort({ createdAt: -1 })  // Sort
+```
+對於 MongoDB 來說，寫法 A 與 寫法 B 完全等價！
+= > 完美: { status: 1, createdAt: -1, price: 1 }
+= > 錯誤: { status: 1, price: 1, createdAt: -1 }  // E -> R -> S (錯誤)
 
-
+### 當兩個E的時候
+* 答案是：在絕大多數情況下沒有差別，MongoDB Optimizer 都會自動處理。
+* 碰到相同的情況, 選擇性高（高基數）的放前面
+```JavaScript
+db.listingsAndReviews.find(
+  { status: "ACTIVE", price: 1 },
+  { status: 1, price: 1, createdAt: 1, _id: 0 } // 明確只輸出索引內有的欄位並剔除 _id
+).sort({ createdAt: -1 })
+```
+{ status: 1, price: 1, createdAt: -1 } // E -> E -> S
 
 
 
