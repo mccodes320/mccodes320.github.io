@@ -22,6 +22,7 @@ https://learn.mongodb.com/learn/course/mongodb-indexes
 * [Lesson 4: A Compound Index](#lesson-4-video-working-with-compound-indexes-in-mongodb)
 * [Lesson 5: Deleting MongoDB Indexes](#lesson-5-deleting-mongodb-indexes)
 * Lesson 6: getIndexes(), explain
+* [ESR](#esr)
 * a Single Text Index
 * Hashed index
 * MongoDB Atlas Search
@@ -599,7 +600,25 @@ db.orders.unhideIndex({userId: 1})
       TypeError: db.listingsAnd ... 1")}}).explain is not a function
       ```
    * 由內往外看winningPlan﹐從 inputStage 傳遞給父 stage
-   * 
+   * 資料結構
+     ```
+     winningPlan: {
+       isCached: false,         // 是否使用了快取的執行計畫 (Boolean)
+       stage: 'STAGE_NAME',     // 最外層（最終處理）的階段名稱 (String)
+       // ... 該 stage 的專屬參數 ...
+       inputStage: {            // 傳遞資料給上一層的子階段 (Object, 選填)
+         stage: 'SUB_STAGE_NAME',
+         // ... 核心屬性 ...
+         inputStage: { ... }    // 若有多層，會繼續往下巢狀嵌套
+       }
+     },
+     rejectedPlans: [           // 被評估後淘汰的執行計畫列表 (Array)
+       {
+         stage: 'STAGE_NAME',   // 候選計畫的執行階段（結構與 winningPlan 相同）
+         inputStage: { ... }
+       }
+     ]
+     ```
     
       
       
@@ -614,37 +633,155 @@ db.orders.unhideIndex({userId: 1})
 
 
 
-# MongoDB 查詢執行計畫左右對照表
+db.listingsAndReviews.find({last_scraped:{ $gt: ISODate("1991-04-01")}}).explain()
 
-建立索引指令：`db.listingsAndReviews.createIndex({ last_scraped: 1 })`
+db.listingsAndReviews.createIndex({last_scraped:1})
 
----
+```
+winningPlan: {
+  stage: 'COLLSCAN',
+  direction: 'forward'
+}
 
-### 1. 全欄位查詢 (無欄位投射)
-`db.listingsAndReviews.find({ last_scraped: { $gt: ISODate("1991-04-01") } }).explain()`
+winningPlan: {
+  stage: 'FETCH',
+  inputStage: {
+	stage: 'IXSCAN',
+	direction: 'forward',
+  }
+}
+```
 
-| 未建立索引 (Before Index) | 建立索引後 (After Index) |
-| :--- | :--- |
-| ```javascript<br>winningPlan: {<br>  stage: 'COLLSCAN',<br>  direction: 'forward'<br>}<br>``` | ```javascript<br>winningPlan: {<br>  stage: 'FETCH',<br>  inputStage: {<br>    stage: 'IXSCAN',<br>    direction: 'forward'<br>  }<br>}<br>``` |
+db.listingsAndReviews.find({last_scraped:{ $gt: ISODate("1991-04-01")}},{last_scraped:1}).explain()
 
----
+```
+winningPlan: {
+  stage: 'PROJECTION_SIMPLE',
+  inputStage: {
+	stage: 'COLLSCAN',
+	direction: 'forward'
+  }
+}
 
-### 2. 指定欄位投射 (預設包含 `_id`)
-`db.listingsAndReviews.find({ last_scraped: { $gt: ISODate("1991-04-01") } }, { last_scraped: 1 }).explain()`
+winningPlan: {
+  stage: 'PROJECTION_SIMPLE',
+  inputStage: {
+	stage: 'FETCH',
+	inputStage: {
+	  stage: 'IXSCAN',
+	  direction: 'forward'
+	}
+}
+```
 
-| 未建立索引 (Before Index) | 建立索引後 (After Index) |
-| :--- | :--- |
-| ```javascript<br>winningPlan: {<br>  stage: 'PROJECTION_SIMPLE',<br>  inputStage: {<br>    stage: 'COLLSCAN',<br>    direction: 'forward'<br>  }<br>}<br>``` | ```javascript<br>winningPlan: {<br>  stage: 'PROJECTION_SIMPLE',<br>  inputStage: {<br>    stage: 'FETCH',<br>    inputStage: {<br>      stage: 'IXSCAN',<br>      direction: 'forward'<br>    }<br>  }<br>}<br>``` |
+db.listingsAndReviews.find({last_scraped:{ $gt: ISODate("1991-04-01")}},{last_scraped:-1}).explain()
 
----
+```
 
-### 3. 指定欄位投射 (明確排除 `_id`：達到覆蓋查詢)
-`db.listingsAndReviews.find({ last_scraped: { $gt: ISODate("1991-04-01") } }, { last_scraped: 1, _id: 0 }).explain()`
+winningPlan: {
+  stage: 'PROJECTION_SIMPLE',
+  inputStage: {
+	stage: 'COLLSCAN',
+	direction: 'forward'
+  }
+}
 
-| 未建立索引 (Before Index) | 建立索引後 (After Index - Covered Query) |
-| :--- | :--- |
-| ```javascript<br>winningPlan: {<br>  stage: 'PROJECTION_SIMPLE',<br>  inputStage: {<br>    stage: 'COLLSCAN',<br>    direction: 'forward'<br>  }<br>}<br>``` | ```javascript<br>winningPlan: {<br>  stage: 'PROJECTION_COVERED',<br>  inputStage: {<br>    stage: 'IXSCAN',<br>    direction: 'forward'<br>  }<br>}<br>``` |
-| **資料流向：**<br>`[1. COLLSCAN]` ➔ 全表掃描<br>↓<br>`[2. PROJECTION_SIMPLE]` ➔ 剔除欄位回傳 | **資料流向：**<br>`[1. IXSCAN]` ➔ 讀取索引 key<br>↓<br>`[2. PROJECTION_COVERED]` ➔ 零 FETCH 直傳 |
+winningPlan: {
+  stage: 'PROJECTION_SIMPLE',
+  inputStage: {
+	stage: 'FETCH',
+	inputStage: {
+	  stage: 'IXSCAN'
+	}
+  }
+}
+
+[1. inputStage: IXSCAN] ➔ 透過索引快速定位出 > 1991-04-01 的資料指標
+          ↓
+[2. inputStage: FETCH] ➔ 根據指標回到硬碟/快取讀取完整文件（拿取 _id 欄位）
+          ↓
+[3. Top Stage: PROJECTION_SIMPLE] ➔ 剪裁資料，只留下 last_scraped 與 _id 回傳給使用者
+
+```
+
+
+
+db.listingsAndReviews.find({last_scraped:{ $gt: ISODate("1991-04-01")}},{last_scraped:1,_id:0}).explain()
+
+```
+winningPlan: {
+  stage: 'PROJECTION_SIMPLE',
+  inputStage: {
+	stage: 'COLLSCAN',
+	direction: 'forward'
+  }
+}
+
+winningPlan: {
+  stage: 'PROJECTION_COVERED',
+  inputStage: {
+	stage: 'IXSCAN',
+	direction: 'forward',
+  }
+}
+```
+
+
+db.listingsAndReviews.find(
+  { last_scraped: { $gt: ISODate("1991-04-01") } },
+  { last_scraped: 1 , _id: 1}
+).sort({ _id: -1 }).explain()
+
+rejectedPlans：用 last_scraped 索引找資料，最後拿去記憶體做 SORT（耗費記憶體）。
+
+winningPlan：直接反向掃描主鍵索引 { _id: 1 }。因為 _id 本身已經排序好了，引擎邊讀取邊過濾 last_scraped，直接免去了記憶體排序（In-Memory Sort）的開銷！
+
+```
+winningPlan: {
+  stage: 'PROJECTION_SIMPLE',
+  inputStage: {
+	stage: 'FETCH',
+	inputStage: {
+	  stage: 'IXSCAN'
+	}
+  }
+}
+
+
+winningPlan: {
+  stage: 'PROJECTION_SIMPLE',
+  inputStage: {
+	stage: 'FETCH',
+
+	inputStage: {
+	  stage: 'IXSCAN',
+	  keyPattern: {
+		_id: 1
+	  }
+	}
+  }
+},
+rejectedPlans: [
+  {
+	stage: 'SORT',
+	sortPattern: {
+	  _id: -1
+	},
+	inputStage: {
+	  stage: 'PROJECTION_SIMPLE',
+	  inputStage: {
+		stage: 'FETCH',
+		inputStage: {
+		  stage: 'IXSCAN',
+		}
+	  }
+	}
+}	
+```
+
+
+# ESR 
+
 
 
 
