@@ -76,13 +76,6 @@ https://learn.mongodb.com/learn/course/mongodb-indexes
    * Multikey indexes operate on an array field
 
 
-db.customer.find({active:true})
-db.customer.find({active:true, account: 276528})
-
-Index: active, account
-
-
-
 6. index所佔用資料
    * Document Identity (索引鍵（Index Keys）+（RecordID / Pointer）
    * 索引鍵（Index Keys）：你指定的特定欄位欄位值
@@ -587,7 +580,7 @@ db.orders.unhideIndex({userId: 1})
 # Lesson 6: getIndexes(), explain
 
 
-1. **View the Indexes used in a Collection**  
+1. **getIndexes()**  
     Use **getIndexes()** to see all the indexes created in a collection.  
     ```sql
     db.customers.getIndexes()
@@ -599,23 +592,65 @@ db.orders.unhideIndex({userId: 1})
     
     ```
 
-2. Check if an index is being used on a query**     
-    * 只有find()可以使用explain(), findOne()不能.
+2. **explain**
+   * Use **explain()** in a collection when running a query to see the Execution plan. 
+   * 只有find()可以使用explain(), findOne()不能.
+      ```
       TypeError: db.listingsAnd ... 1")}}).explain is not a function
+      ```
+   * 由內往外看winningPlan﹐從 inputStage 傳遞給父 stage
+   * 
     
-    Use **explain()** in a collection when running a query to see the Execution plan. This plan provides the details of the execution stages (IXSCAN , COLLSCAN, FETCH, SORT, etc.).  
       
       
-    | 階段名稱       | 說明                                      |
-    | ---------- | --------------------------------------- |
-    | `IXSCAN`   | **Index Scan**：代表正在使用索引進行查詢。這是你期望看到的結果。 |
-    | `COLLSCAN` | **Collection Scan**：全表掃描。代表沒有使用索引，效能差。  |
-    | `FETCH`    | 代表依索引找到位置後，再讀取實際文件內容，通常是搭配 IXSCAN 使用。           |
-    | `SORT`     | 表示在記憶體中進行排序，若沒有用索引排序會耗費更多資源。            |
-    | `PROJECTION_COVERED`     | 當查詢所需的欄位全部包含在索引中，MongoDB 不需 FETCH 文件即可回傳結果。     
+| 階段名稱 | 說明 |
+| :--- | :--- |
+| `IXSCAN` | **Index Scan**：代表正在使用索引進行查詢。這是你期望看到的結果。 |
+| `COLLSCAN` | **Collection Scan**：全表掃描。代表沒有使用索引，效能差。 |
+| `FETCH` | 代表依索引找到位置後，再讀取實際文件內容，通常是搭配 IXSCAN 使用。 |
+| `SORT` | 表示在記憶體中進行排序，若沒有用索引排序會耗費更多資源。 |
+| `PROJECTION_SIMPLE` | 一般投射。代表資料已取得（透過 COLLSCAN 或 FETCH），最後僅需過濾或剪裁出指定的欄位回傳。 |
+| `PROJECTION_COVERED` | 當查詢所需的欄位全部包含在索引中，MongoDB 不需 FETCH 文件即可回傳結果。 |
 
 
-   { category: 1, price: -1, stock: 1 }
+
+# MongoDB 查詢執行計畫左右對照表
+
+建立索引指令：`db.listingsAndReviews.createIndex({ last_scraped: 1 })`
+
+---
+
+### 1. 全欄位查詢 (無欄位投射)
+`db.listingsAndReviews.find({ last_scraped: { $gt: ISODate("1991-04-01") } }).explain()`
+
+| 未建立索引 (Before Index) | 建立索引後 (After Index) |
+| :--- | :--- |
+| ```javascript<br>winningPlan: {<br>  stage: 'COLLSCAN',<br>  direction: 'forward'<br>}<br>``` | ```javascript<br>winningPlan: {<br>  stage: 'FETCH',<br>  inputStage: {<br>    stage: 'IXSCAN',<br>    direction: 'forward'<br>  }<br>}<br>``` |
+
+---
+
+### 2. 指定欄位投射 (預設包含 `_id`)
+`db.listingsAndReviews.find({ last_scraped: { $gt: ISODate("1991-04-01") } }, { last_scraped: 1 }).explain()`
+
+| 未建立索引 (Before Index) | 建立索引後 (After Index) |
+| :--- | :--- |
+| ```javascript<br>winningPlan: {<br>  stage: 'PROJECTION_SIMPLE',<br>  inputStage: {<br>    stage: 'COLLSCAN',<br>    direction: 'forward'<br>  }<br>}<br>``` | ```javascript<br>winningPlan: {<br>  stage: 'PROJECTION_SIMPLE',<br>  inputStage: {<br>    stage: 'FETCH',<br>    inputStage: {<br>      stage: 'IXSCAN',<br>      direction: 'forward'<br>    }<br>  }<br>}<br>``` |
+
+---
+
+### 3. 指定欄位投射 (明確排除 `_id`：達到覆蓋查詢)
+`db.listingsAndReviews.find({ last_scraped: { $gt: ISODate("1991-04-01") } }, { last_scraped: 1, _id: 0 }).explain()`
+
+| 未建立索引 (Before Index) | 建立索引後 (After Index - Covered Query) |
+| :--- | :--- |
+| ```javascript<br>winningPlan: {<br>  stage: 'PROJECTION_SIMPLE',<br>  inputStage: {<br>    stage: 'COLLSCAN',<br>    direction: 'forward'<br>  }<br>}<br>``` | ```javascript<br>winningPlan: {<br>  stage: 'PROJECTION_COVERED',<br>  inputStage: {<br>    stage: 'IXSCAN',<br>    direction: 'forward'<br>  }<br>}<br>``` |
+| **資料流向：**<br>`[1. COLLSCAN]` ➔ 全表掃描<br>↓<br>`[2. PROJECTION_SIMPLE]` ➔ 剔除欄位回傳 | **資料流向：**<br>`[1. IXSCAN]` ➔ 讀取索引 key<br>↓<br>`[2. PROJECTION_COVERED]` ➔ 零 FETCH 直傳 |
+
+
+
+
+
+
 
 * Best Practices
    * 完美
