@@ -48,13 +48,80 @@ C. 錯誤，索引能大幅提升查詢效能，但對寫入效能完全沒有�
 D. 錯誤，敘述完全相反；索引能優化查詢，但會對寫入效能產生負面影響。
 
 
+[題目]  
+What is a single field index? (Select one.)
+什麼是單一欄位索引（Single Field Index）？（單選）
+
+[選項]  
+A. An index that supports efficient querying against one field
+B. An index that supports efficient querying against multiple fields
+C. An index that only supports efficient querying against fields with scalar values
+D. An index that supports efficient querying against fields that are already indexed by another user-defined index
+
+[正確答案]：
+A
+
+[核心考點]： 3.1 給定一個正在執行全表掃描（collection scan）的查詢，辨識哪種索引可以提升該查詢的效能。
+
+[詳細解析]：
+單一欄位索引（Single Field Index）是 MongoDB 中最基礎的索引類型，僅針對文件中的單一欄位建立鍵值索引與排序，用以加速針對該特定欄位的查詢。
+
+A. 正確，精準定義了單一欄位索引的作用——支援針對單一欄位的高效查詢。
+B. 錯誤，針對多個欄位建立的索引稱為複合索引（Compound Index）。
+C. 錯誤，單一欄位索引若建立在包含陣列的欄位上，會自動轉換為多鍵索引（Multikey Index），並非僅能支援純量值（Scalar Values）。
+D. 錯誤，索引是獨立建立於欄位上的資料結構，不需要也不依賴其他使用者定義的索引。
 
 
 
 
+[題目]  
+You have a collection of customer details. The following is a sample document from the collection:
 
+```json
+{
+  "_id": { "$oid": "5ca4bbcea2dd94ee58162a6a" },
+  "username": "hillrachel",
+  "name": "Katherine David",
+  "address": "55711 Janet Plaza Apt. 865\nChristinachester, CT 62716",
+  "birthdate": { "$date": { "$numberLong": "582848134000" } },
+  "email": "timothy78@hotmail.com",
+  "Accounts": [
+    { "$numberInt": "462501" },
+    { "$numberInt": "228290" },
+    { "$numberInt": "968786" },
+    { "$numberInt": "515844" },
+    { "$numberInt": "377292" }
+  ],
+  "tier_and_details": {}
+}
+```
 
+You create a single field index on the email field, with the unique constraint set to true:
+db.customers.createIndex({email:1}, {unique:true})
+What would happen if you attempt to insert a new document with an email that already exists in the collection? (Select one.)
+你有一個儲存顧客詳細資料的集合。上方為集合中的範例文件。
+你在 email 欄位上建立了一個單一欄位索引，並將唯一性約束條件設為 true：db.customers.createIndex({email:1}, {unique:true})。
+如果你嘗試插入一份包含集合中已存在 email 的新文件，會發生什麼事？（單選）
 
+[選項]
+
+A. The new document will be inserted and replace the old document in the collection.
+B. The new document will be inserted and the old document will remain in the collection.
+C. MongoDB will return a duplicate key error, and the document will be inserted.
+D. MongoDB will return a duplicate key error, and the document will not be inserted.
+
+[正確答案]：
+D
+
+[核心考點]： 3.5 辨識使用索引的權衡（trade-offs），以及刪除支援查詢的索引後所帶來的影響與後果。
+
+[詳細解析]：
+在 MongoDB 中，唯一索引（Unique Index）用於強制確保索引欄位的數值唯一性。當嘗試寫入已存在的重複鍵值（Duplicate Key）時，MongoDB 會直接拋出 E11000 duplicate key error 拒絕寫入，該文件不會被插入。
+
+A. 錯誤，insert 操作不會自動替換（replace）舊文件，除非使用 upsert 或 replaceOne。
+B. 錯誤，唯一索引會阻止重複值的寫入，新文件無法成功插入。
+C. 錯誤，雖然會回傳 duplicate key error，但該文件「不會」被寫入資料庫。
+D. 正確，精準描述唯一索引的行為：拋出重複鍵錯誤（Duplicate Key Error）且拒絕寫入該文件。
 
 
 
