@@ -145,18 +145,31 @@ https://learn.mongodb.com/learn/course/mongodb-indexes
 
 # Lesson 3: Creating a Multikey Index in MongoDB
 
-How MongoDB works with array fields in an index 如何在索引中使用陣列欄位  
+* Index on an array filed
+* Can be signle field or compound index
 
 使用客戶集合來說明
-![image](https://github.com/user-attachments/assets/f314acd7-ec55-4962-8fa9-091af5faf89b)
+```javascript
+{
+	_id: objectId
+	name: string,
+	birthdate: date,
+	email: string,
+	accounts: array
+}
+```
 
-![image](https://github.com/user-attachments/assets/85773ca2-5a58-415e-9c0d-47ef9dc95578)
+```
+{
+	_id: ObjectId("**************"),
+	name: 'Charles',
+	email: 'test@yahoo.com',
+	accounts: [ 100,101,102,103]
+}
+```
 
-**Multikey Indexes**
 
-Index on an array filed
 
-Can be signle field or compound index
 
 ![image](https://github.com/user-attachments/assets/6897809a-faa2-4566-9e59-865d6454dc16)
 以上範例為創建Multikey Indexes  
@@ -595,7 +608,7 @@ db.orders.unhideIndex({userId: 1})
 
 2. **explain**
    * Use **explain()** in a collection when running a query to see the Execution plan. 
-   * 只有find()可以使用explain(), findOne()不能.
+   * **只有find()可以使用explain(), findOne()不能.**
       ```
       TypeError: db.listingsAnd ... 1")}}).explain is not a function
       ```
@@ -811,6 +824,34 @@ db.listingsAndReviews.find(
 ).sort({ createdAt: -1 })
 ```
 { status: 1, price: 1, createdAt: -1 } // E -> E -> S
+
+
+
+db.listingsAndReviews.find(
+{ status: "ACTIVE", price: 1 },
+{ status: 1, price: 1, createdAt: 1, _id: 0 } // 明確只輸出索引內有的欄位並剔除 _id
+).sort({ createdAt: 1,status:1}) 
+
+= > { price: 1, createdAt: 1, status: 1 } // E(精準匹配) -> S (排序第一順位) -> ES (同時滿足 Equality 與 Sort)
+
+db.listingsAndReviews.find(
+{ status: "ACTIVE", price: 1 },
+{ status: 1, price: 1, createdAt: 1, _id: 0 } // 明確只輸出索引內有的欄位並剔除 _id
+).sort({ status:1, createdAt: 1}) 
+
+= > { price: 1, status: 1, createdAt: 1 } // E(精準匹配) ->  ES (同時滿足 Equality 與 Sort)-> S (排序第一順位)
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
