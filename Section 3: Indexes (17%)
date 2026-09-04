@@ -124,7 +124,28 @@ C. 錯誤，雖然會回傳 duplicate key error，但該文件「不會」被寫
 D. 正確，精準描述唯一索引的行為：拋出重複鍵錯誤（Duplicate Key Error）且拒絕寫入該文件。
 
 
+[題目]  
+What is a multikey index? (Select one.)
+什麼是多鍵索引（Multikey Index）？（單選）
 
+[選項]  
+A. An index on one field only where the field is not an array
+B. An index where one of the indexed fields contains an array
+C. An index on more than one field where none of the fields are arrays
+D. An index on more than one field where multiple fields are arrays
+
+[正確答案]：
+B
+
+[核心考點]： 3.2 給定一個對陣列欄位進行等值比對且正在執行全表掃描的查詢，辨識哪種索引可以提升該查詢的效能。
+
+[詳細解析]：
+當索引建立在包含陣列（Array）值的欄位上時，MongoDB 會自動將其建立為「多鍵索引 (Multikey Index)」，為陣列中的每一個元素獨立建立索引條目。在複合多鍵索引中，限制最多只能有一個索引欄位是陣列。
+
+A. 錯誤，欄位若非陣列且只有一個欄位，屬標準的「單一欄位索引 (Single Field Index)」。
+B. 正確，精準定義多鍵索引：索引欄位中至少有一個（且最多一個，若為複合索引）包含陣列值。
+C. 錯誤，多個欄位且皆不包含陣列，屬一般「複合索引 (Compound Index)」。
+D. 錯誤，MongoDB 嚴格禁止在同一個複合多鍵索引中包含「多個」陣列欄位（會拋出 Parallel Arrays 錯誤）。
 
 
 
@@ -157,6 +178,107 @@ A. 正確，MongoDB 雜湊索引會先將浮點數截斷為 64 位元整數再�
 B. 錯誤，相同的 `userId` 經雜湊運算後產生的 Hash 值完全相同，因此必然會被分發至「同一」分片上。
 C. 錯誤，雜湊函式會破壞資料的原生排序順序，因此雜湊索引無法有效支援範圍查詢（Range Queries）。
 D. 錯誤，MongoDB 在啟用分片時，會直接採用開發者指定的分片金鑰索引，不會自動另外建立 `_id` 的雜湊索引來覆蓋它。
+
+
+[題目]  
+What are the ramifications of deleting an index that is supporting a query? (Select one.)
+刪除一個正在支援查詢的索引會有什麼後果？（單選）
+
+[選項]  
+A. The performance of the query will improve.
+B. The performance of the query will be negatively affected.
+C. The query will fail.
+D. The query will perform as expected.
+
+[正確答案]：
+B
+
+[核心考點]： 3.5 辨識使用索引的權衡（trade-offs），以及刪除支援查詢的索引後所帶來的影響與後果。
+
+[詳細解析]：
+刪除原本用於支援特定查詢的索引後，MongoDB 將無法使用索引跳過非目標文件，查詢會退化為全表掃描（Collection Scan, COLLSCAN），大幅增加 disk I/O 與 CPU 開銷，導致查詢效能顯著下降。
+
+A. 錯誤，缺少索引會使查詢需要掃描整份集合，效能必然下降而非提升。
+B. 正確，查詢無法再利用索引加速，會改用全表掃描，對執行效能造成嚴重的負面影響。
+C. 錯誤，MongoDB 仍然可以正常執行該查詢並回傳正確結果，查詢不會直接失敗報錯。
+D. 錯誤，查詢執行時間會大幅拉長，無法再保持原本有索引支援時的預期高效率表現。
+
+[題目]  
+What are the ramifications of deleting an index that is supporting a query? (Select one.)
+刪除一個正在支援查詢的索引會有什麼後果？（單選）
+
+[選項]  
+A. The performance of the query will improve.
+B. The performance of the query will be negatively affected.
+C. The query will fail.
+D. The query will perform as expected.
+
+[正確答案]：
+B
+
+[核心考點]： 3.5 辨識使用索引的權衡（trade-offs），以及刪除支援查詢的索引後所帶來的影響與後果。
+
+[詳細解析]：
+刪除原本用於支援特定查詢的索引後，MongoDB 將無法使用索引跳過非目標文件，查詢會退化為全表掃描（Collection Scan, COLLSCAN），大幅增加 disk I/O 與 CPU 開銷，導致查詢效能顯著下降。
+
+A. 錯誤，缺少索引會使查詢需要掃描整份集合，效能必然下降而非提升。
+B. 正確，查詢無法再利用索引加速，會改用全表掃描，對執行效能造成嚴重的負面影響。
+C. 錯誤，MongoDB 仍然可以正常執行該查詢並回傳正確結果，查詢不會直接失敗報錯。
+D. 錯誤，查詢執行時間會大幅拉長，無法再保持原本有索引支援時的預期高效率表現。
+
+
+
+
+[題目]  
+You have a collection of customer details. The following is a sample document from this collection:
+```json
+{
+  "_id": { "$oid": "5ca4bbcea2dd94ee58162a6a" },
+  "username": "hillrachel",
+  "name": "Katherine David",
+  "address": "55711 Janet Plaza Apt. 865\nChristinachester, CT 62716",
+  "birthdate": { "$date": { "$numberLong": "582848134000" } },
+  "email": "timothy78@hotmail.com",
+  "Accounts": [
+    { "$numberInt": "462501" },
+    { "$numberInt": "228290" },
+    { "$numberInt": "968786" },
+    { "$numberInt": "515844" },
+    { "$numberInt": "377292" }
+  ],
+  "tier_and_details": {}
+}
+```
+You have an index on the email field. Here’s the command you used to create the index:
+db.customers.createIndex({email:1})
+Before deleting it, you want to assess the impact of removing this index on the performance of the query. To do this, which command should you use? (Select one.)
+你有一個儲存顧客詳細資料的集合。上方為集合中的範例文件。
+你在 email 欄位上有一個索引。這是你用來建立索引的命令：db.customers.createIndex({email:1})。
+在真正刪除它之前，你想評估移除此索引對查詢效能的影響。為了達成這個目的，你應該使用哪一個命令？（單選）
+
+[選項]
+
+A. dropIndex()
+B. dropIndexes()
+C. getIndexes()
+D. hideIndex()
+
+[正確答案]：
+D
+
+[核心考點]： 3.5 辨識使用索引的權衡（trade-offs），以及刪除支援查詢的索引後所帶來的影響與後果。
+
+[詳細解析]：
+hideIndex()（隱藏索引）能讓查詢規劃器（Query Planner）忽略該索引，用於模擬索引刪除後的效能影響，同時保留索引節省重新建立的成本。
+
+A. 錯誤，dropIndex() 會直接實體刪除指定索引，無法做到「事先評估影響」，若發現需要該索引則必須耗時重新建立。
+B. 錯誤，dropIndexes() 會刪除集合中所有索引（_id 除外），無法用於單一索引的測試評估。
+C. 錯誤，getIndexes() 僅用於列出集合現有的所有索引資訊，無法測試或模擬刪除索引後的查詢效能變化。
+D. 正確，hideIndex() 能對查詢優化器隱藏索引以測試效能衝擊，驗證安全後再決定是否刪除或取消隱藏 (unhideIndex)。
+
+
+
+
 
 
 
