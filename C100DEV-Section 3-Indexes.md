@@ -40,6 +40,8 @@ https://learn.mongodb.com/learn/course/mongodb-indexes
 
 # Lesson 1: Using MongoDB Indexes in Collections
 
+# Lesson 1: Using MongoDB Indexes in Collections
+
 ## 1. 什麼是索引 (What Indexes Are)
 
 索引是一種特殊的有序資料結構，主要作用與特性如下：
@@ -54,13 +56,13 @@ https://learn.mongodb.com/learn/course/mongodb-indexes
 
 MongoDB 查詢時的運作機制與相關成本如下：
 
-* **無索引情況 (Without Indexes)**：
+* 無索引情況 (Without Indexes)：
   * MongoDB 必須掃描整個集合（Collection Scan）來尋找符合條件的文件。
   * 若查詢包含排序，必須在記憶體中進行額外排序作業。
-* **有索引情況 (With Indexes)**：
+* 有索引情況 (With Indexes)：
   * MongoDB 僅需讀取索引所標示的特定文件，甚至能直接從索引回傳結果。
   * 每個 Collection 預設都會在 `_id` 欄位上建立一個預設索引。
-* **寫入成本與注意事項**：
+* 寫入成本與注意事項：
   * 每次執行插入、更新或刪除作業時，資料庫皆須同步更新受影響的索引樹。
   * 當索引數量過多時，會引發「寫入放大 (Write Amplification)」現象，導致寫入效能顯著降低。
 
@@ -69,29 +71,29 @@ MongoDB 查詢時的運作機制與相關成本如下：
 
 ## 3. 常見索引類型 (Index Types)
 
-* **單一欄位索引 (Single Field Index)**：針對單一欄位建立索引（例如 `_id` 預設索引）。
-* **複合索引 (Compound Index)**：由多個欄位組成的索引。
-* **多鍵索引 (Multikey Index)**：針對陣列欄位建立的索引，MongoDB 會自動推斷並調整為多鍵索引。
+* 單一欄位索引 (Single Field Index)：針對單一欄位建立索引（例如 `_id` 預設索引）。
+* 複合索引 (Compound Index)：由多個欄位組成的索引。
+* 多鍵索引 (Multikey Index)：針對陣列欄位建立的索引，MongoDB 會自動推斷並調整為多鍵索引。
 
 ## 4. 索引的底層結構與儲存內容
 
 MongoDB 使用 B-Tree（B 樹）資料結構來管理索引，索引內部主要儲存以下兩種資訊：
 
-* **索引鍵 (Index Keys)**：建立索引時指定的欄位與對應數值。
-* **記錄識別碼 (RecordID / Pointer)**：由 WiredTiger 儲存引擎產生的內部 64 位元整數，代表該文件在磁碟或記憶體區塊中的實體位置。
+* 索引鍵 (Index Keys)：建立索引時指定的欄位與對應數值。
+* 記錄識別碼 (RecordID / Pointer)：由 WiredTiger 儲存引擎產生的內部 64 位元整數，代表該文件在磁碟或記憶體區塊中的實體位置。
 
 ## 5. 索引底層管理與異動成本 (B-Tree & Write Amplification)
 
 MongoDB 採用 B-Tree（B 樹）資料結構來維護與管理索引：
 
-* **異動流程**：當執行 `insert`、`update` 或 `delete` 時，資料庫除將原始文件寫入磁碟外，還必須同時更新所有受影響的 B-Tree 索引樹。
-* **寫入放大 (Write Amplification)**：若集合中建立過多索引，每次資料異動都會觸發大量索引樹更新，引發嚴重的寫入放大現象，導致寫入操作變得極為耗時與耗費資源。
+* 異動流程：當執行 `insert`、`update` 或 `delete` 時，資料庫除將原始文件寫入磁碟外，還必須同時更新所有受影響的 B-Tree 索引樹。
+* 寫入放大 (Write Amplification)：若集合中建立過多索引，每次資料異動都會觸發大量索引樹更新，引發嚴重的寫入放大現象，導致寫入操作變得極為耗時與耗費資源。
 
 ## 6. 索引使用重點與最佳實踐 (Best Practices)
 
-* **自動建立預設索引**：MongoDB 會自動在 `_id` 欄位建立單一欄位索引，不需手動建立。
-* **自動推斷多鍵索引**：當索引欄位為陣列（Array）型態時，MongoDB 會自動將其推斷並轉為 Multikey 索引，無需特別指定。
-* **最左前綴原則 (Leftmost Prefix Rule)**：
+* 自動建立預設索引：MongoDB 會自動在 `_id` 欄位建立單一欄位索引，不需手動建立。
+* 自動推斷多鍵索引：當索引欄位為陣列（Array）型態時，MongoDB 會自動將其推斷並轉為 Multikey 索引，無需特別指定。
+* 最左前綴原則 (Leftmost Prefix Rule)：
   * 複合索引查詢時必須遵守前綴欄位排序。
   * 例如建立 `{a: 1, b: 1}` 索引，可支援 `{a}` 或 `{a, b}` 的查詢，但無法僅針對 `{b}` 進行索引查詢。
 
