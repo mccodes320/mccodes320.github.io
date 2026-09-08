@@ -36,73 +36,64 @@ https://learn.mongodb.com/learn/course/mongodb-indexes
 
    
    
-   
-
-
-
 # Lesson 1: Using MongoDB Indexes in Collections
-   
-1. **What indexes are**     
-   * Special data structures是一種特殊得資料結構     
-   * Store small portion of the data, 可以將資料的一小部分儲存在有序的表單中     
-   * Ordered and easy to search efficiently   
-   * Point to document indetity, 指向文檔標示, 允許快速查詢和更新資料   
-   * Eliminates in-memory sorting 排序順序與索引一致，MongoDB 可直接依索引順序回傳結果，避免在記憶體中進行 SORT   
-![image](https://github.com/user-attachments/assets/64ec2f93-27f6-446d-9d79-944784de7fed)   
-   
-2. **How indexes can improve performance**   
-   * Speed up queries加速查詢   
-   * Reduce disk I/O減少磁碟IO   
-   * Reduce resources required 減少所需要的資源   
-   * Support equaity matches and **range-based** operations and return sorted results. 支援查詢, 如等項或範圍查詢.   
-   indexes會依據建立時所提供的所以欄位和排序, 將資料儲存在以建立的資料表中     
-   
-3. **Costs of using indexes**
 
-   **3.1 Without indexes**  
-	   * MongoDB reads all documents(collection scan)
-	   * Sorts results in memory. 如果查詢要已有排序的方式輸出, 也會需要額外在記憶體中做排序.
-  
-   **3.2 With indexes**  
-	   * MongoDB only fetches the documents indentified by the index based on the query. 如果索引包含查詢所要的資料, DB就不用讀取整份文件
-	   * There is one default index per collection, which includes only the _id field 預設索引_id  
-	   * Every query should use an index  
+## 1. 什麼是索引 (What Indexes Are)
+
+索引是一種特殊的有序資料結構，主要作用與特性如下：
+
+* **儲存少量資料**：僅儲存集合中特定欄位的一小部分資料，並以有序表單的形式整理。
+* **精準指向文檔**：索引項目會指向文檔的實體位置（RecordID），提供快速查詢與更新。
+* **降低資源消耗**：加快查詢速度、減少磁碟 I/O，大幅提升整體資料庫效能。
+* **避免記憶體排序**：當查詢的排序順序與索引一致時，MongoDB 可直接依索引順序回傳結果，無需在記憶體中進行 SORT。
+* **支援多種查詢**：支援等值比對（Equality Matches）與範圍查詢（Range-based Operations）。
+
+   
+## 2. 索引的運作與成本比較
+
+MongoDB 查詢時的運作機制與相關成本如下：
+
+* **無索引情況 (Without Indexes)**：
+  * MongoDB 必須掃描整個集合（Collection Scan）來尋找符合條件的文件。
+  * 若查詢包含排序，必須在記憶體中進行額外排序作業。
+* **有索引情況 (With Indexes)**：
+  * MongoDB 僅需讀取索引所標示的特定文件，甚至能直接從索引回傳結果。
+  * 每個 Collection 預設都會在 `_id` 欄位上建立一個預設索引。
+* **寫入成本與注意事項**：
+  * 每次執行插入、更新或刪除作業時，資料庫皆須同步更新受影響的索引樹。
+  * 當索引數量過多時，會引發「寫入放大 (Write Amplification)」現象，導致寫入效能顯著降低。
 
    **注意: 索引具有寫入效能的成本, 在插入新的文件或更新時, 也需要針對索引去更動.**
    **注意: 如果collection有太多索引, 反而會造成寫入效能降低.**  
    
-5. Most common index type:
-   * Single field
-   * Compound
-   * Multikey indexes operate on an array field
+## 3. 常見索引類型 (Index Types)
+
+* **單一欄位索引 (Single Field Index)**：針對單一欄位建立索引（例如 `_id` 預設索引）。
+* **複合索引 (Compound Index)**：由多個欄位組成的索引。
+* **多鍵索引 (Multikey Index)**：針對陣列欄位建立的索引，MongoDB 會自動推斷並調整為多鍵索引。
+
+## 4. 索引的底層結構與儲存內容
+
+MongoDB 使用 **B-Tree（B 樹）** 資料結構來管理索引，索引內部主要儲存以下兩種資訊：
+
+* **索引鍵 (Index Keys)**：建立索引時指定的欄位與對應數值。
+* **記錄識別碼 (RecordID / Pointer)**：由 WiredTiger 儲存引擎產生的內部 64 位元整數，代表該文件在磁碟或記憶體區塊中的實體位置。
 
 
-6. index所佔用資料
-   * Document Identity (索引鍵（Index Keys）+（RecordID / Pointer）
-   * 索引鍵（Index Keys）：你指定的特定欄位欄位值
-   * 記錄識別碼（RecordID / Pointer）：指向硬碟中完整文件的指標，由 WiredTiger 儲存引擎產生的內部 64 位元整數（意即底層的 Location Pointer）。它代表這份完整文件在硬碟/記憶體資料區塊中的具體實體位置。
-   * 舉例  
-     執行: db.users.createIndex({ age: 1 }  
-     Index Keys: 25  
-     RecordID: RecordID(12345)（並非 _id，而是比 _id 更底層的記憶體/磁碟定位符號）  
-     執行: db.users.createIndex({ { name: 1, age: -1 } }  
-     Index Keys: ["Alice", 25]  
-  ```sql
-{
-  "_id": ObjectId("60c72b2f9b1d8b2bad8e4531"),
-  "name": "Alice",
-  "age": 25,
-  "email": "alice@example.com"
-}
-  ```
+## 5. 索引底層管理與異動成本 (B-Tree & Write Amplification)
 
-6. 使用 B-Tree（B 樹） 資料結構來管理索引  
-7. 進行 insert / update / delete ，資料庫把原始文件寫入磁碟，圖時更新所有受影響的 B-Tree 索引樹.  
-   當索引數量過多時，寫入效能就會引發嚴重的「寫入放大（Write Amplification）」現象，導致 insert 變得非常昂貴（耗時且耗資源）。
+MongoDB 採用 **B-Tree（B 樹）** 資料結構來維護與管理索引：
 
-* MongoDB 在 _id 欄位會自動建立單一欄位索引。  
-* Multikey 索引是自動推斷的，不需特別指定，只要索引欄位是陣列就會自動變為 multikey。  
-* 複合索引查詢時建議遵守前綴欄位排序，如：{a: 1, b: 1} 能支援查詢 {a} 或 {a, b}，但不能只查 {b}。  
+* **異動流程**：當執行 `insert`、`update` 或 `delete` 時，資料庫除將原始文件寫入磁碟外，還必須同時更新所有受影響的 B-Tree 索引樹。
+* **寫入放大 (Write Amplification)**：若集合中建立過多索引，每次資料異動都會觸發大量索引樹更新，引發嚴重的寫入放大現象，導致寫入操作變得極為耗時與耗費資源。
+
+## 6. 索引使用重點與最佳實踐 (Best Practices)
+
+* **自動建立預設索引**：MongoDB 會自動在 `_id` 欄位建立單一欄位索引，不需手動建立。
+* **自動推斷多鍵索引**：當索引欄位為陣列（Array）型態時，MongoDB 會自動將其推斷並轉為 Multikey 索引，無需特別指定。
+* **最左前綴原則 (Leftmost Prefix Rule)**：
+  * 複合索引查詢時必須遵守前綴欄位排序。
+  * 例如建立 `{a: 1, b: 1}` 索引，可支援 `{a}` 或 `{a, b}` 的查詢，但**無法**僅針對 `{b}` 進行索引查詢。
 
 
 
