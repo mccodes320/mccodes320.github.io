@@ -34,11 +34,7 @@ https://learn.mongodb.com/learn/course/mongodb-indexes
    查詢時 db.orders.find({ status: 'shipped', orderDate: { $gte: ISODate('2024-01-01') }, customerId: 'C123' })
    會因為範圍性查詢導致index失效   
 
-   
-   
-# Lesson 1: Using MongoDB Indexes in Collections
 
-# Lesson 1: Using MongoDB Indexes in Collections
 
 # Lesson 1: Using MongoDB Indexes in Collections
 
@@ -100,79 +96,106 @@ MongoDB 採用 B-Tree（B 樹）資料結構來維護與管理索引：
 
 
 
+# Lesson 2: Single Field Index
 
+支援在單一欄位進行查詢與排序。
 
-# Lesson 2: A Single Field Index
-	 
-* Support queries and sort on a single field 支持單字段上的查詢和排序
- 
-1. **Single Field**  
-   * Create a Single Field Index by using createIndex()	
-        Ascending order:1	
-        Descending order:-1	
-     ```sql
-     > db.coll.createIndex({fieldname:1})
-     < fieldname_1
-     ```
-   * Enforce uniqueness	
-     Add **{unique:true}** as a second, optional, parameter in **createIndex()** to force uniqueness in the index field values.
-     Once the unique index is created, any inserts or updates including duplicated values in the collection for the index field/s will fail.	
-          	
-     ```sql
-     > db.coll.createIndex({fieldname:1}, {unique: true})
-     < fieldname_1
-     ```
-   * Name	
-     ```sql
-     > db.coll.createIndex({fieldname:1}, {unique: true, name: 'haaaa'})
-     < haaaa
-     ``` 
+1. 建立單一欄位索引
+
+使用 createIndex() 建立單一欄位索引：
+* 升冪排序：1
+* 降冪排序：-1
+
+```sql
+> db.coll.createIndex({fieldname: 1})
+< fieldname_1
+
+```
+
+2. 強制唯一性 (Unique Index)
+
+在 createIndex() 的第二個選填參數加入 {unique: true} 可強制索引欄位值不重複。
+建立後，任何包含重複值的插入或更新操作皆會失敗。
+
+```sql
+> db.coll.createIndex({fieldname: 1}, {unique: true})
+< fieldname_1
+
+```
+
+3. 自訂索引名稱 (Index Name)
+
+可以在第二個選填參數中加入 name 屬性來指定索引名稱：
+
+```sql
+> db.coll.createIndex({fieldname: 1}, {unique: true, name: 'haaaa'})
+< haaaa
+```
+
 
 
 
 
 # Lesson 3: Creating a Multikey Index in MongoDB
 
-* Index on an array filed
-* Can be signle field or compound index
+* 針對陣列欄位（Array Field）建立的索引。
+* 可以是單一欄位索引或複合索引。
+* 只要被索引的欄位中包含陣列，即為 Multikey Index。
+* 陣列內部可包含巢狀物件或其他資料型別。
+* 在複合索引中，每個索引只能有一個欄位是陣列型態。
 
-Any index where one of the indexed fields contains an array
-任何被索引欄位中包含陣列的索引
 
-The array can hold nested objects or other field types
-陣列可以包含巢狀物件或其他欄位類型
+資料內容：
 
-In a compound index, only one field can be an array per index
-在複合索引中，每個索引只能有一個欄位是陣列
+```json
+{
+	"_id": ObjectId("60c72b2f9b1d8b2bad8e4531"),
+	"name": "Charles",
+	"email": "test@yahoo.com",
+	"accounts": [100, 101, 102, 103]
+}
 
-使用客戶集合來說明
+```
+
+建立多鍵索引（Multikey Index）：
+
 ```javascript
-{
-	_id: objectId
-	name: string,
-	birthdate: date,
-	email: string,
-	accounts: array
-}
-```
+// 建立單一欄位的多鍵索引
+db.customers.createIndex({accounts: 1})
 
-```
-{
-	_id: ObjectId("**************"),
-	name: 'Charles',
-	email: 'test@yahoo.com',
-	accounts: [ 100,101,102,103]
-}
-```
-
-**Create a Single field Multikey Index**  
-```
-// create index
-db.customers.createIndex({accounts:1})
-db.customers.createIndex({mail:1, accounts:1})
+// 建立複合欄位的多鍵索引
+db.customers.createIndex({email: 1, accounts: 1})
 ```
 
 
+# Lesson 4: A Compound Indexes in MongoDB
+
+* 針對多個欄位建立的索引（多欄位索引）。
+* 若包含陣列欄位，亦可作為多鍵索引（Multikey Index）。
+* 每個複合索引最多只能包含一個陣列欄位。
+* 支援符合索引前綴（Prefix）的查詢。
+
+建立複合索引範例：
+
+```javascript
+db.customers.createIndex({active: 1, birthdate: -1, name: 1})
+
+```
+
+可以使用該索引的查詢：
+
+```javascript
+db.customers.find({active: true}).sort({birthdate: -1})
+db.customers.find({birthdate: {$lt: ISODate("1995-08-01")}, active: true})
+
+```
+
+無法使用該索引的查詢：
+
+```javascript
+db.customers.find({birthdate: {$lt: ISODate("1995-08-01")}})
+db.customers.find({}).sort({birthdate: 1})
+```
 
 
 
@@ -180,19 +203,8 @@ db.customers.createIndex({mail:1, accounts:1})
 
 
 
-# Lesson 4: Video: Working with Compound Indexes in MongoDB
 
 
-**Compound indexes 複合索引**
-
-Index on multiple fields 多欄位索引  
-Can be a multikey index if it includes an array field 如果包含陣列欄位，可以是多鍵索引  
-Maximum of one array field per index  每個索引最多只有一個陣列欄位  
-
-Support queries that match on the prefix of the index fields
-支援對索引欄位前綴進行匹配的查詢
-
-![image](https://github.com/user-attachments/assets/5d1afcdd-34fb-4675-a87c-c425597b06e6)
 
 The order of the fields in a compound index matters
 複合索引中欄位的順序很重要
