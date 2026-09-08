@@ -60,13 +60,13 @@ https://learn.mongodb.com/learn/course/mongodb-indexes
 3. **Costs of using indexes**
 
    **3.1 Without indexes**  
-        * MongoDB reads all documents(collection scan)
-        * Sorts results in memory. 如果查詢要已有排序的方式輸出, 也會需要額外在記憶體中做排序.
+	   * MongoDB reads all documents(collection scan)
+	   * Sorts results in memory. 如果查詢要已有排序的方式輸出, 也會需要額外在記憶體中做排序.
   
    **3.2 With indexes**  
-        * MongoDB only fetches the documents indentified by the index based on the query. 如果索引包含查詢所要的資料, DB就不用讀取整份文件
-        * There is one default index per collection, which includes only the _id field 預設索引_id  
-        *  Every query should use an index  
+	   * MongoDB only fetches the documents indentified by the index based on the query. 如果索引包含查詢所要的資料, DB就不用讀取整份文件
+	   * There is one default index per collection, which includes only the _id field 預設索引_id  
+	   * Every query should use an index  
 
    **注意: 索引具有寫入效能的成本, 在插入新的文件或更新時, 也需要針對索引去更動.**
    **注意: 如果collection有太多索引, 反而會造成寫入效能降低.**  
@@ -109,14 +109,14 @@ https://learn.mongodb.com/learn/course/mongodb-indexes
 
 
 
-# Lesson 2: Creating a Single Field Index in MongoDB
+# Lesson 2: A Single Field Index
 	 
 * Support queries and sort on a single field 支持單字段上的查詢和排序
  
 1. **Single Field**  
-   * Create a Single Field Index by using createIndex()
-        Ascending order:1  
-        Descending order:-1    
+   * Create a Single Field Index by using createIndex()	
+        Ascending order:1	
+        Descending order:-1	
      ```sql
      > db.coll.createIndex({fieldname:1})
      < fieldname_1
@@ -134,11 +134,6 @@ https://learn.mongodb.com/learn/course/mongodb-indexes
      > db.coll.createIndex({fieldname:1}, {unique: true, name: 'haaaa'})
      < haaaa
      ``` 
-
-
-   
-    
-
 
 
 
