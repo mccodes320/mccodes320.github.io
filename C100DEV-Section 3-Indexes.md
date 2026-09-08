@@ -110,9 +110,9 @@ https://learn.mongodb.com/learn/course/mongodb-indexes
 
 
 # Lesson 2: Creating a Single Field Index in MongoDB
--- 
+	 
 * Support queries and sort on a single field 支持單字段上的查詢和排序
-* 
+ 
 1. **Single Field**  
    * Create a Single Field Index by using createIndex()
         Ascending order:1  
@@ -121,15 +121,15 @@ https://learn.mongodb.com/learn/course/mongodb-indexes
      > db.coll.createIndex({fieldname:1})
      < fieldname_1
      ```
-   * Enforce uniqueness
+   * Enforce uniqueness	
      Add **{unique:true}** as a second, optional, parameter in **createIndex()** to force uniqueness in the index field values.
-     Once the unique index is created, any inserts or updates including duplicated values in the collection for the index field/s will fail.
-          
+     Once the unique index is created, any inserts or updates including duplicated values in the collection for the index field/s will fail.	
+          	
      ```sql
      > db.coll.createIndex({fieldname:1}, {unique: true})
      < fieldname_1
      ```
-   * Name
+   * Name	
      ```sql
      > db.coll.createIndex({fieldname:1}, {unique: true, name: 'haaaa'})
      < haaaa
@@ -168,10 +168,14 @@ https://learn.mongodb.com/learn/course/mongodb-indexes
 }
 ```
 
+**Create a Single field Multikey Index**  
+```
+// create index
+db.customers.createIndex({accounts:1})
+db.customers.createIndex({mail:1, accounts:1})
+```
 
 
-
-![image](https://github.com/user-attachments/assets/6897809a-faa2-4566-9e59-865d6454dc16)
 以上範例為創建Multikey Indexes  
 
 如果要做查詢, 希望找到具有特定帳號的客戶, 那就要對帳戶作索引
@@ -197,32 +201,6 @@ In a compound index, only one field can be an array per index
 在複合索引中，每個索引只能有一個欄位是陣列
 
 
-**Understanding Multikey Indexes**  
-Review the code below, which demonstrates how multikey indexes work. If a single field or compound index includes an array field, then the index is a multikey index.
-
-
-**Create a Single field Multikey Index**  
-Use createIndex() to create a new index in a collection. Include an object as parameter that contains the array field and sort order. In this example accounts is an array field.
-```
-db.customers.createIndex({
-  accounts: 1
-})
-```
-**View the Indexes used in a Collection**
-Use getIndexes() to see all the indexes created in a collection.
-
-db.customers.getIndexes()
-
- **3.6**
-
-
-```
-db.customers.explain().find({
-  accounts: 627788
-  })
-```
-
-
 
 
 
@@ -231,9 +209,6 @@ db.customers.explain().find({
 
 
 **Compound indexes 複合索引**
-What compound indexes are 什麼是複合索引  
-How to create a compound index 如何建立複合索引  
-How to use a compound index to sort or cover queries 如何使用複合索引來排序或覆蓋查詢  
 
 Index on multiple fields 多欄位索引  
 Can be a multikey index if it includes an array field 如果包含陣列欄位，可以是多鍵索引  
