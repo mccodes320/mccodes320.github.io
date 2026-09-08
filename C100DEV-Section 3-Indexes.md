@@ -148,6 +148,15 @@ https://learn.mongodb.com/learn/course/mongodb-indexes
 * Index on an array filed
 * Can be signle field or compound index
 
+Any index where one of the indexed fields contains an array
+任何被索引欄位中包含陣列的索引
+
+The array can hold nested objects or other field types
+陣列可以包含巢狀物件或其他欄位類型
+
+In a compound index, only one field can be an array per index
+在複合索引中，每個索引只能有一個欄位是陣列
+
 使用客戶集合來說明
 ```javascript
 {
@@ -176,29 +185,7 @@ db.customers.createIndex({mail:1, accounts:1})
 ```
 
 
-以上範例為創建Multikey Indexes  
 
-如果要做查詢, 希望找到具有特定帳號的客戶, 那就要對帳戶作索引
-
-使用getIndexes() 來查找集合中的索引, 會輸出有三個索引
-
-![image](https://github.com/user-attachments/assets/15d59410-75f4-4eaf-97f0-8bdbe60c83ec)
-
-建立索引後
-
-![image](https://github.com/user-attachments/assets/ac46d545-449d-435c-9dcb-9254fc94991e)
-
-Multikey indexing in MongoDB:
-MongoDB 中的多鍵索引：
-
-Any index where one of the indexed fields contains an array
-任何被索引欄位中包含陣列的索引
-
-The array can hold nested objects or other field types
-陣列可以包含巢狀物件或其他欄位類型
-
-In a compound index, only one field can be an array per index
-在複合索引中，每個索引只能有一個欄位是陣列
 
 
 
@@ -232,34 +219,33 @@ The sort order of the field values in the index matters
 **Equality**
 相等性
 
-Test exact matches on single field
-測試單一欄位的精確匹配
-
-Should be placed first in a compound index
-應放在複合索引的第一位
-
-Reduces query processing time
-減少查詢處理時間
-
-Retrieves fewer documents
-檢索更少的文檔
+	Test exact matches on single field
+	測試單一欄位的精確匹配
+	
+	Should be placed first in a compound index
+	應放在複合索引的第一位
+	
+	Reduces query processing time
+	減少查詢處理時間
+	
+	Retrieves fewer documents
+	檢索更少的文檔
 
 
 **Sort**
 排序
 
-Determines the order of results
-決定結果的順序
-
-Index sort eliminates the need for in-memory sorts
-索引排序消除了記憶體中排序的需要
-
-Sort order is important if query results are sorted by more than 1 field and they mix sort orders
-如果查詢結果按多個欄位排序且它們混合了排序順序，則排序順序很重要
-
-
-**Working with Compound Indexes**
-Review the code below, which demonstrates how to create a compound index in a collection.
+	Determines the order of results
+	決定結果的順序
+	
+	Index sort eliminates the need for in-memory sorts
+	索引排序消除了記憶體中排序的需要
+	
+	Sort order is important if query results are sorted by more than 1 field and they mix sort orders
+	如果查詢結果按多個欄位排序且它們混合了排序順序，則排序順序很重要
+	
+	**Working with Compound Indexes**
+	Review the code below, which demonstrates how to create a compound index in a collection.
 
 
 **Create a Compound Index**
