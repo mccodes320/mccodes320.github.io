@@ -226,185 +226,6 @@ db.customers.find({}).sort({birthdate: 1})
 
 
 
-The order of the fields in a compound index matters
-複合索引中欄位的順序很重要
-
-Follow this order: Equality, Sort, Range
-遵循此順序：相等、排序、範圍
-
-The sort order of the field values in the index matters
-索引中欄位值的排序順序很重要
-
-
-**Equality**
-相等性
-
-	Test exact matches on single field
-	測試單一欄位的精確匹配
-	
-	Should be placed first in a compound index
-	應放在複合索引的第一位
-	
-	Reduces query processing time
-	減少查詢處理時間
-	
-	Retrieves fewer documents
-	檢索更少的文檔
-
-
-**Sort**
-排序
-
-	Determines the order of results
-	決定結果的順序
-	
-	Index sort eliminates the need for in-memory sorts
-	索引排序消除了記憶體中排序的需要
-	
-	Sort order is important if query results are sorted by more than 1 field and they mix sort orders
-	如果查詢結果按多個欄位排序且它們混合了排序順序，則排序順序很重要
-	
-	**Working with Compound Indexes**
-	Review the code below, which demonstrates how to create a compound index in a collection.
-
-
-**Create a Compound Index**
-Use createIndex() to create a new index in a collection. Within the parentheses of createIndex(), include an object that contains two or more fields and their sort order.
-```
-db.customers.createIndex({
-  active:1, 
-  birthdate:-1,
-  name:1
-})
-```
-
-**Order of Fields in a Compound Index**
-The order of the fields matters when creating the index and the sort order. It is recommended to list the fields in the following order: Equality, Sort, and Range.
-
-* Equality: field/s that matches on a single field value in a query
-* Sort: field/s that orders the results by in a query
-* Range: field/s that the query filter in a range of valid values
-The following query includes an equality match on the active field, a sort on birthday (descending) and name (ascending), and a range query on birthday too.
-```
-db.customers.find({
-  birthdate: {
-    $gte:ISODate("1977-01-01")
-    },
-    active:true
-    }).sort({
-      birthdate:-1, 
-      name:1
-      })
-```
-Here's an example of an efficient index for this query:
-```
-db.customers.createIndex({
-  active:1, 
-  birthdate:-1,
-  name:1
-})
-```
-View the Indexes used in a Collection
-Use getIndexes() to see all the indexes created in a collection.
-```
-db.customers.getIndexes()
-```
-Check if an index is being used on a query
-Use explain() in a collection when running a query to see the Execution plan. This plan provides the details of the execution stages (IXSCAN , COLLSCAN, FETCH, SORT, etc.). Some of these are:
-
-
-
-| 執行階段 | 全稱 | 定義與運作機制 | 效能影響與優化建議 |
-| :--- | :--- | :--- | :--- |
-| **`IXSCAN`** | Index Scan<br>(索引掃描) | 查詢成功使用了索引。資料庫僅檢索索引樹中的特定鍵值，迅速定位符合條件的文件位置。 | **最佳 (Optimal)**<br>代表查詢已受索引優化，無須掃描整份集合。 |
-| **`COLLSCAN`** | Collection Scan<br>(全集合掃描) | 查詢未命中任何索引。資料庫必須從頭到尾逐筆讀取集合中的每一份文件來比對條件。 | **極差 (Poor)**<br>在大型資料集中會造成嚴重 I/O 負擔與延遲，應針對查詢條件建立索引。 |
-| **`FETCH`** | Fetch Documents<br>(檢索文件) | 資料庫根據先前階段（如 `IXSCAN`）獲取的位置指標，從磁碟或記憶體中讀取完整的文件內容。 | **正常 (Normal)**<br>若查詢需求為覆蓋查詢（Covered Query），可完全跳過此階段以提升極致效能。 |
-| **`SORT`** | In-Memory Sort<br>(記憶體排序) | 資料庫在記憶體中對查詢結果進行排序，通常發生於排序欄位未建立索引時。 | **高風險 (High Risk)**<br>耗費 CPU 與記憶體。若排序資料超過預設上限（100 MB）查詢會中斷，應建立排序索引。 |
-
-
-
-
-
-
-
-
-```
-db.customers.explain().find({
-  birthdate: {
-    $gte:ISODate("1977-01-01")
-    },
-  active:true
-  }).sort({
-    birthdate:-1,
-    name:1
-    })
-```
-**Cover a query by the Index**
-An Index covers a query when MongoDB does not need to fetch the data from memory since all the required data is already returned by the index.
-
-In most cases, we can use projections to return only the required fields and cover the query. Make sure those fields in the projection are in the index.
-
-By adding the projection **{name:1,birthdate:1,_id:0}** in the previous query, we can limit the returned fields to only name and birthdate. These fields are part of the index and when we run the explain() command, the execution plan shows only two stages:
-
-* IXSCAN - Index scan using the compound index
-* PROJECTION_COVERED - All the information needed is returned by the index, no need to fetch from memory
-
-```
-db.customers.explain().find({
-  birthdate: {
-    $gte:ISODate("1977-01-01")
-    },
-  active:true
-  },
-  {name:1,
-    birthdate:1, 
-    _id:0
-  }).sort({
-    birthdate:-1,
-    name:1
-    })
-```
-
-
-* 前綴原則（Prefix Rule）
-  複合索引指的是由多個欄位組合而成的單一索引。例如
-  ```sql
-  db.users.createIndex({ db: 1, collection: 1, status: 1 })
-  ```  
-  所謂的「前綴（Prefixes）」，指的是這個索引由左至右依序組合出來的「子集」。以上述索引為例，它所擁有的合法字首前綴包含以下兩種組合：  
-  第一前綴： { db: 1 }  
-  第二前綴： { db: 1, collection: 1 }  
-  (註：包含完整三個欄位的 { db: 1, collection: 1, status: 1 } 自然也適用，但它通常被直接視為索引本身，而非前綴。)
-
-  前綴原則的核心定義是：**一個複合索引，只能支援「以該索引前綴開始」的查詢條件。**  
-  B-Tree 在排序複合索引時，是嚴格遵循「先比較左邊欄位，左邊相同時，才比較右邊欄位」的順序
-  
-  情況 A：完全匹配（極高效）  
-  ```sql
-  db.users.find({ db: "test", collection: "orders", status: "active" })
-  ```  
-  情況 B：部分匹配，且符合前綴（高效）
-  ```sql
-  db.users.find({ db: "test" })
-  db.users.find({ db: "test", collection: "orders" })
-  ```
-  支援。 這兩個查詢分別命中了「第一前綴」與「第二前綴」。這代表你不需要單獨為 { db: 1 } 建立另一個獨立索引，這個複合索引已經兼顧了它的功能。  
-      
-  情況 C：不符合前綴（完全不支援）  
-  ```sql
-  db.users.find({ db: "test", status: "active" })
-  ```
-  不支援。 這些查詢都跳過了最左邊的 db 欄位。對 WiredTiger 儲存引擎來說，少了最左邊的排序基準，右邊的資料在 B-Tree 中是無序、分散的，因此無法進行索引掃描（IXSCAN），只能被迫走全表掃描（COLLSCAN）。
-  
-  前綴中間「斷層」會怎樣？
-  ```sql
-  db.users.find({ db: "test", status: "active" })
-  ```
-  結論： 這個查詢雖然有用到索引來縮小 scope，但只能發揮「部分優化」的效果，效率不如連續匹配的前綴。
-
-
-
-
 
 
 
@@ -827,6 +648,185 @@ db.listingsAndReviews.find(
 
 
 
+
+
+
+
+The order of the fields in a compound index matters
+複合索引中欄位的順序很重要
+
+Follow this order: Equality, Sort, Range
+遵循此順序：相等、排序、範圍
+
+The sort order of the field values in the index matters
+索引中欄位值的排序順序很重要
+
+
+**Equality**
+相等性
+
+	Test exact matches on single field
+	測試單一欄位的精確匹配
+	
+	Should be placed first in a compound index
+	應放在複合索引的第一位
+	
+	Reduces query processing time
+	減少查詢處理時間
+	
+	Retrieves fewer documents
+	檢索更少的文檔
+
+
+**Sort**
+排序
+
+	Determines the order of results
+	決定結果的順序
+	
+	Index sort eliminates the need for in-memory sorts
+	索引排序消除了記憶體中排序的需要
+	
+	Sort order is important if query results are sorted by more than 1 field and they mix sort orders
+	如果查詢結果按多個欄位排序且它們混合了排序順序，則排序順序很重要
+	
+	**Working with Compound Indexes**
+	Review the code below, which demonstrates how to create a compound index in a collection.
+
+
+**Create a Compound Index**
+Use createIndex() to create a new index in a collection. Within the parentheses of createIndex(), include an object that contains two or more fields and their sort order.
+```
+db.customers.createIndex({
+  active:1, 
+  birthdate:-1,
+  name:1
+})
+```
+
+**Order of Fields in a Compound Index**
+The order of the fields matters when creating the index and the sort order. It is recommended to list the fields in the following order: Equality, Sort, and Range.
+
+* Equality: field/s that matches on a single field value in a query
+* Sort: field/s that orders the results by in a query
+* Range: field/s that the query filter in a range of valid values
+The following query includes an equality match on the active field, a sort on birthday (descending) and name (ascending), and a range query on birthday too.
+```
+db.customers.find({
+  birthdate: {
+    $gte:ISODate("1977-01-01")
+    },
+    active:true
+    }).sort({
+      birthdate:-1, 
+      name:1
+      })
+```
+Here's an example of an efficient index for this query:
+```
+db.customers.createIndex({
+  active:1, 
+  birthdate:-1,
+  name:1
+})
+```
+View the Indexes used in a Collection
+Use getIndexes() to see all the indexes created in a collection.
+```
+db.customers.getIndexes()
+```
+Check if an index is being used on a query
+Use explain() in a collection when running a query to see the Execution plan. This plan provides the details of the execution stages (IXSCAN , COLLSCAN, FETCH, SORT, etc.). Some of these are:
+
+
+
+| 執行階段 | 全稱 | 定義與運作機制 | 效能影響與優化建議 |
+| :--- | :--- | :--- | :--- |
+| **`IXSCAN`** | Index Scan<br>(索引掃描) | 查詢成功使用了索引。資料庫僅檢索索引樹中的特定鍵值，迅速定位符合條件的文件位置。 | **最佳 (Optimal)**<br>代表查詢已受索引優化，無須掃描整份集合。 |
+| **`COLLSCAN`** | Collection Scan<br>(全集合掃描) | 查詢未命中任何索引。資料庫必須從頭到尾逐筆讀取集合中的每一份文件來比對條件。 | **極差 (Poor)**<br>在大型資料集中會造成嚴重 I/O 負擔與延遲，應針對查詢條件建立索引。 |
+| **`FETCH`** | Fetch Documents<br>(檢索文件) | 資料庫根據先前階段（如 `IXSCAN`）獲取的位置指標，從磁碟或記憶體中讀取完整的文件內容。 | **正常 (Normal)**<br>若查詢需求為覆蓋查詢（Covered Query），可完全跳過此階段以提升極致效能。 |
+| **`SORT`** | In-Memory Sort<br>(記憶體排序) | 資料庫在記憶體中對查詢結果進行排序，通常發生於排序欄位未建立索引時。 | **高風險 (High Risk)**<br>耗費 CPU 與記憶體。若排序資料超過預設上限（100 MB）查詢會中斷，應建立排序索引。 |
+
+
+
+
+
+
+
+
+```
+db.customers.explain().find({
+  birthdate: {
+    $gte:ISODate("1977-01-01")
+    },
+  active:true
+  }).sort({
+    birthdate:-1,
+    name:1
+    })
+```
+**Cover a query by the Index**
+An Index covers a query when MongoDB does not need to fetch the data from memory since all the required data is already returned by the index.
+
+In most cases, we can use projections to return only the required fields and cover the query. Make sure those fields in the projection are in the index.
+
+By adding the projection **{name:1,birthdate:1,_id:0}** in the previous query, we can limit the returned fields to only name and birthdate. These fields are part of the index and when we run the explain() command, the execution plan shows only two stages:
+
+* IXSCAN - Index scan using the compound index
+* PROJECTION_COVERED - All the information needed is returned by the index, no need to fetch from memory
+
+```
+db.customers.explain().find({
+  birthdate: {
+    $gte:ISODate("1977-01-01")
+    },
+  active:true
+  },
+  {name:1,
+    birthdate:1, 
+    _id:0
+  }).sort({
+    birthdate:-1,
+    name:1
+    })
+```
+
+
+* 前綴原則（Prefix Rule）
+  複合索引指的是由多個欄位組合而成的單一索引。例如
+  ```sql
+  db.users.createIndex({ db: 1, collection: 1, status: 1 })
+  ```  
+  所謂的「前綴（Prefixes）」，指的是這個索引由左至右依序組合出來的「子集」。以上述索引為例，它所擁有的合法字首前綴包含以下兩種組合：  
+  第一前綴： { db: 1 }  
+  第二前綴： { db: 1, collection: 1 }  
+  (註：包含完整三個欄位的 { db: 1, collection: 1, status: 1 } 自然也適用，但它通常被直接視為索引本身，而非前綴。)
+
+  前綴原則的核心定義是：**一個複合索引，只能支援「以該索引前綴開始」的查詢條件。**  
+  B-Tree 在排序複合索引時，是嚴格遵循「先比較左邊欄位，左邊相同時，才比較右邊欄位」的順序
+  
+  情況 A：完全匹配（極高效）  
+  ```sql
+  db.users.find({ db: "test", collection: "orders", status: "active" })
+  ```  
+  情況 B：部分匹配，且符合前綴（高效）
+  ```sql
+  db.users.find({ db: "test" })
+  db.users.find({ db: "test", collection: "orders" })
+  ```
+  支援。 這兩個查詢分別命中了「第一前綴」與「第二前綴」。這代表你不需要單獨為 { db: 1 } 建立另一個獨立索引，這個複合索引已經兼顧了它的功能。  
+      
+  情況 C：不符合前綴（完全不支援）  
+  ```sql
+  db.users.find({ db: "test", status: "active" })
+  ```
+  不支援。 這些查詢都跳過了最左邊的 db 欄位。對 WiredTiger 儲存引擎來說，少了最左邊的排序基準，右邊的資料在 B-Tree 中是無序、分散的，因此無法進行索引掃描（IXSCAN），只能被迫走全表掃描（COLLSCAN）。
+  
+  前綴中間「斷層」會怎樣？
+  ```sql
+  db.users.find({ db: "test", status: "active" })
+  ```
+  結論： 這個查詢雖然有用到索引來縮小 scope，但只能發揮「部分優化」的效果，效率不如連續匹配的前綴。
 
 
 
