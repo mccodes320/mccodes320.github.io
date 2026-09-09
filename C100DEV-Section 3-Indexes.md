@@ -226,165 +226,115 @@ db.customers.find({}).sort({birthdate: 1})
 
 
 
-
-
-
 # Lesson 5: Deleting MongoDB Indexes
---
-1. **What Deleting are**  
-    * Deleting an index can affect the query performance. 刪除索引可能會影響查詢效能。  
-    * dropIndex() to delete one index.  使用 dropIndex() 刪除一個索引。  
-    * dropIndexes() to delete more than one index.  使用 dropIndexes() 刪除多個索引。
-    * hideIndex() to hide an index.  使用 hideIndex() 隱藏一個索引。
-    * unhideIndex() 取消影藏 db.orders.unhideIndex({ "totalAmount": 1 });
 
-2. 先建立index
-   ```sql
-    db.orders.createIndex({ "userId": 1 });
+* 刪除索引可能會影響查詢效能。
+* dropIndex() 用於刪除單一索引。
+* dropIndexes() 用於刪除多個或除 _id 外的所有索引。
+* hideIndex() 用於隱藏索引，不影響寫入效能但查詢會忽略該索引。
+* unhideIndex() 用於取消隱藏索引。
 
-    userId_1
-   
-    db.orders.createIndex({ "userId": 1 , "test1": 1}, {name: "test1"});
+1. 建立測試索引範例
 
-    test1
+```sql
+db.orders.createIndex({ "userId": 1 })
+db.orders.createIndex({ "userId": 1, "test1": 1 }, { name: "test1" })
+db.orders.createIndex({ "totalAmount": 1 })
+```
 
-   db.orders.createIndex({ "totalAmount": 1 });
-   
-   ```
+2. 隱藏與取消隱藏索引 (hideIndex & unhideIndex)
+
+在刪除索引前，可先隱藏索引以評估影響。隱藏或取消隱藏可以透過欄位條件或索引名稱操作：
+
+```sql
+// 透過欄位條件隱藏索引
+db.orders.hideIndex({ userId: 1 })
 
 
-3. **View the Indexes used in a Collection**
-   Use getIndexes() to see all the indexes created in a collection. There is always a default index in every collection on _id field. This index is used by MongoDB internally and cannot be deleted.  
-    ```
-    db.orders.getIndexes()
-
-    [
-      { v: 2, key: { _id: 1 }, name: '_id_' },
-      { v: 2, key: { userId: 1 }, name: 'userId_1' },
-      {
-        v: 2,
-        key: { status: 1, createdAt: -1 },
-        name: 'status_1_createdAt_-1'
-      },
-      { v: 2, key: { totalAmount: 1 }, name: 'totalAmount_1' },
-      { v: 2, key: { userId: 1, test1: 1 }, name: 'test1' }
-    ]
-    
-    ```
-4. ** hideIndex & unhideIndex **
-   * 透過條件
-  ```sql
-  db.orders.hideIndex({userId: 1})
-
-  {
-    hidden_old: false,
-    hidden_new: true,
-    ok: 1,
-    '$clusterTime': {
-      clusterTime: Timestamp({ t: 1782282944, i: 2 }),
-      signature: {
-        hash: Binary.createFromBase64('lSlUp19gFk4vnYHCfQp+EkZowt4=', 0),
-        keyId: Long('7623464695818616839')
-      }
-    },
-    operationTime: Timestamp({ t: 1782282944, i: 2 })
-  }
-  ```
-  ```sql
-    db.orders.getIndexes()
-
-    { v: 2, key: { userId: 1 }, name: 'userId_1', hidden: true },
-  ```
-
-  * 透過名稱
-   ```sql
-    db.orders.hideIndex("status_1_createdAt_-1")
-
-    {
-      hidden_old: false,
-      hidden_new: true,
-      ok: 1,
-      '$clusterTime': {
-        clusterTime: Timestamp({ t: 1782283177, i: 4 }),
-        signature: {
-          hash: Binary.createFromBase64('e9uO4/q6JhTIy0x/4FkRvtjLQ8w=', 0),
-          keyId: Long('7623464695818616839')
-        }
-      },
-      operationTime: Timestamp({ t: 1782283177, i: 4 })
+{
+  hidden_old: false,
+  hidden_new: true,
+  ok: 1,
+  '$clusterTime': {
+    clusterTime: Timestamp({ t: 1788937237, i: 2 }),
+    signature: {
+      hash: Binary.createFromBase64('0Mt7QOShXuPBg9OoKIcJCElN/qg=', 0),
+      keyId: Long('7623464695818616839')
     }
+  },
+  operationTime: Timestamp({ t: 1788937237, i: 2 })
+}
 
-  ```
-  ```sql
-    db.orders.getIndexes()
 
-  {
-    v: 2,
-    key: { status: 1, createdAt: -1 },
-    name: 'status_1_createdAt_-1',
-    hidden: true
-  }
-  ```
 
-  ** unhideIndex** 
+// 透過欄位條件取消隱藏
+db.orders.unhideIndex({ userId: 1 })
 
-  ```sql
-db.orders.unhideIndex({userId: 1})
 
 {
   hidden_old: true,
   hidden_new: false,
   ok: 1,
   '$clusterTime': {
-    clusterTime: Timestamp({ t: 1782283511, i: 5 }),
+    clusterTime: Timestamp({ t: 1788937244, i: 2 }),
     signature: {
-      hash: Binary.createFromBase64('3TUmlme3uIB7EukZLy/g/lKd/Jo=', 0),
+      hash: Binary.createFromBase64('uRTY4xihrrAsbpoAKWPaSkXUpmw=', 0),
       keyId: Long('7623464695818616839')
     }
   },
-  operationTime: Timestamp({ t: 1782283511, i: 5 })
+  operationTime: Timestamp({ t: 1788937244, i: 2 })
 }
-  ```
-  ```sql
-  db.orders.unhideIndex("status_1_createdAt_-1")
-  ```
+```
 
-    
-5. **Delete an Index**
-   Use dropIndex() to delete an existing index from a collection. Within the parentheses of dropIndex(), include an object representing the index key or provide the index name as a string.
+3. 刪除單一索引 (dropIndex)
 
-    Delete index by key:
-    ```
-    db.orders.dropIndex({userId: 1})
+使用 dropIndex() 刪除指定索引，參數傳入欄位鍵值物件或索引名稱字串：
 
-    {
-      nIndexesWas: 5,
-      ok: 1,
-      '$clusterTime': {
-        clusterTime: Timestamp({ t: 1782283699, i: 2 }),
-        signature: {
-          hash: Binary.createFromBase64('Zhg7y+LPW/zChz7pthI0Gygz6Sg=', 0),
-          keyId: Long('7623464695818616839')
-        }
-      },
-      operationTime: Timestamp({ t: 1782283699, i: 2 })
+```sql
+// 透過欄位鍵值刪除
+db.orders.dropIndex({ userId: 1 })
+
+{
+  nIndexesWas: 5,
+  ok: 1,
+  '$clusterTime': {
+    clusterTime: Timestamp({ t: 1788937328, i: 2 }),
+    signature: {
+      hash: Binary.createFromBase64('ttJzuX+bKvfGj+tQSoV7WX5bLTc=', 0),
+      keyId: Long('7623464695818616839')
     }
-    ```
-    Delete index by name:
-    ```
-    db.orders.dropIndex('status_1_createdAt_-1')
+  },
+  operationTime: Timestamp({ t: 1788937328, i: 2 })
+}
 
-    ```
-6. **Delete Indexes**
-    Use dropIndexes() to delete all the indexes from a collection, with the exception of the default index on _id.
-    
-    db.customers.dropIndexes()
-    The dropIndexes() command also can accept an array of index names as a parameter to delete a specific list of indexes.
-    ```sql
-    db.collection.dropIndexes([
-      'index1name', 'index2name', 'index3name'
-      ])
-    ```
+
+// 透過索引名稱刪除
+db.orders.dropIndex('status_1_createdAt_-1')
+```
+
+4. 刪除多個索引 (dropIndexes)
+
+使用 dropIndexes() 刪除集合中除了 _id 以外的所有索引，或傳入索引名稱陣列刪除指定的複數索引：
+
+```sql
+// 刪除除 _id 以外的所有索引
+db.orders.dropIndexes()
+
+// 傳入陣列刪除多個指定索引
+db.orders.dropIndexes([
+  'index1name',
+  'index2name',
+  'index3name'
+])
+```
+
+
+
+
+
+
+
+
 
 
 
