@@ -236,97 +236,97 @@ db.customers.find({}).sort({birthdate: 1})
 
 1. 建立測試索引範例
 
-```sql
-db.orders.createIndex({ "userId": 1 })
-db.orders.createIndex({ "userId": 1, "test1": 1 }, { name: "test1" })
-db.orders.createIndex({ "totalAmount": 1 })
-```
+	```sql
+	db.orders.createIndex({ "userId": 1 })
+	db.orders.createIndex({ "userId": 1, "test1": 1 }, { name: "test1" })
+	db.orders.createIndex({ "totalAmount": 1 })
+	```
 
 2. 隱藏與取消隱藏索引 (hideIndex & unhideIndex)
 
 在刪除索引前，可先隱藏索引以評估影響。隱藏或取消隱藏可以透過欄位條件或索引名稱操作：
 
-```sql
-// 透過欄位條件隱藏索引
-db.orders.hideIndex({ userId: 1 })
-
-
-{
-  hidden_old: false,
-  hidden_new: true,
-  ok: 1,
-  '$clusterTime': {
-    clusterTime: Timestamp({ t: 1788937237, i: 2 }),
-    signature: {
-      hash: Binary.createFromBase64('0Mt7QOShXuPBg9OoKIcJCElN/qg=', 0),
-      keyId: Long('7623464695818616839')
-    }
-  },
-  operationTime: Timestamp({ t: 1788937237, i: 2 })
-}
-
-
-
-// 透過欄位條件取消隱藏
-db.orders.unhideIndex({ userId: 1 })
-
-
-{
-  hidden_old: true,
-  hidden_new: false,
-  ok: 1,
-  '$clusterTime': {
-    clusterTime: Timestamp({ t: 1788937244, i: 2 }),
-    signature: {
-      hash: Binary.createFromBase64('uRTY4xihrrAsbpoAKWPaSkXUpmw=', 0),
-      keyId: Long('7623464695818616839')
-    }
-  },
-  operationTime: Timestamp({ t: 1788937244, i: 2 })
-}
-```
+	```sql
+	// 透過欄位條件隱藏索引
+	db.orders.hideIndex({ userId: 1 })
+	
+	
+	{
+	  hidden_old: false,
+	  hidden_new: true,
+	  ok: 1,
+	  '$clusterTime': {
+	    clusterTime: Timestamp({ t: 1788937237, i: 2 }),
+	    signature: {
+	      hash: Binary.createFromBase64('0Mt7QOShXuPBg9OoKIcJCElN/qg=', 0),
+	      keyId: Long('7623464695818616839')
+	    }
+	  },
+	  operationTime: Timestamp({ t: 1788937237, i: 2 })
+	}
+	
+	
+	
+	// 透過欄位條件取消隱藏
+	db.orders.unhideIndex({ userId: 1 })
+	
+	
+	{
+	  hidden_old: true,
+	  hidden_new: false,
+	  ok: 1,
+	  '$clusterTime': {
+	    clusterTime: Timestamp({ t: 1788937244, i: 2 }),
+	    signature: {
+	      hash: Binary.createFromBase64('uRTY4xihrrAsbpoAKWPaSkXUpmw=', 0),
+	      keyId: Long('7623464695818616839')
+	    }
+	  },
+	  operationTime: Timestamp({ t: 1788937244, i: 2 })
+	}
+	```
 
 3. 刪除單一索引 (dropIndex)
 
 使用 dropIndex() 刪除指定索引，參數傳入欄位鍵值物件或索引名稱字串：
 
-```sql
-// 透過欄位鍵值刪除
-db.orders.dropIndex({ userId: 1 })
-
-{
-  nIndexesWas: 5,
-  ok: 1,
-  '$clusterTime': {
-    clusterTime: Timestamp({ t: 1788937328, i: 2 }),
-    signature: {
-      hash: Binary.createFromBase64('ttJzuX+bKvfGj+tQSoV7WX5bLTc=', 0),
-      keyId: Long('7623464695818616839')
-    }
-  },
-  operationTime: Timestamp({ t: 1788937328, i: 2 })
-}
-
-
-// 透過索引名稱刪除
-db.orders.dropIndex('status_1_createdAt_-1')
-```
+	```sql
+	// 透過欄位鍵值刪除
+	db.orders.dropIndex({ userId: 1 })
+	
+	{
+	  nIndexesWas: 5,
+	  ok: 1,
+	  '$clusterTime': {
+	    clusterTime: Timestamp({ t: 1788937328, i: 2 }),
+	    signature: {
+	      hash: Binary.createFromBase64('ttJzuX+bKvfGj+tQSoV7WX5bLTc=', 0),
+	      keyId: Long('7623464695818616839')
+	    }
+	  },
+	  operationTime: Timestamp({ t: 1788937328, i: 2 })
+	}
+	
+	
+	// 透過索引名稱刪除
+	db.orders.dropIndex('status_1_createdAt_-1')
+	```
 
 4. 刪除多個索引 (dropIndexes)
 
 使用 dropIndexes() 刪除集合中除了 _id 以外的所有索引，或傳入索引名稱陣列刪除指定的複數索引：
 
-```sql
-// 刪除除 _id 以外的所有索引
-db.orders.dropIndexes()
-
-// 傳入陣列刪除多個指定索引
-db.orders.dropIndexes([
-  'index1name',
-  'index2name',
-  'index3name'
-])
-```
+	```sql
+	// 刪除除 _id 以外的所有索引
+	db.orders.dropIndexes()
+	
+	// 傳入陣列刪除多個指定索引
+	db.orders.dropIndexes([
+	  'index1name',
+	  'index2name',
+	  'index3name'
+	])
+	```
 
 
 
