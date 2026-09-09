@@ -346,6 +346,38 @@ C. 正確原因：單一部電影與其多位演員的關係是典型的一對�
 D. 錯誤原因：戲院與播映電影的關係同 A 選項，屬於多對多（Many-to-Many）關係。  
 
 
+
+[題目]  
+In the context of a movie database application, which of the following is an example of an entity? (Select one.)
+在電影資料庫應用程式的 context 中，下列哪一個是「實體 (Entity)」的範例？（單選）
+
+[選項]  
+A. The rating of a movie.
+B. A document representing a movie tracked in the database application.
+C. The genre of a movie.
+D. The release date of a movie.
+
+[正確答案]：
+B
+
+[核心考點]： 4.1 給定一個包含三個集合（一個父集合與兩個子集合）以及使用者的情境，辨識哪些是內嵌關係（embedded relationships），哪些應該採用引用連結（linked）。
+
+[詳細解析]：
+「實體 (Entity)」指資料庫中獨立存在的物件或事物（通常對應一份文件）；「屬性 (Attribute)」則是用於描述實體特徵的資料欄位（如評分、類型、上映日期）。
+
+A. 錯誤，電影的評分（Rating）是描述電影特徵的「屬性 (Attribute)」，而非實體。
+B. 正確，代表一部電影的文件（Document）是資料庫中獨立被追蹤與記錄的「實體 (Entity)」。
+C. 錯誤，電影的類型（Genre）是屬於電影實體的一個「屬性 (Attribute)」。
+D. 錯誤，電影的上映日期（Release Date）是屬於電影實體的一個「屬性 (Attribute)」。
+
+
+
+
+
+
+
+
+
 # Lesson 5: Embedding and Referencing
 
 
