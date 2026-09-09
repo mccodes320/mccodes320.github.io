@@ -175,6 +175,26 @@ db.customers.createIndex({email: 1, accounts: 1})
 * 每個複合索引最多只能包含一個陣列欄位。
 * 支援符合索引前綴（Prefix）的查詢。
 
+資料內容:
+
+```javascript
+  {
+    username: "alice99",
+    name: "Alice Wang",
+    active: true,
+    birthdate: ISODate("1998-05-12T00:00:00Z"),
+    accounts: [1001, 1002]
+  },
+  {
+    username: "bob_smith",
+    name: "Bob Smith",
+    active: true,
+    birthdate: ISODate("1992-11-20T00:00:00Z"),
+    accounts: [2001]
+  }
+```
+
+
 建立複合索引範例：
 
 ```javascript
