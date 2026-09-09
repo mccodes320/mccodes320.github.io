@@ -235,98 +235,90 @@ db.customers.find({}).sort({birthdate: 1})
 * unhideIndex() 用於取消隱藏索引。
 
 1. 建立測試索引範例
-
-	```sql
-	db.orders.createIndex({ "userId": 1 })
-	db.orders.createIndex({ "userId": 1, "test1": 1 }, { name: "test1" })
-	db.orders.createIndex({ "totalAmount": 1 })
-	```
+```sql
+db.orders.createIndex({ "userId": 1 })
+db.orders.createIndex({ "userId": 1, "test1": 1 }, { name: "test1" })
+db.orders.createIndex({ "totalAmount": 1 })
+```
 
 2. 隱藏與取消隱藏索引 (hideIndex & unhideIndex)
+   在刪除索引前，可先隱藏索引以評估影響。隱藏或取消隱藏可以透過欄位條件或索引名稱操作：
 
-在刪除索引前，可先隱藏索引以評估影響。隱藏或取消隱藏可以透過欄位條件或索引名稱操作：
+```sql
+// 透過欄位條件隱藏索引
+db.orders.hideIndex({ userId: 1 })
 
-	```sql
-	// 透過欄位條件隱藏索引
-	db.orders.hideIndex({ userId: 1 })
-	
-	
-	{
-	  hidden_old: false,
-	  hidden_new: true,
-	  ok: 1,
-	  '$clusterTime': {
-	    clusterTime: Timestamp({ t: 1788937237, i: 2 }),
-	    signature: {
-	      hash: Binary.createFromBase64('0Mt7QOShXuPBg9OoKIcJCElN/qg=', 0),
-	      keyId: Long('7623464695818616839')
-	    }
-	  },
-	  operationTime: Timestamp({ t: 1788937237, i: 2 })
+
+{
+  hidden_old: false,
+  hidden_new: true,
+  ok: 1,
+  '$clusterTime': {
+	clusterTime: Timestamp({ t: 1788937237, i: 2 }),
+	signature: {
+	  hash: Binary.createFromBase64('0Mt7QOShXuPBg9OoKIcJCElN/qg=', 0),
+	  keyId: Long('7623464695818616839')
 	}
-	
-	
-	
-	// 透過欄位條件取消隱藏
-	db.orders.unhideIndex({ userId: 1 })
-	
-	
-	{
-	  hidden_old: true,
-	  hidden_new: false,
-	  ok: 1,
-	  '$clusterTime': {
-	    clusterTime: Timestamp({ t: 1788937244, i: 2 }),
-	    signature: {
-	      hash: Binary.createFromBase64('uRTY4xihrrAsbpoAKWPaSkXUpmw=', 0),
-	      keyId: Long('7623464695818616839')
-	    }
-	  },
-	  operationTime: Timestamp({ t: 1788937244, i: 2 })
+  },
+  operationTime: Timestamp({ t: 1788937237, i: 2 })
+}
+
+
+
+// 透過欄位條件取消隱藏
+db.orders.unhideIndex({ userId: 1 })
+
+
+{
+  hidden_old: true,
+  hidden_new: false,
+  ok: 1,
+  '$clusterTime': {
+	clusterTime: Timestamp({ t: 1788937244, i: 2 }),
+	signature: {
+	  hash: Binary.createFromBase64('uRTY4xihrrAsbpoAKWPaSkXUpmw=', 0),
+	  keyId: Long('7623464695818616839')
 	}
-	```
+  },
+  operationTime: Timestamp({ t: 1788937244, i: 2 })
+}
+```
 
 3. 刪除單一索引 (dropIndex)
+   使用 dropIndex() 刪除指定索引，參數傳入欄位鍵值物件或索引名稱字串：
 
-使用 dropIndex() 刪除指定索引，參數傳入欄位鍵值物件或索引名稱字串：
+```sql
+// 透過欄位鍵值刪除
+db.orders.dropIndex({ userId: 1 })
 
-	```sql
-	// 透過欄位鍵值刪除
-	db.orders.dropIndex({ userId: 1 })
-	
-	{
-	  nIndexesWas: 5,
-	  ok: 1,
-	  '$clusterTime': {
-	    clusterTime: Timestamp({ t: 1788937328, i: 2 }),
-	    signature: {
-	      hash: Binary.createFromBase64('ttJzuX+bKvfGj+tQSoV7WX5bLTc=', 0),
-	      keyId: Long('7623464695818616839')
-	    }
-	  },
-	  operationTime: Timestamp({ t: 1788937328, i: 2 })
+{
+  nIndexesWas: 5,
+  ok: 1,
+  '$clusterTime': {
+	clusterTime: Timestamp({ t: 1788937328, i: 2 }),
+	signature: {
+	  hash: Binary.createFromBase64('ttJzuX+bKvfGj+tQSoV7WX5bLTc=', 0),
+	  keyId: Long('7623464695818616839')
 	}
-	
-	
-	// 透過索引名稱刪除
-	db.orders.dropIndex('status_1_createdAt_-1')
-	```
+  },
+  operationTime: Timestamp({ t: 1788937328, i: 2 })
+}
+
+
+// 透過索引名稱刪除
+db.orders.dropIndex('status_1_createdAt_-1')
+```
 
 4. 刪除多個索引 (dropIndexes)
+   使用 dropIndexes() 刪除集合中除了 _id 以外的所有索引，或傳入索引名稱陣列刪除指定的複數索引：
 
-使用 dropIndexes() 刪除集合中除了 _id 以外的所有索引，或傳入索引名稱陣列刪除指定的複數索引：
+```sql
+// 刪除除 _id 以外的所有索引
+db.orders.dropIndexes()
 
-	```sql
-	// 刪除除 _id 以外的所有索引
-	db.orders.dropIndexes()
-	
-	// 傳入陣列刪除多個指定索引
-	db.orders.dropIndexes([
-	  'index1name',
-	  'index2name',
-	  'index3name'
-	])
-	```
+// 傳入陣列刪除多個指定索引
+db.orders.dropIndexes(['index1name', 'index2name', 'index3name'])
+```
 
 
 
@@ -343,11 +335,8 @@ db.customers.find({}).sort({birthdate: 1})
 
 
 
-# Lesson 6: getIndexes(), explain
-
-
-1. **getIndexes()**  
-    Use **getIndexes()** to see all the indexes created in a collection.  
+# Lesson 6: getIndexes() 檢視集合所有索引	
+* 用於列出指定集合（Collection）目前存在的所有索引結構、名稱與特殊屬性（例如 TTL 索引的過期秒數）：
     ```sql
     db.customers.getIndexes()
 
@@ -358,43 +347,159 @@ db.customers.find({}).sort({birthdate: 1})
     
     ```
 
-2. **explain**
+# Lesson 7: explain() 剖析查詢執行計畫
    * Use **explain()** in a collection when running a query to see the Execution plan. 
    * **只有find()可以使用explain(), findOne()不能.**
-      ```
-      TypeError: db.listingsAnd ... 1")}}).explain is not a function
-      ```
-   * 由內往外看winningPlan﹐從 inputStage 傳遞給父 stage
-   * 資料結構
      ```
-     winningPlan: {
-       isCached: false,         // 是否使用了快取的執行計畫 (Boolean)
-       stage: 'STAGE_NAME',     // 最外層（最終處理）的階段名稱 (String)
-       // ... 該 stage 的專屬參數 ...
-       inputStage: {            // 傳遞資料給上一層的子階段 (Object, 選填)
-         stage: 'SUB_STAGE_NAME',
-         // ... 核心屬性 ...
-         inputStage: { ... }    // 若有多層，會繼續往下巢狀嵌套
-       }
-     },
-     rejectedPlans: [           // 被評估後淘汰的執行計畫列表 (Array)
-       {
-         stage: 'STAGE_NAME',   // 候選計畫的執行階段（結構與 winningPlan 相同）
-         inputStage: { ... }
-       }
-     ]
+     TypeError: db.listingsAnd ... 1")}}).explain is not a function
+     ```
+   * 三種模式說明與範例
+     ```sql
+		// Mode 1: queryPlanner（預設值，不實際執行查詢）
+		db.customers.explain("queryPlanner").find({ email: "alice@example.com" })
+		
+		// Mode 2: executionStats（最常用！實際執行查詢並輸出精確統計）
+		db.customers.explain("executionStats").find({ email: "alice@example.com" })
+		
+		// Mode 3: allPlansExecution（輸出優化器評估所有候選計畫時的完整數據）
+		db.customers.explain("allPlansExecution").find({ email: "alice@example.com" })
+     ```
+   * 實戰輸出結果與關鍵指標解讀 (executionStats)
+     ```sql
+		db.customers.explain("executionStats").find(
+		  { email: "timothy78@hotmail.com" },
+		  { email: 1, _id: 0 }
+		)
+     ```
+   * 輸出資料
+     ```sql
+		{
+		  explainVersion: '1',
+		  queryPlanner: {
+		    winningPlan: {
+		      stage: 'PROJECTION_COVERED', // 階段 2：達成覆蓋查詢（零硬碟 I/O）
+		      inputStage: {
+		        stage: 'IXSCAN',          // 階段 1：使用索引掃描
+		        keyPattern: { email: 1 },
+		        indexName: 'email_1',
+		        isMultiKey: false
+		      }
+		    },
+		    rejectedPlans: []              // 優化器淘汰的其他計畫
+		  },
+		  executionStats: {
+		    executionSuccess: true,
+		    nReturned: 1,                 // [關鍵] 最終回傳的文件筆數：1 筆
+		    executionTimeMillis: 0,       // [關鍵] 總耗時：0 毫秒
+		    totalKeysExamined: 1,         // [關鍵] 掃描的索引鍵數：1 個
+		    totalDocsExamined: 0,         // [關鍵] 讀取硬碟文件數：0 筆（極致效能！）
+		    executionStages: {
+		      stage: 'PROJECTION_COVERED',
+		      nReturned: 1,
+		      executionTimeMillisEstimate: 0
+		    }
+		  }
+		}
+     ```
+   * 資料結構
+        * 由內往外看winningPlan﹐從 inputStage 傳遞給父 stage 
+     ```sql
+	     winningPlan: {
+	       isCached: false,         // 是否使用了快取的執行計畫 (Boolean)
+	       stage: 'STAGE_NAME',     // 最外層（最終處理）的階段名稱 (String)
+	       // ... 該 stage 的專屬參數 ...
+	       inputStage: {            // 傳遞資料給上一層的子階段 (Object, 選填)
+	         stage: 'SUB_STAGE_NAME',
+	         // ... 核心屬性 ...
+	         inputStage: { ... }    // 若有多層，會繼續往下巢狀嵌套
+	       }
+	     },
+	     rejectedPlans: [           // 被評估後淘汰的執行計畫列表 (Array)
+	       {
+	         stage: 'STAGE_NAME',   // 候選計畫的執行階段（結構與 winningPlan 相同）
+	         inputStage: { ... }
+	       }
+	     ]
      ```
     
-      
-      
-| 階段名稱 | 說明 |
-| :--- | :--- |
-| `IXSCAN` | **Index Scan**：代表正在使用索引進行查詢。這是你期望看到的結果。 |
-| `COLLSCAN` | **Collection Scan**：全表掃描。代表沒有使用索引，效能差。 |
-| `FETCH` | 代表依索引找到位置後，再讀取實際文件內容，通常是搭配 IXSCAN 使用。(讀取進硬碟) |
-| `SORT` | 表示在記憶體中進行排序，若沒有用索引排序會耗費更多資源。 |
-| `PROJECTION_SIMPLE` | 一般投射。代表資料已取得（透過 COLLSCAN 或 FETCH），最後僅需過濾或剪裁出指定的欄位回傳。 |
-| `PROJECTION_COVERED` | 當查詢所需的欄位全部包含在索引中，MongoDB 不需 FETCH 文件即可回傳結果。 |
+
+* MongoDB 執行階段 (Execution Stages) 完全解析
+
+| 執行階段 Stage | 全稱 Full Name | 定義與運作機制 Mechanism | 效能影響與優化建議 Assessment & Action |
+| :--- | :--- | :--- | :--- |
+| PROJECTION_COVERED | Covered Query (覆蓋查詢) | 當查詢與回傳所需的欄位全部包含在索引中（且排除 _id），MongoDB 完全不需 FETCH 文件即可直接回傳結果。 | 極致 (Optimal+)：零磁碟 I/O，完全依靠記憶體內的索引提供結果，效能達到理論極限。 |
+| IXSCAN | Index Scan (索引掃描) | 查詢成功使用了索引。資料庫僅檢索 B-Tree 索引樹中的特定鍵值，迅速定位符合條件的文件位置。 | 最佳 (Optimal)：代表查詢已受索引優化，無須掃描全集合。 |
+| FETCH | Fetch Documents (檢索文件) | 資料庫根據前一階段（如 IXSCAN）獲取的位置指標，從磁碟或快取中讀取完整的文件內容。 | 正常 (Normal)：搭配 IXSCAN 使用屬於正常流程；若需極限優化可嘗試調整 Projection 以達成 PROJECTION_COVERED。 |
+| PROJECTION_SIMPLE | Simple Projection (一般投射) | 資料已被取得（透過 COLLSCAN 或 FETCH），最後在記憶體中過濾或剪裁出查詢指定要回傳的欄位。 | 正常 (Normal)：純記憶體欄位裁剪動作，通常開銷極低。 |
+| SORT | In-Memory Sort (記憶體排序) | 資料庫在記憶體中對結果進行排序，發生於排序欄位未命中索引或 ESR 索引順序不符時。 | 高風險 (High Risk)：極耗 CPU 與記憶體。若排序資料超過 100 MB 限制查詢會報錯中斷，應建立符合排序條件的複合索引。 |
+| COLLSCAN | Collection Scan (全集合掃描) | 查詢未命中任何索引。資料庫必須從頭到尾逐筆讀取集合中的每一份文件來比對條件。 | 極差 (Poor)：在大型資料集中會造成嚴重磁碟 I/O 負擔與高延遲，應立即針對查詢條件建立索引。 |
+
+
+
+
+
+# Lesson 8: ESR 原則的核心架構
+
+* Equality (E) 相等性：單一欄位的精確匹配（例如 status: "ACTIVE"）。必須優先置於索引第一位，能大幅過濾無效文件，減少檢索時間。
+* Sort (S) 排序：決定結果集順序的欄位（例如 .sort({ createdAt: -1 })）。利用索引排序可消除開銷極高的記憶體排序（In-Memory Sort）。
+* Range (R) 範圍：包含範圍查詢條件的欄位（例如 $gte, $lt, $in）。必須放在排序欄位之後。
+
+
+Equality + Sort + Range  
+
+```JavaScript
+// 寫法 A (先寫 Range 再寫 Equality)
+db.listingsAndReviews.find({
+  price: { $gte: 100 },    // Range
+  status: "ACTIVE"         // Equality
+}).sort({ createdAt: -1 })  // Sort
+
+// 寫法 B (先寫 Equality 再寫 Range)
+db.listingsAndReviews.find({
+  status: "ACTIVE",        // Equality
+  price: { $gte: 100 }     // Range
+}).sort({ createdAt: -1 })  // Sort
+```
+對於 MongoDB 來說，寫法 A 與 寫法 B 完全等價！	
+= > 完美: { status: 1, createdAt: -1, price: 1 }	
+= > 錯誤: { status: 1, price: 1, createdAt: -1 }  // E -> R -> S (錯誤)	
+	
+### 當兩個E的時候
+* 答案是：在絕大多數情況下沒有差別，MongoDB Optimizer 都會自動處理。
+* 碰到相同的情況, 選擇性高（高基數）的放前面
+```JavaScript
+db.listingsAndReviews.find(
+  { status: "ACTIVE", price: 1 },
+  { status: 1, price: 1, createdAt: 1, _id: 0 } // 明確只輸出索引內有的欄位並剔除 _id
+).sort({ createdAt: -1 })
+```
+{ status: 1, price: 1, createdAt: -1 } // E -> E -> S
+
+
+```JavaScript
+db.listingsAndReviews.find(
+{ status: "ACTIVE", price: 1 },
+{ status: 1, price: 1, createdAt: 1, _id: 0 } // 明確只輸出索引內有的欄位並剔除 _id
+).sort({ createdAt: 1,status:1}) 
+```
+= > { price: 1, createdAt: 1, status: 1 } // E(精準匹配) -> S (排序第一順位) -> ES (同時滿足 Equality 與 Sort)
+```JavaScript
+db.listingsAndReviews.find(
+{ status: "ACTIVE", price: 1 },
+{ status: 1, price: 1, createdAt: 1, _id: 0 } // 明確只輸出索引內有的欄位並剔除 _id
+).sort({ status:1, createdAt: 1}) 
+```
+= > { price: 1, status: 1, createdAt: 1 } // E(精準匹配) ->  ES (同時滿足 Equality 與 Sort)-> S (排序第一順位)
+
+
+
+
+
+# Lesson 9: 
+
+
+
+
 
 
 
@@ -545,265 +650,98 @@ rejectedPlans: [
 ```
 
 
-# ESR 
 
-Equality + Sort + Range  
+# Lesson 9: 複合索引Compound Index Prefix Rule and Best Practices
 
-```JavaScript
-// 寫法 A (先寫 Range 再寫 Equality)
-db.listingsAndReviews.find({
-  price: { $gte: 100 },    // Range
-  status: "ACTIVE"         // Equality
-}).sort({ createdAt: -1 })  // Sort
-
-// 寫法 B (先寫 Equality 再寫 Range)
-db.listingsAndReviews.find({
-  status: "ACTIVE",        // Equality
-  price: { $gte: 100 }     // Range
-}).sort({ createdAt: -1 })  // Sort
-```
-對於 MongoDB 來說，寫法 A 與 寫法 B 完全等價！
-= > 完美: { status: 1, createdAt: -1, price: 1 }
-= > 錯誤: { status: 1, price: 1, createdAt: -1 }  // E -> R -> S (錯誤)
-
-### 當兩個E的時候
-* 答案是：在絕大多數情況下沒有差別，MongoDB Optimizer 都會自動處理。
-* 碰到相同的情況, 選擇性高（高基數）的放前面
-```JavaScript
-db.listingsAndReviews.find(
-  { status: "ACTIVE", price: 1 },
-  { status: 1, price: 1, createdAt: 1, _id: 0 } // 明確只輸出索引內有的欄位並剔除 _id
-).sort({ createdAt: -1 })
-```
-{ status: 1, price: 1, createdAt: -1 } // E -> E -> S
+複合索引（Compound Index）是由多個欄位按特定順序組合而成的單一索引。理解其運作底層（B-Tree 樹狀結構）與前綴原則（Prefix Rule），是設計高效能查詢的關鍵。
 
 
+### 1. 前綴原則 (Prefix Rule) 的核心定義
 
-db.listingsAndReviews.find(
-{ status: "ACTIVE", price: 1 },
-{ status: 1, price: 1, createdAt: 1, _id: 0 } // 明確只輸出索引內有的欄位並剔除 _id
-).sort({ createdAt: 1,status:1}) 
+#### 何謂索引前綴（Index Prefixes）？
 
-= > { price: 1, createdAt: 1, status: 1 } // E(精準匹配) -> S (排序第一順位) -> ES (同時滿足 Equality 與 Sort)
+假設我們建立了一個包含三個欄位的複合索引：
 
-db.listingsAndReviews.find(
-{ status: "ACTIVE", price: 1 },
-{ status: 1, price: 1, createdAt: 1, _id: 0 } // 明確只輸出索引內有的欄位並剔除 _id
-).sort({ status:1, createdAt: 1}) 
-
-= > { price: 1, status: 1, createdAt: 1 } // E(精準匹配) ->  ES (同時滿足 Equality 與 Sort)-> S (排序第一順位)
-
-
-
-
-
-
-
-
-
-
-The order of the fields in a compound index matters
-複合索引中欄位的順序很重要
-
-Follow this order: Equality, Sort, Range
-遵循此順序：相等、排序、範圍
-
-The sort order of the field values in the index matters
-索引中欄位值的排序順序很重要
-
-
-**Equality**
-相等性
-
-	Test exact matches on single field
-	測試單一欄位的精確匹配
-	
-	Should be placed first in a compound index
-	應放在複合索引的第一位
-	
-	Reduces query processing time
-	減少查詢處理時間
-	
-	Retrieves fewer documents
-	檢索更少的文檔
-
-
-**Sort**
-排序
-
-	Determines the order of results
-	決定結果的順序
-	
-	Index sort eliminates the need for in-memory sorts
-	索引排序消除了記憶體中排序的需要
-	
-	Sort order is important if query results are sorted by more than 1 field and they mix sort orders
-	如果查詢結果按多個欄位排序且它們混合了排序順序，則排序順序很重要
-	
-	**Working with Compound Indexes**
-	Review the code below, which demonstrates how to create a compound index in a collection.
-
-
-**Create a Compound Index**
-Use createIndex() to create a new index in a collection. Within the parentheses of createIndex(), include an object that contains two or more fields and their sort order.
-```
-db.customers.createIndex({
-  active:1, 
-  birthdate:-1,
-  name:1
-})
+```javascript
+db.users.createIndex({ db: 1, collection: 1, status: 1 })
 ```
 
-**Order of Fields in a Compound Index**
-The order of the fields matters when creating the index and the sort order. It is recommended to list the fields in the following order: Equality, Sort, and Range.
+所謂的「前綴」，指的是該索引從最左側欄位開始、依序向右組合出來的子集：
 
-* Equality: field/s that matches on a single field value in a query
-* Sort: field/s that orders the results by in a query
-* Range: field/s that the query filter in a range of valid values
-The following query includes an equality match on the active field, a sort on birthday (descending) and name (ascending), and a range query on birthday too.
+* 第一前綴：{ db: 1 }
+* 第二前綴：{ db: 1, collection: 1 }
+* 完整索引：{ db: 1, collection: 1, status: 1 }（涵蓋全部欄位）
+
+#### B-Tree 的底層排序機制與查詢命中分析
+
+WiredTiger 儲存引擎在排序複合索引時，嚴格遵循「先比較左邊欄位，左欄位相同時，才比較右邊欄位」的順序。因此，複合索引只能支援以該索引前綴開始的查詢條件。
+
+```javascript
+// 情況 A：完全匹配（極高效）
+// 順序命中全部欄位，直達 B-Tree 目標節點
+db.users.find({ db: "test", collection: "orders", status: "active" })
+
+// 情況 B：部分匹配且符合前綴（高效）
+// 分別命中第一與第二前綴，無須再為 { db: 1 } 單獨建立獨立索引
+db.users.find({ db: "test" })
+db.users.find({ db: "test", collection: "orders" })
+
+// 情況 C：不符合前綴（完全不支援）
+// 完全跳過了最左邊的 db 欄位。右邊資料在 B-Tree 中是無序分散的，無法進行 IXSCAN，只能退回 COLLSCAN
+db.users.find({ collection: "orders", status: "active" })
+
+// 情況 D：前綴中間出現「斷層」
+// 雖然包含最左邊欄位 db，但跳過了中間的 collection 欄位
+db.users.find({ db: "test", status: "active" })
 ```
-db.customers.find({
-  birthdate: {
-    $gte:ISODate("1977-01-01")
-    },
-    active:true
-    }).sort({
-      birthdate:-1, 
-      name:1
-      })
+
+> 中間斷層分析：當查詢跳過中間欄位時，MongoDB 仍可用最左側欄位（db）做索引範圍掃描（IXSCAN）來縮小搜尋範圍，但對於後續欄位（status）只能在索引樹上做後續過濾（Index Post-filtering），效能無法達到連續匹配前綴的最佳狀態。
+
+---
+
+### 2. 複合索引查詢最佳實踐 (Best Practices)
+
+假設針對商品集合建立以下符合 ESR 原則的複合索引：
+
+```javascript
+db.products.createIndex({ category: 1, price: -1, stock: 1 })
 ```
-Here's an example of an efficient index for this query:
-```
-db.customers.createIndex({
-  active:1, 
-  birthdate:-1,
-  name:1
-})
-```
-View the Indexes used in a Collection
-Use getIndexes() to see all the indexes created in a collection.
-```
-db.customers.getIndexes()
-```
-Check if an index is being used on a query
-Use explain() in a collection when running a query to see the Execution plan. This plan provides the details of the execution stages (IXSCAN , COLLSCAN, FETCH, SORT, etc.). Some of these are:
 
-
-
-| 執行階段 | 全稱 | 定義與運作機制 | 效能影響與優化建議 |
-| :--- | :--- | :--- | :--- |
-| **`IXSCAN`** | Index Scan<br>(索引掃描) | 查詢成功使用了索引。資料庫僅檢索索引樹中的特定鍵值，迅速定位符合條件的文件位置。 | **最佳 (Optimal)**<br>代表查詢已受索引優化，無須掃描整份集合。 |
-| **`COLLSCAN`** | Collection Scan<br>(全集合掃描) | 查詢未命中任何索引。資料庫必須從頭到尾逐筆讀取集合中的每一份文件來比對條件。 | **極差 (Poor)**<br>在大型資料集中會造成嚴重 I/O 負擔與延遲，應針對查詢條件建立索引。 |
-| **`FETCH`** | Fetch Documents<br>(檢索文件) | 資料庫根據先前階段（如 `IXSCAN`）獲取的位置指標，從磁碟或記憶體中讀取完整的文件內容。 | **正常 (Normal)**<br>若查詢需求為覆蓋查詢（Covered Query），可完全跳過此階段以提升極致效能。 |
-| **`SORT`** | In-Memory Sort<br>(記憶體排序) | 資料庫在記憶體中對查詢結果進行排序，通常發生於排序欄位未建立索引時。 | **高風險 (High Risk)**<br>耗費 CPU 與記憶體。若排序資料超過預設上限（100 MB）查詢會中斷，應建立排序索引。 |
-
-
-
-
-
-
-
-
-```
-db.customers.explain().find({
-  birthdate: {
-    $gte:ISODate("1977-01-01")
-    },
-  active:true
-  }).sort({
-    birthdate:-1,
-    name:1
-    })
-```
-**Cover a query by the Index**
-An Index covers a query when MongoDB does not need to fetch the data from memory since all the required data is already returned by the index.
-
-In most cases, we can use projections to return only the required fields and cover the query. Make sure those fields in the projection are in the index.
-
-By adding the projection **{name:1,birthdate:1,_id:0}** in the previous query, we can limit the returned fields to only name and birthdate. These fields are part of the index and when we run the explain() command, the execution plan shows only two stages:
-
-* IXSCAN - Index scan using the compound index
-* PROJECTION_COVERED - All the information needed is returned by the index, no need to fetch from memory
-
-```
-db.customers.explain().find({
-  birthdate: {
-    $gte:ISODate("1977-01-01")
-    },
-  active:true
-  },
-  {name:1,
-    birthdate:1, 
-    _id:0
-  }).sort({
-    birthdate:-1,
-    name:1
-    })
+#### 最佳查詢 (Perfect)	
+* 等值 + 範圍組合：完全涵蓋索引前綴。		
+```javascript
+db.products.find({ category: "electronics", price: { $gte: 100 }, stock: { $gt: 10 } })
 ```
 
 
-* 前綴原則（Prefix Rule）
-  複合索引指的是由多個欄位組合而成的單一索引。例如
-  ```sql
-  db.users.createIndex({ db: 1, collection: 1, status: 1 })
-  ```  
-  所謂的「前綴（Prefixes）」，指的是這個索引由左至右依序組合出來的「子集」。以上述索引為例，它所擁有的合法字首前綴包含以下兩種組合：  
-  第一前綴： { db: 1 }  
-  第二前綴： { db: 1, collection: 1 }  
-  (註：包含完整三個欄位的 { db: 1, collection: 1, status: 1 } 自然也適用，但它通常被直接視為索引本身，而非前綴。)
-
-  前綴原則的核心定義是：**一個複合索引，只能支援「以該索引前綴開始」的查詢條件。**  
-  B-Tree 在排序複合索引時，是嚴格遵循「先比較左邊欄位，左邊相同時，才比較右邊欄位」的順序
-  
-  情況 A：完全匹配（極高效）  
-  ```sql
-  db.users.find({ db: "test", collection: "orders", status: "active" })
-  ```  
-  情況 B：部分匹配，且符合前綴（高效）
-  ```sql
-  db.users.find({ db: "test" })
-  db.users.find({ db: "test", collection: "orders" })
-  ```
-  支援。 這兩個查詢分別命中了「第一前綴」與「第二前綴」。這代表你不需要單獨為 { db: 1 } 建立另一個獨立索引，這個複合索引已經兼顧了它的功能。  
-      
-  情況 C：不符合前綴（完全不支援）  
-  ```sql
-  db.users.find({ db: "test", status: "active" })
-  ```
-  不支援。 這些查詢都跳過了最左邊的 db 欄位。對 WiredTiger 儲存引擎來說，少了最左邊的排序基準，右邊的資料在 B-Tree 中是無序、分散的，因此無法進行索引掃描（IXSCAN），只能被迫走全表掃描（COLLSCAN）。
-  
-  前綴中間「斷層」會怎樣？
-  ```sql
-  db.users.find({ db: "test", status: "active" })
-  ```
-  結論： 這個查詢雖然有用到索引來縮小 scope，但只能發揮「部分優化」的效果，效率不如連續匹配的前綴。
+* 前綴過濾 + 排序：命中第一前綴 category 過濾，並順應第二欄位 price 的排序方向（-1），直接從小至大或由大至小讀取索引，免去記憶體內排序（In-Memory Sort: False）。
+```javascript
+db.products.find({ category: "electronics" }).sort({ price: -1 })
+```
 
 
+* 單前綴過濾：僅帶入最左側 category，索引發揮高品質單鍵過濾效果，執行 IXSCAN 迅速限縮範圍。	
+```javascript
+db.products.find({ category: "electronics" })
+```
+
+#### 次佳查詢 (Mid)	
+* 中間斷層過濾：漏掉中間欄位 price，只能利用 category 進行索引邊界掃描。在索引樹中撈出符合 electronics 的條目後，再進行掃描後過濾（Post-scan filtering）。	
+```javascript
+db.products.find({ category: "electronics", stock: { $gt: 0 } })
+```
+
+#### 劣質查詢 (Bad)
+* 缺少最左前綴：完全未帶入最左欄位 category，導致索引完全失效，迫使資料庫進行全集合掃描（COLLSCAN）。	
+```javascript
+db.products.find({ price: { $gte: 100 }, stock: { $gt: 0 } }
+```
 
 
-
-
-
-
-
-* Best Practices
-   * 完美
-     等值篩選 + 範圍篩選      
-     db.products.find({ category: "electronics", price: { $gte: 100 }, stock: { $gt: 10 } })
-   * 符合ESR，查詢使用了最左側的前綴 category 進行過濾，並且緊接著利用第二個欄位 price 進行排序。因為排序方向（-1）與索引定義完全一致，直接從小至大或從大至小讀取索引，達成記憶體內免排序（In-Memory Sort: False）
-     db.products.find({ category: "electronics" }).sort({ price: -1 })
-   * 使用最左側前綴，即使沒有帶入 price 和 stock，只要帶入了最左邊的 category，該索引依然是一個高效率的單鍵索引。MongoDB 會執行 IXSCAN（索引掃描）迅速限縮範圍。
-     db.products.find({ category: "electronics" })   
-   
-* Mid
-  漏掉了中間的 price，只能使用 category 來做索引邊界掃描。只能在索引樹裡把所有符合 electronics 的條目撈出來後，一筆一筆進行掃描後過濾（Post-scan filtering）。
-   db.products.find({ category: "electronics", stock: { $gt: 0 } })   
-* Bad   
-  索引完全失效, 完全沒有包含最左邊的 category   
-  db.products.find({ category: "electronics", stock: { $gt: 0 } })   
-  排序欄位順序顛倒或方向不符   
-  db.products.find({ category: "electronics" }).sort({ stock: 1 })   
-
+* 排序欄位跳過前綴或方向不符：排序欄位未包含前綴，或排序欄位順序與方向無法透過索引滿足，導致系統進行高代價的記憶體內排序（SORT 階段）。
+```javascript
+db.products.find({ category: "electronics" }).sort({ stock: 1 })
+```
 
 
 
@@ -901,6 +839,10 @@ db.sessions.find({ userId: { $gt: "U500" } });
 
 // ✅ 等值查詢：高效命中雜湊索引（Index Scan）
 db.sessions.find({ userId: "U1234" });
+
+
+
+
 
 
 
